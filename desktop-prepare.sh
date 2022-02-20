@@ -13,7 +13,7 @@ sh ~/.vim_runtime/install_awesome_vimrc.sh
 #tmux
 git clone --depth=1 https://github.com/gpakosz/.tmux.git
 ln -s -f .tmux/.tmux.conf
-cp .tmux.conf.local ~/
+cp .tmux.conf.local ~/.tmux
 cp start-tmux.sh ~/
 
 #install micro
@@ -41,7 +41,6 @@ cd
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"agnoster\"/g' .zshrc
-echo 'alias ls="exa -hHBmgaFl --git"' >> ~/.zshrc
 echo 'alias ls="exa -hHBmgaFl --git"' >> ~/.zshrc
 echo 'alias t="tmux"' >> ~/.zshrc
 echo 'alias ta="t a -t"' >> ~/.zshrc
