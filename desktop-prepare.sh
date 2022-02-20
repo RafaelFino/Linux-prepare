@@ -6,15 +6,12 @@ sudo apt install -y git vim zsh wget unzip jq telnet curl htop terminator tmux d
 sudo apt autoclean -y
 sudo apt autoremove -y
 
+#add user to sudo-docker
+sudo usermod -aG docker $USER
+
 #install vim
 git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime
 sh ~/.vim_runtime/install_awesome_vimrc.sh
-
-#tmux
-git clone --depth=1 https://github.com/gpakosz/.tmux.git
-ln -s -f .tmux/.tmux.conf
-cp .tmux.conf.local ~/.tmux
-cp start-tmux.sh ~/
 
 #install micro
 curl https://getmic.ro | bash
@@ -34,6 +31,11 @@ wget https://github.com/ogham/exa/releases/download/v0.10.1/exa-linux-x86_64-v0.
 sudo unzip -o -j exa-linux-x86_64-v0.10.1.zip "bin/exa" -d /usr/bin
 rm exa-linux-x86_64-v0.10.1.zip
 
+#Install oh-my-tmux
+git clone --depth=1 https://github.com/gpakosz/.tmux.git ~/.tmux
+cp .tmux.conf.local ~/.tmux
+cp start-tmux.sh ~/
+
 #change dir to HOME
 cd
 
@@ -52,8 +54,5 @@ echo zsh >> ~/.bashrc
 
 #copy terminator config
 mv terminator-config .config/terminator/config
-
-#add user to sudo-docker
-sudo usermod -aG docker $USER
 
 echo 'Done!'
