@@ -5,7 +5,7 @@ sudo cat hosts >> /etc/hosts
 cd
 
 #update
-sudo apt install -y git vim zsh wget unzip jq telnet curl htop lm-sensors python3 python3-pip
+sudo apt install -y git vim zsh wget unzip jq telnet curl htop lm-sensors python3 python3-pip exa
 
 #install vim
 git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime
@@ -14,11 +14,6 @@ sh ~/.vim_runtime/install_awesome_vimrc.sh
 #install micro
 curl https://getmic.ro | bash
 sudo mv micro /usr/bin
-
-#install exa (new LS)
-wget https://github.com/ogham/exa/releases/download/v0.10.1/exa-linux-armv7-v0.10.1.zip -O exa.zip
-sudo unzip -o -j exa.zip "bin/exa" -d /usr/bin
-rm exa-linux-x86_64-v0.10.0.zip
 
 #install oh-my-zsh
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
