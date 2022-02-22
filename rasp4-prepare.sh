@@ -5,7 +5,7 @@ sudo cat hosts >> /etc/hosts
 cd
 
 #update
-sudo apt install -y git vim zsh wget unzip jq telnet curl htop lm-sensors python3 python3-pip exa
+sudo apt install -y git vim zsh wget unzip jq telnet curl htop lm-sensors python3 python3-pip exa cifs-utils
 
 #install vim
 git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime

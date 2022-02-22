@@ -36,6 +36,25 @@ git clone --depth=1 https://github.com/gpakosz/.tmux.git ~/.tmux
 cp .tmux.conf.local ~/.tmux
 cp start-tmux.sh ~/
 
+#config fstab
+sudo echo '#Fogo na Pamonha Router Share' >> /etc/fstab
+sudo echo '//c7-router/sda1        /media/c7-router        cifs    rw,relatime,vers=1.0,sec=none,file_mode=0777,dir_mode=0777      0       0' >> /etc/fstab
+
+sudo echo 'Rasp 3 SMB Share - Open Media Vault' >> /etc/fstab
+sudo echo '//rasp3/share-a /media/rasp3-share-a cifs    guest,rw,relatime,noforceuid,noforcegid,file_mode=0777,dir_mode=0777,noperm 0   0'
+sudo echo '//rasp3/share-b /media/rasp3-share-b cifs    guest,rw,relatime,noforceuid,noforcegid,file_mode=0777,dir_mode=0777,noperm 0   0'
+
+sudo echo 'Rasp4 SMB Share' >> /etc/fstab
+sudo echo '//rasp4/share /media/rasp4-share cifs    guest,rw,relatime,noforceuid,noforcegid,file_mode=0777,dir_mode=0777,noperm  0   0'
+
+sudo mkdir /media/rasp4-share /media/rasp3-share-a /media/rasp3-share-b
+sudo chown nobody:nogroup /media/rasp4-share /media/rasp3-share-a /media/rasp3-share-b
+sudo chmod 0775 /media/rasp4-share /media/rasp3-share-a /media/rasp3-share-b
+sudo mount -a
+
+#include itens to hosts
+sudo cat hosts /etc/hosts | sort -urf > /etc/hosts
+
 #change dir to HOME
 cd
 
