@@ -43,13 +43,15 @@ sudo echo '//c7-router/sda1        /media/c7-router        cifs    rw,relatime,v
 sudo echo 'Rasp 3 SMB Share - Open Media Vault' >> /etc/fstab
 sudo echo '//rasp3/share-a /media/rasp3-share-a cifs    guest,rw,relatime,noforceuid,noforcegid,file_mode=0777,dir_mode=0777,noperm 0   0'
 sudo echo '//rasp3/share-b /media/rasp3-share-b cifs    guest,rw,relatime,noforceuid,noforcegid,file_mode=0777,dir_mode=0777,noperm 0   0'
+sudo echo '//rasp3/share-c /media/rasp3-share-c cifs    guest,rw,relatime,noforceuid,noforcegid,file_mode=0777,dir_mode=0777,noperm 0   0'
+sudo echo '//rasp3/share-d /media/rasp3-share-d cifs    guest,rw,relatime,noforceuid,noforcegid,file_mode=0777,dir_mode=0777,noperm 0   0'
 
 sudo echo 'Rasp4 SMB Share' >> /etc/fstab
 sudo echo '//rasp4/share /media/rasp4-share cifs    guest,rw,relatime,noforceuid,noforcegid,file_mode=0777,dir_mode=0777,noperm  0   0'
 
-sudo mkdir /media/rasp4-share /media/rasp3-share-a /media/rasp3-share-b
-sudo chown nobody:nogroup /media/rasp4-share /media/rasp3-share-a /media/rasp3-share-b
-sudo chmod 0775 /media/rasp4-share /media/rasp3-share-a /media/rasp3-share-b
+sudo mkdir /media/rasp4-share /media/rasp3-share-a /media/rasp3-share-b /media/rasp3-share-c /media/rasp3-share-d
+sudo chown nobody:nogroup /media/rasp4-share /media/rasp3-share-a /media/rasp3-share-b /media/rasp3-share-c /media/rasp3-share-d
+sudo chmod 0775 /media/rasp4-share /media/rasp3-share-a /media/rasp3-share-b /media/rasp3-share-c /media/rasp3-share-d
 sudo mount -a
 
 #include itens to hosts
