@@ -31,11 +31,6 @@ wget https://github.com/ogham/exa/releases/download/v0.10.1/exa-linux-x86_64-v0.
 sudo unzip -o -j exa-linux-x86_64-v0.10.1.zip "bin/exa" -d /usr/bin
 rm exa-linux-x86_64-v0.10.1.zip
 
-#Install oh-my-tmux
-git clone --depth=1 https://github.com/gpakosz/.tmux.git ~/.tmux
-cp .tmux.conf.local ~/.tmux
-cp start-tmux.sh ~/
-
 #config fstab
 sudo echo '#Fogo na Pamonha Router Share' >> /etc/fstab
 sudo echo '//c7-router/sda1        /media/c7-router        cifs    rw,relatime,vers=1.0,sec=none,file_mode=0777,dir_mode=0777      0       0' >> /etc/fstab
@@ -55,10 +50,18 @@ sudo chmod 0775 /media/rasp4-share /media/rasp3-share-a /media/rasp3-share-b /me
 sudo mount -a
 
 #include itens to hosts
-sudo cat hosts /etc/hosts | sort -urf > /etc/hosts
+sudo sh -c "$(cat hosts /etc/hosts | sort -urf > /etc/hosts)"
 
-#change dir to HOME
+#Prepare tmux
+mkdir ~/.tmux
+cp .tmux.* ~/.tmux
+cp start-tmux.sh ~/
+
+#change workdir to Home
 cd
+
+#Oh-my-tmux
+git clone --depth=1 https://github.com/gpakosz/.tmux.git ~/.tmux
 
 #install oh-my-zsh
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -71,9 +74,5 @@ echo 'alias tls="t ls"' >> ~/.zshrc
 echo 'alias tn="t new -t"' >> ~/.zshrc
 
 echo set nu >> ~/.vim_runtime/my_configs.vim
-echo zsh >> ~/.bashrc
-
-#copy terminator config
-mv terminator-config .config/terminator/config
 
 echo 'Done!'
