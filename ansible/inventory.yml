@@ -1,0 +1,28 @@
+all:
+  vars:
+    ansible_connection: ssh
+    ansible_user: fino
+
+  children:
+    rasps:
+      hosts:
+        raspw:
+        rasp[2:4]:
+        rasp[3:4]w:    
+    odroids:
+      hosts:
+        odroid-a:
+        odroid-b:
+    notes:
+      hosts:
+        fino-note:
+        fino-note-cable:
+        pepe-note:
+        vostro-[01:02]:
+    servers:
+      hosts:
+        x79:
+    desktops:
+      hosts:
+        xps:
+        xpsw:

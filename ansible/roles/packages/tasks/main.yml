@@ -1,0 +1,56 @@
+---
+  - name : Install Vim
+    become: yes
+    apt: name=vim state=latest update_cache=true
+
+  - name : Install ZSH
+    become: yes  
+    apt: name=zsh state=latest update_cache=true
+    
+  - name : Install GIT
+    become: yes  
+    apt: name=git state=latest update_cache=true
+
+  - name : Install WGET
+    become: yes
+    apt: name=wget state=latest update_cache=true
+    
+  - name : Install Unzip
+    become: yes  
+    apt: name=unzip state=latest update_cache=true
+
+  - name : Install JQ
+    become: yes  
+    apt: name=jq state=latest update_cache=true
+
+  - name : Install telnet
+    become: yes  
+    apt: name=telnet state=latest update_cache=true
+
+  - name : Install curl
+    become: yes  
+    apt: name=curl state=latest update_cache=true
+
+  - name : Install htop
+    become: yes  
+    apt: name=htop state=latest update_cache=true    
+
+  - name : Install lm-sensors
+    become: yes  
+    apt: name=lm-sensors state=latest update_cache=true
+
+  - name : Install python3
+    become: yes  
+    apt: name=python3 state=latest update_cache=true
+
+  - name : Install python3-pip
+    become: yes  
+    apt: name=python3-pip state=latest update_cache=true      
+
+  - name : Install cifs-utils
+    become: yes  
+    apt: name=cifs-utils state=latest update_cache=true    
+
+  - name : Update packages
+    become: yes  
+    apt: name="*" state=latest update_cache=true force_apt_get=true

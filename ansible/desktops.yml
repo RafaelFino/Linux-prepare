@@ -1,0 +1,9 @@
+--- 
+  - hosts: desktops
+    roles:
+    - packages
+    - vim
+    - zsh-exa
+    - tmux
+    - micro
+    - fonts

@@ -1,0 +1,7 @@
+---
+  - hosts: rasps
+    roles:
+    - packages
+    - vim
+    - zsh-exa
+    - micro

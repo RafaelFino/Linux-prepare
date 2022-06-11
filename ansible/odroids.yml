@@ -1,0 +1,7 @@
+---
+  - hosts: odroids
+    roles:
+    - packages
+    - vim
+    - zsh
+    - micro

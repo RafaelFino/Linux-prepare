@@ -1,0 +1,32 @@
+---   
+  - name: Install GIT
+    become: yes
+    apt: name=git state=latest update_cache=true
+
+  - name: Install VIM      
+    become: yes
+    apt: name=vim state=latest update_cache=true    
+
+  - name: Check if VIMRC path exists
+    stat:
+      path: "~/.vim_runtime"
+    register: result      
+    
+  - name: Clone awesome vim repo
+    command: git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime
+    args:
+      chdir: ~
+    when: not result.stat.exists
+
+  - name: Install awesome vim repo
+    command: ~/.vim_runtime/install_awesome_vimrc.sh
+    args:
+      chdir: ~
+    when: not result.stat.exists      
+
+  - name: Create a custom config.vim
+    command: echo set nu >> ~/.vim_runtime/my_configs.vim
+    args:
+      chdir: ~
+    when: not result.stat.exists      
+    

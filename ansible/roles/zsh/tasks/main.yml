@@ -1,0 +1,25 @@
+---
+  - name: Install ZSH      
+    become: yes
+    apt: name=zsh state=latest update_cache=true
+    
+  - name: Install GIT
+    become: yes
+    apt: name=git state=latest update_cache=true
+
+  - name: Check if OH-MY-ZSH path exists
+    stat:
+      path: "~/.oh-my-zsh"
+    register: result      
+    
+  - name: Install OH-MY-ZSH Repo
+    command: curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+    args:
+      chdir: ~
+    when: not result.stat.exists
+
+  - name: Change OH-MY-ZSH theme
+    command: sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"agnoster\"/g' .zshrc
+    args:
+      chdir: ~
+    when: not result.stat.exists

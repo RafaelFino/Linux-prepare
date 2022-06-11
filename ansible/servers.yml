@@ -1,0 +1,10 @@
+---
+  - hosts: servers
+    
+    roles:
+      - packages  
+      - vim
+      - zsh-exa
+      - tmux
+      - micro
+      - fonts      

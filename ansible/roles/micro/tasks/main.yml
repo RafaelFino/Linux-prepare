@@ -1,0 +1,22 @@
+---
+  - name: Install CURL      
+    become: yes
+    apt: name=curl state=latest update_cache=true
+
+  - name: Check if micro path exists
+    stat:
+      path: "/usr/bin/micro"
+    register: result
+    
+  - name: Install micro editor
+    command: curl https://getmic.ro | bash
+    args:
+      chdir: ~
+    when: not result.stat.exists  
+
+  - name: Move micro editor binary to common folder
+    become: yes
+    command: sudo mv micro /usr/bin
+    args:
+      chdir: ~
+    when: not result.stat.exists      
