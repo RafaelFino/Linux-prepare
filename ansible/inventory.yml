@@ -8,7 +8,6 @@ all:
       hosts:
         raspw:
         rasp[2:4]:
-        rasp[3:4]w:    
     odroids:
       hosts:
         odroid-a:
@@ -16,7 +15,6 @@ all:
     notes:
       hosts:
         fino-note:
-        fino-note-cable:
         pepe-note:
         vostro-[01:02]:
     servers:
@@ -25,4 +23,3 @@ all:
     desktops:
       hosts:
         xps:
-        xpsw:
