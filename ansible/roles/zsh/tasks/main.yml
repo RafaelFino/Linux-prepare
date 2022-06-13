@@ -1,25 +1,89 @@
 ---
-  - name: Install ZSH      
+  - name: Install zsh packages
     become: yes
-    apt: name=zsh state=latest update_cache=true
+    apt: 
+      pkg:
+        - git
+        - zsh
+      state: latest
+      update_cache: yes
     
-  - name: Install GIT
-    become: yes
-    apt: name=git state=latest update_cache=true
+  - name: Get install OH-MY-ZSH script
+    get_url:
+      url: http://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+      dest: /tmp/install-oh-my-zsh.sh
 
   - name: Check if OH-MY-ZSH path exists
     stat:
       path: "~/.oh-my-zsh"
-    register: result      
-    
-  - name: Install OH-MY-ZSH Repo
-    command: curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh
-    args:
-      chdir: ~
-    when: not result.stat.exists
+    register: result        
+
+  - name: Copy install script to home
+    ansible.builtin.copy:
+      remote_src: yes
+      src: /tmp/install-oh-my-zsh.sh
+      dest: ~/install-oh-my-zsh.sh
+      mode: u+rwx,g+rx,o+rwx
+    when: not result.stat.exists      
+
+  - name: Execute install OH-MY-ZSH script
+    command: ~/install-oh-my-zsh.sh --unattended
+    when: not result.stat.exists    
+
+  - name: Remove OH-MY-ZSH install script
+    file:
+      path: ~/install-oh-my-zsh.sh
+      state: absent 
+    when: not result.stat.exists    
 
   - name: Change OH-MY-ZSH theme
     command: sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"agnoster\"/g' .zshrc
     args:
       chdir: ~
     when: not result.stat.exists
+
+  - name: Check if OH-MY-ZSH path exists [ROOT]
+    become: yes
+    stat:
+      path: "~/.oh-my-zsh"
+    register: result
+    
+  - name: Copy install script to home [ROOT]
+    become: yes
+    copy:
+      remote_src: yes
+      src: /tmp/install-oh-my-zsh.sh
+      dest: ~/install-oh-my-zsh.sh
+      mode: u+rwx,g+rx,o+rwx
+    when: not result.stat.exists      
+
+  - name: Execute install OH-MY-ZSH script  [ROOT]
+    become: yes  
+    command: ~/install-oh-my-zsh.sh --unattended
+    when: not result.stat.exists    
+
+  - name: Remove OH-MY-ZSH install script [ROOT]
+    become: yes 
+    file:
+      path: /tmp/install-oh-my-zsh.sh
+      state: absent 
+    when: not result.stat.exists    
+
+  - name: Remove OH-MY-ZSH install script from home [ROOT]
+    become: yes 
+    file:
+      path: ~/install-oh-my-zsh.sh
+      state: absent 
+    when: not result.stat.exists     
+
+  - name: Change OH-MY-ZSH theme  [ROOT]
+    become: yes  
+    command: sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"frisk\"/g' .zshrc
+    args:
+      chdir: ~
+    when: not result.stat.exists
+
+  - name: Change shell [ROOT]
+    become: yes  
+    command: chsh -s /bin/zsh
+    when: not result.stat.exists    

@@ -1,56 +1,47 @@
 ---
-  - name : Install Vim
-    become: yes
-    apt: name=vim state=latest update_cache=true
-
-  - name : Install ZSH
+  - name : Install default packages
     become: yes  
-    apt: name=zsh state=latest update_cache=true
-    
-  - name : Install GIT
-    become: yes  
-    apt: name=git state=latest update_cache=true
-
-  - name : Install WGET
-    become: yes
-    apt: name=wget state=latest update_cache=true
-    
-  - name : Install Unzip
-    become: yes  
-    apt: name=unzip state=latest update_cache=true
-
-  - name : Install JQ
-    become: yes  
-    apt: name=jq state=latest update_cache=true
-
-  - name : Install telnet
-    become: yes  
-    apt: name=telnet state=latest update_cache=true
-
-  - name : Install curl
-    become: yes  
-    apt: name=curl state=latest update_cache=true
-
-  - name : Install htop
-    become: yes  
-    apt: name=htop state=latest update_cache=true    
-
-  - name : Install lm-sensors
-    become: yes  
-    apt: name=lm-sensors state=latest update_cache=true
-
-  - name : Install python3
-    become: yes  
-    apt: name=python3 state=latest update_cache=true
-
-  - name : Install python3-pip
-    become: yes  
-    apt: name=python3-pip state=latest update_cache=true      
-
-  - name : Install cifs-utils
-    become: yes  
-    apt: name=cifs-utils state=latest update_cache=true    
+    apt: 
+      pkg:
+        - git
+        - wget
+        - unzip
+        - jq
+        - telnet
+        - curl
+        - htop
+        - lm-sensors
+        - python3
+        - python3-pip
+        - cifs-utils
+        - cmatrix
+      state: latest
+      update_cache: yes   
 
   - name : Update packages
     become: yes  
     apt: name="*" state=latest update_cache=true force_apt_get=true
+
+  - name: Update system - fix broken install
+    become: yes
+    command: apt-get --fix-broken install -y
+
+  - name: Update system - update apt
+    become: yes
+    command: apt-get update -y
+    
+  - name: Update system- dist-upgrade
+    become: yes
+    command: apt-get dist-upgrade -y
+    
+  - name: Update system - full-upgrade
+    become: yes
+    command: apt-get full-upgrade -y
+    
+  - name: Update system - autoclean
+    become: yes
+    command: apt-get autoclean -y
+  
+  - name: Update system - autoremove
+    become: yes
+    command: apt-get autoremove -y

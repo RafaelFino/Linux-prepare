@@ -1,12 +1,8 @@
 ---
-  - name: Install TMUX
+  - name: Install tmux
     become: yes
     apt: name=tmux state=latest update_cache=true
     
-  - name: Install GIT
-    become: yes
-    apt: name=git state=latest update_cache=true
-
   - name: Check if tmux path exists
     stat:
       path: "~/.tmux"

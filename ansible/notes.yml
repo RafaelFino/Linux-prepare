@@ -1,7 +1,8 @@
 --- 
   - hosts: notes
     roles:
-    - packages
-    - vim
-    - zsh-exa
-    - micro
+      - packages
+      - vim
+      - zsh
+      - exa
+      - micro

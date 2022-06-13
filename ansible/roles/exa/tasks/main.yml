@@ -1,0 +1,29 @@
+---
+  - name: Install EXA
+    become: yes
+    apt: name=exa state=latest update_cache=true      
+
+  - name: Check if OH-MY-ZSH path exists
+    stat:
+      path: "~/.oh-my-zsh"
+    register: result      
+    
+  - name: Create exa alias to ls
+    lineinfile:
+      path: ~/.zshrc
+      regexp: '^(alias ls=)'
+      line: alias ls="exa -hHBmgaFl"
+    when: result.stat.exists
+
+  - name: Check if OH-MY-ZSH path exists [ROOT]
+    stat:
+      path: "~/.oh-my-zsh"
+    register: result      
+    
+  - name: Create exa alias to ls [ROOT]
+    become: yes
+    lineinfile:
+      path: ~/.zshrc
+      regexp: '^(alias ls=)'
+      line: alias ls="exa -hHBmgaFl"
+    when: result.stat.exists

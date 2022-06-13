@@ -3,5 +3,6 @@
     roles:
     - packages
     - vim
-    - zsh-exa
+    - zsh
+    - exa
     - micro

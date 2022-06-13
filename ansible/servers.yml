@@ -4,7 +4,8 @@
     roles:
       - packages  
       - vim
-      - zsh-exa
+      - zsh
+      - exa
       - tmux
       - micro
       - fonts      
