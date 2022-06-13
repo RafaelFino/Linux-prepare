@@ -1,20 +1,25 @@
 ---
   - hosts: servers    
     roles:
+      - hosts
       - packages
 
   - hosts: rasps
     roles:
+      - hosts
       - packages
 
   - hosts: odroids
     roles:
+      - hosts
       - packages
 
   - hosts: notes
     roles:
+      - hosts
       - packages
 
   - hosts: desktops
     roles:
+      - hosts
       - packages

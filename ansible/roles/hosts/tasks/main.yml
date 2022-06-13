@@ -1,0 +1,15 @@
+---
+  - name: Include server vars
+    include_vars:
+      dir: vars
+      extensions:
+        - 'yml'
+
+  - name: Insert all hosts from hosts var file
+    become: yes
+    lineinfile:
+      path: /etc/hosts
+      regexp: '.*{{ item.ip }}'
+      line: "{{ item.ip }}\t\t{{ item.server }}"
+      create: yes
+    with_items: '{{ servers }}'
