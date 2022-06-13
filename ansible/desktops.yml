@@ -1,11 +1,11 @@
 --- 
   - hosts: desktops
     roles:
-    - hosts
-    - packages
-    - vim
-    - zsh
-    - exa
-    - tmux
-    - micro
-    - fonts
+      - hosts
+      - packages
+      - vim
+      - zsh
+      - exa
+      - tmux
+      - micro
+      - fonts
