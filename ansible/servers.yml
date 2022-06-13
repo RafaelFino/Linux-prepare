@@ -2,6 +2,7 @@
   - hosts: servers
     
     roles:
+      - hosts
       - packages  
       - vim
       - zsh

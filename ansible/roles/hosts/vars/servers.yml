@@ -1,24 +1,24 @@
 ---
   servers: 
-    - { server: rasp2, ip: 192.168.0.103 }
-    - { server: rasp3, ip: 192.168.0.102 }
-    - { server: rasp4, ip: 192.168.0.100 }
-    - { server: rasp3w,ip: 192.168.0.121 }
-    - { server: rasp4w, ip: 192.168.0.120 }
+    - { server: c6-router, ip: 192.168.0.11 }
+    - { server: c7-router, ip: 192.168.0.10 }
+    - { server: fino-note-cable, ip: 192.168.0.21 }
+    - { server: fino-note, ip: 192.168.0.22 }
     - { server: odroid-a, ip: 192.168.0.101 }
     - { server: odroid-b, ip: 192.168.0.106 }
-    - { server: fino-note, ip: 192.168.0.22 }
-    - { server: fino-note-cable, ip: 192.168.0.21 }
     - { server: pepe-note, ip: 192.168.0.23 }
+    - { server: rasp2, ip: 192.168.0.103 }
+    - { server: rasp3, ip: 192.168.0.102 }
+    - { server: rasp3w,ip: 192.168.0.121 }
+    - { server: rasp4, ip: 192.168.0.100 }
+    - { server: rasp4w, ip: 192.168.0.120 }
+    - { server: rgt-cel, ip: 192.168.0.50 }
+    - { server: tablet, ip: 192.168.0.51 }
+    - { server: vivo, ip: 192.168.0.1 }
     - { server: vostro-01, ip: 192.168.0.26 }
     - { server: vostro-02, ip: 192.168.0.27 }
     - { server: x79, ip: 192.168.0.25 }
+    - { server: xbox-one, ip: 192.168.0.35 }
+    - { server: xbox-sx, ip: 192.168.0.36 }
     - { server: xps, ip: 192.168.0.19 }
     - { server: xpsw, ip: 192.168.0.20 }
-    - { server: vivo, ip: 192.168.0.1 }
-    - { server: xbox-sx, ip: 192.168.0.36 }
-    - { server: xbox-one, ip: 192.168.0.35 }
-    - { server: c7-router, ip: 192.168.0.10 }
-    - { server: c6-router, ip: 192.168.0.11 }
-    - { server: rgt-cel, ip: 192.168.0.50 }
-    - { server: tablet, ip: 192.168.0.51 }

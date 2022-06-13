@@ -9,7 +9,8 @@
     become: yes
     lineinfile:
       path: /etc/hosts
-      regexp: '.*{{ item.ip }}'
+      regexp: '.*{{ item.ip }}\t\t'
       line: "{{ item.ip }}\t\t{{ item.server }}"
       create: yes
+      firstmatch: yes
     with_items: '{{ servers }}'
