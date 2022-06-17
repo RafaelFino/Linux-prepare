@@ -10,8 +10,7 @@ all:
         rasp[2:4]:
     odroids:
       hosts:
-        odroid-a:
-        odroid-b:
+        odroid-[a:b]:
     notes:
       hosts:
         fino-note:
