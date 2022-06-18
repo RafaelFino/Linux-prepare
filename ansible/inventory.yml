@@ -15,7 +15,8 @@ all:
       hosts:
         fino-note:
         pepe-note:
-        vostro-[01:02]:
+        beca-note:
+        vostro-01:
     servers:
       hosts:
         x79:
