@@ -25,5 +25,5 @@
     lineinfile:
       path: ~/.zshrc
       regexp: '^(alias ls=)'
-      line: alias ls="exa -hHBmgaFl"
+      line: alias ls="exa -hHbmgaFl --time-style=long-iso"
     when: result.stat.exists
