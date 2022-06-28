@@ -2,7 +2,7 @@
 
 #update
 apt update -y
-apt install -y git vim zsh wget unzip jq telnet curl htop lm-sensors python3 python3-pip 
+apt install -y git vim zsh wget unzip jq telnet htop python3 python3-pip 
 
 #install vim
 git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime
@@ -25,6 +25,7 @@ sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"frisk\"/g' .zshrc
 echo 'alias ls="exa -hHbmgaFl"' >> ~/.zshrc
 echo set nu >> ~/.vim_runtime/my_configs.vim
 
-echo 'Done!'
+chsh -s /bin/zsh
 
+echo 'Done!'
 zsh
