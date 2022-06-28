@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# To execute this script, as a root: 
+# curl https://raw.githubusercontent.com/RafaelFino/Linux-prepare/main/killercoda.sh | bash && zsh
+
 #update
 apt update -y
 apt install -y git vim zsh wget unzip jq telnet htop python3 python3-pip 
