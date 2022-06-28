@@ -24,7 +24,7 @@ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.
 sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"frisk\"/g' .zshrc
 echo 'alias ls="exa -hHbmgaFl"' >> ~/.zshrc
 echo set nu >> ~/.vim_runtime/my_configs.vim
-echo zsh >> .bashrc
+echo zsh >> ~/.bashrc
 
 chsh -s /bin/zsh
 
