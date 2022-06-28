@@ -1,7 +1,14 @@
 #!/bin/bash
 
-# To execute this script, as a root: 
-# curl https://raw.githubusercontent.com/RafaelFino/Linux-prepare/main/killercoda.sh | bash && zsh
+# To prepare a single instance
+#
+# 1: Create a simple ubuntu instance on killercoda.com: 
+#		https://killercoda.com/playgrounds/scenario/ubuntu
+#
+# 2: Execute this command on terminal: 
+#		curl https://raw.githubusercontent.com/RafaelFino/Linux-prepare/main/killercoda.sh | bash && zsh
+# 
+# Have fun! :)
 
 #update
 apt update -y
