@@ -34,12 +34,15 @@
     file:
       path: ~/install-oh-my-zsh.sh
       state: absent 
-    when: not result.stat.exists    
 
   - name: Change OH-MY-ZSH theme
     command: sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"agnoster\"/g' .zshrc
     args:
       chdir: ~
+    when: not result.stat.exists
+
+  - name: Change shell
+    command: chsh -s /bin/zsh
     when: not result.stat.exists
 
   - name: Check if OH-MY-ZSH path exists [ROOT]
@@ -86,4 +89,9 @@
   - name: Change shell [ROOT]
     become: yes  
     command: chsh -s /bin/zsh
-    when: not result.stat.exists    
+    when: not result.stat.exists
+
+  - name: Remove tmp install oh-my-zsh script
+    file: 
+      path: /tmp/install-oh-my-zsh.sh
+      state: absent
