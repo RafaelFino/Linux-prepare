@@ -16,7 +16,9 @@
         - cifs-utils
         - cmatrix
       state: latest
-      update_cache: yes   
+      update_cache: yes
+      autoclean: yes
+      autoremove: yes
 
   - name : Update packages
     become: yes  

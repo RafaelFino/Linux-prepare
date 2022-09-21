@@ -6,8 +6,8 @@ all:
   children:
     rasps:
       hosts:
-        raspw:
         rasp[2:4]:
+        raspw:
     odroids:
       hosts:
         odroid-[a:b]:
