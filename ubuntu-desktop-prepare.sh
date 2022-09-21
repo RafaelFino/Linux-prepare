@@ -2,6 +2,7 @@
 
 #update
 sudo apt update -y
+sudo apt upgrade -y
 sudo apt install -y git vim zsh wget unzip jq telnet curl htop terminator tmux docker docker-compose python3 python3-pip
 sudo apt autoclean -y
 sudo apt autoremove -y
