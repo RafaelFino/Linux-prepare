@@ -7,6 +7,9 @@ sudo apt install -y git vim zsh wget unzip jq telnet curl htop terminator tmux d
 sudo apt autoclean -y
 sudo apt autoremove -y
 
+#Install Visual Studio Code
+sudo snap install --classic code
+
 #add user to sudo-docker
 sudo usermod -aG docker $USER
 
