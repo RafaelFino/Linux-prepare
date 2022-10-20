@@ -3,7 +3,7 @@
 #update
 sudo apt update -y
 sudo apt upgrade -y
-sudo apt install -y git vim zsh wget unzip jq telnet curl htop terminator tmux docker docker-compose python3 python3-pip
+sudo apt install -y git vim zsh wget unzip jq telnet curl htop terminator tmux docker docker-compose python3 python3-pip exa
 sudo apt autoclean -y
 sudo apt autoremove -y
 
@@ -26,11 +26,6 @@ rm -rf fonts
 git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git
 ./nerd-fonts/install.sh
 rm -rf nerd-fonts
-
-#install exa (new LS)
-wget https://github.com/ogham/exa/releases/download/v0.10.1/exa-linux-x86_64-v0.10.1.zip
-sudo unzip -o -j exa-linux-x86_64-v0.10.1.zip "bin/exa" -d /usr/bin
-rm exa-linux-x86_64-v0.10.1.zip
 
 #Oh-my-tmux
 git clone --depth=1 https://github.com/gpakosz/.tmux.git ~/.tmux
