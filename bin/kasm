@@ -1,0 +1,8 @@
+#!/bin/bash
+echo '##### Kasm web desktop #####'
+echo 'URL:  https://localhost:6901'
+echo 'USER: kasm_user'
+echo -n Enter desktop password:
+read -s password
+echo
+docker run --rm -it --shm-size=8g -p 6901:6901 -e VNC_PW=$password kasmweb/desktop-deluxe:1.13.0
