@@ -4,7 +4,7 @@
 #
 #update
 sudo apt update -y
-sudo apt install -y git vim zsh wget unzip jq telnet htop python3 python3-pip micro
+sudo apt install -y git vim zsh wget unzip jq telnet htop python3 python3-pip micro docker docker-compose
 
 #install vim
 git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime
