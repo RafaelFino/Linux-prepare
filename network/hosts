@@ -1,0 +1,35 @@
+127.0.0.1	localhost
+127.0.1.1	XPS
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+192.168.0.1   vivo
+192.168.0.36  xbox-sx
+192.168.0.35  xbox-one
+192.168.0.10  c7-router
+192.168.0.11  c6-router
+192.168.0.12  pppx
+192.168.0.21  fino-note-cable
+192.168.0.22  fino-note
+192.168.0.50  rgt-cel
+192.168.0.19  xps
+192.168.0.20  xpsw
+192.168.0.25  x79
+192.168.0.26  vostro-01
+192.168.0.27  vostro-02
+192.168.0.100 rasp4
+192.168.0.102 rasp3
+192.168.0.103 rasp2
+192.168.0.120 rasp4w
+192.168.0.101 odroid-a
+192.168.0.106 odroid-b
+192.168.0.122 raspw
+192.168.0.121 rasp3w
+192.168.0.51  tablet
+192.168.0.23  pepe-note
+

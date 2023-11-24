@@ -1,0 +1,1 @@
+for i in *.ogg; do ffmpeg -i "$i" -f mp3 "${i%}.mp3"; done
