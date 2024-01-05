@@ -22,7 +22,13 @@ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.
 sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"frisk\"/g' .zshrc
 echo 'alias ls="exa -hHbmgaFl"' >> ~/.zshrc
 echo set nu >> ~/.vim_runtime/my_configs.vim
-#echo zsh >> ~/.bashrc
+
+#open server ports to web
+sudo iptables -P INPUT ACCEPT
+sudo iptables -P OUTPUT ACCEPT
+sudo iptables -P FORWARD ACCEPT
+sudo iptables -F
+sudo iptables --flush
 
 sudo chsh -s /bin/zsh
 
