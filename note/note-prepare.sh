@@ -2,7 +2,7 @@
 
 #update
 sudo apt update -y
-sudo apt install -y git vim zsh wget unzip jq telnet curl htop terminator docker.io docker-compose python3 python3-pip kate mousepad exa micro btop batcat apt-transport-https gpg
+sudo apt install -y git vim zsh wget unzip jq telnet curl htop terminator docker.io docker-compose python3 python3-pip kate mousepad eza micro btop batcat apt-transport-https gpg
 sudo apt autoclean -y
 sudo apt autoremove -y
 
