@@ -54,7 +54,6 @@ echo 'PATH=$PATH:/usr/local/go/bin' >> ~/.zshrc
 # jvm
 echo 'Install JVM'
 curl -s "https://get.sdkman.io" | bash
-sdk install java
 zsh -c 'source ~/.zshrc; sdk install java'
 
 echo 'Done! '
