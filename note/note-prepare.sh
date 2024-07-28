@@ -61,4 +61,4 @@ echo 'Install JVM'
 curl -s "https://get.sdkman.io" | bash
 sdk install java
 
-echo 'Done!'
+echo 'Done! '
