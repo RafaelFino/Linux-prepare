@@ -36,11 +36,6 @@ git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git
 ./nerd-fonts/install.sh
 rm -rf nerd-fonts
 
-#Install oh-my-tmux
-git clone --depth=1 https://github.com/gpakosz/.tmux.git ~/.tmux
-cp .tmux.conf.local ~/.tmux
-cp start-tmux.sh ~/
-
 #install oh-my-zsh
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"agnoster\"/g' .zshrc
@@ -60,5 +55,6 @@ echo 'PATH=$PATH:/usr/local/go/bin' >> ~/.zshrc
 echo 'Install JVM'
 curl -s "https://get.sdkman.io" | bash
 sdk install java
+zsh -c 'source ~/.zshrc; sdk install java'
 
 echo 'Done! '
