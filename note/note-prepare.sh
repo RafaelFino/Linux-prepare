@@ -17,9 +17,9 @@ sudo apt autoclean -y
 sudo apt autoremove -y
 
 # add user to sudo-docker
-# sudo groupadd docker
+sudo groupadd docker
 sudo usermod -aG docker $USER
-newgrp docker
+# newgrp docker
 
 
 # install vim awesome
