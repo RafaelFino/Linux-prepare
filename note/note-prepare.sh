@@ -1,4 +1,4 @@
-\#!/bin/bash
+#!/bin/bash
 
 # update and add keys
 sudo apt update -y
