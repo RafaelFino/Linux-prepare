@@ -54,7 +54,7 @@ echo 'Installing golang'
 wget "https://go.dev/dl/$(curl https://go.dev/VERSION\?m=text | head -n 1).linux-$(dpkg --print-architecture).tar.gz" -O golang.tar.gz  
 sudo tar -C /usr/local -xzf golang.tar.gz
 rm golang.tar.gz
-echo 'PATH=$PATH:/usr/local/go/bin' >> ~./zshrc
+echo 'PATH=$PATH:/usr/local/go/bin' >> ~/.zshrc
 
 # jvm
 echo 'Install JVM'
