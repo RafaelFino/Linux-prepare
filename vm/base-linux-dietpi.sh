@@ -25,8 +25,8 @@ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.
 sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"agnoster\"/g' .zshrc
 
 #e[x|z]a
-echo 'alias ls="eza -hHbmgalT -L 1 --time-style=long-iso --icons"' >> ~/.zshrc
-echo 'alias lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"' >> ~/.zshrc
+echo 'alias ls="exa -hHbmgalT -L 1 --time-style=long-iso --icons"' >> ~/.zshrc
+echo 'alias lt="exa -hHbmgalT -L 4 --time-style=long-iso --icons"' >> ~/.zshrc
 
 #golang
 echo 'Installing golang'
