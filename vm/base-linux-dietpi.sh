@@ -5,7 +5,7 @@ sudo apt update -y
 sudo apt upgrade -y
 
 # install packages
-sudo apt install -y wget git zsh gpg vim unzip jq telnet curl htop btop python3-pip exa micro apt-transport-https zlib1g dotnet-sdk-8.0 dotnet-runtime-8.0 aspnetcore-runtime-8.0 sqlite3 docker.io docker-compose
+sudo apt install -y wget git zsh gpg vim unzip jq telnet curl htop btop python3-pip exa micro apt-transport-https  sqlite3 docker.io docker-compose
 sudo apt autoclean -y
 sudo apt autoremove -y
 
