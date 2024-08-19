@@ -14,7 +14,9 @@ if [ -f ~/.ssh/authorized_keys ]; then
 fi
 
 while read u; do
-        curl -sS "https://github.com/$u.keys" >> ~/.ssh/gh_keys
+        if [ ! -z "$u" ]; then
+                curl -sS "https://github.com/$u.keys" >> ~/.ssh/gh_keys
+        fi
 done <~/.ssh/users
 
 sort ~/.ssh/gh_keys | uniq > ~/.ssh/authorized_keys
