@@ -1,0 +1,24 @@
+#!/bin/zsh
+
+if [ ! -d ~/.ssh ]; then
+        mkdir -m 700 ~/.ssh
+fi
+
+export http_proxy='http://192.168.1.10:3128'
+export https_proxy='http://192.168.1.10:3128'
+
+curl -sS https://rgt-tools.duckdns.org/drive/api/public/dl/JzcWHOIA/plataforma/vm-users.json | jq -r '.all[] , .$(cat /etc/hostname)[]' | sort | uniq  > ~/.ssh/users
+
+if [ -f ~/.ssh/authorized_keys ]; then
+        cat  ~/.ssh/authorized_keys > ~/.ssh/gh_keys
+fi
+
+while read u; do
+        curl -sS "https://github.com/$u.keys" >> ~/.ssh/gh_keys
+done <~/.ssh/users
+
+sort ~/.ssh/gh_keys | uniq > ~/.ssh/authorized_keys
+
+if [ -f ~/.ssh/gh_keys ]; then
+        rm ~/.ssh/gh_keys
+fi
