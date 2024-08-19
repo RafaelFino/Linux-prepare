@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 if [ ! -d ~/.ssh ]; then
         mkdir -m 700 ~/.ssh
@@ -7,7 +7,7 @@ fi
 export http_proxy='http://192.168.1.10:3128'
 export https_proxy='http://192.168.1.10:3128'
 
-curl -sS https://rgt-tools.duckdns.org/drive/api/public/dl/JzcWHOIA/plataforma/vm-users.json | jq -r ".all[]? , .$(hostname)[]?" | sort | uniq  > ~/.ssh/users
+curl -sS https://rgt-tools.duckdns.org/drive/api/public/dl/JzcWHOIA/plataforma/vm-users.json | tr '[:upper:]' '[:lower:]' | jq -r ".all[]? , .$(hostname)[]?" | sort | uniq  > ~/.ssh/users
 
 if [ -f ~/.ssh/authorized_keys ]; then
         cat  ~/.ssh/authorized_keys > ~/.ssh/gh_keys
