@@ -14,6 +14,7 @@ if [ -f ~/.ssh/authorized_keys ]; then
 fi
 
 while read u; do
+        echo "Getting keys for $u"
         if [ ! -z "$u" ]; then
                 curl -sS "https://github.com/$u.keys" >> ~/.ssh/gh_keys
         fi
