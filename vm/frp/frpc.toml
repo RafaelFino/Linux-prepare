@@ -1,0 +1,176 @@
+user = "proxmox-proxy"
+serverAddr = "learnops.duckdns.org"
+serverPort = 443
+auth.method = "token"
+auth.token = "SUPERSECRETUPPERTOKEN"
+loginFailExit = false
+
+#webServer.addr = "192.168.0.92"
+#webServer.port = 7110
+# dashboard's username and password are both optional
+#webServer.user = "root"
+#webServer.password = "frpr00t"
+
+#log.level = "debug"
+#log.to = "/var/log/frpc.log"
+log.maxDays = 3
+
+dnsServer = "192.168.0.12"
+
+#[[proxies]]
+#name = "bot"
+#type = "tcp"
+#remotePort = 7111
+#[proxies.plugin]
+#type = "http2http"
+#localAddr = "192.168.0.11:8080"
+#hostHeaderRewrite = "0.0.0.0"
+#requestHeaders.set.x-from-where = "frp"
+
+[[proxies]]
+name = "ssh-12"
+type = "tcp"
+localIP = "192.168.1.12"
+localPort = 22
+remotePort = 7112
+
+[[proxies]]
+name = "ssh-13"
+type = "tcp"
+localIP = "192.168.1.13"
+localPort = 22
+remotePort = 7113
+
+[[proxies]]
+name = "ssh-14"
+type = "tcp"
+localIP = "192.168.1.14"
+localPort = 22
+remotePort = 7114
+
+[[proxies]]
+name = "ssh-15"
+type = "tcp"
+localIP = "192.168.1.15"
+localPort = 22
+remotePort = 7115
+
+[[proxies]]
+name = "ssh-16"
+type = "tcp"
+localIP = "192.168.1.16"
+localPort = 22
+remotePort = 7116
+
+[[proxies]]
+name = "ssh-17"
+type = "tcp"
+localIP = "192.168.1.17"
+localPort = 22
+remotePort = 7117
+
+[[proxies]]
+name = "ssh-18"
+type = "tcp"
+localIP = "192.168.1.18"
+localPort = 22
+remotePort = 7118
+
+[[proxies]]
+name = "ssh-19"
+type = "tcp"
+localIP = "192.168.1.19"
+localPort = 22
+remotePort = 7119
+
+[[proxies]]
+name = "ssh-20"
+type = "tcp"
+localIP = "192.168.1.20"
+localPort = 22
+remotePort = 7120
+
+[[proxies]]
+name = "ssh-21"
+type = "tcp"
+localIP = "192.168.1.21"
+localPort = 22
+remotePort = 7121
+
+[[proxies]]
+name = "ssh-22"
+type = "tcp"
+localIP = "192.168.1.22"
+localPort = 22
+remotePort = 7122
+
+
+[[proxies]]
+name = "ssh-23"
+type = "tcp"
+localIP = "192.168.1.23"
+localPort = 22
+remotePort = 7123
+
+[[proxies]]
+name = "ssh-24"
+type = "tcp"
+localIP = "192.168.1.24"
+localPort = 22
+remotePort = 7124
+
+[[proxies]]
+name = "ssh-25"
+type = "tcp"
+localIP = "192.168.1.25"
+localPort = 22
+remotePort = 7125
+
+[[proxies]]
+name = "ssh-26"
+type = "tcp"
+localIP = "192.168.1.26"
+localPort = 22
+remotePort = 7126
+
+[[proxies]]
+name = "ssh-27"
+type = "tcp"
+localIP = "192.168.1.27"
+localPort = 22
+remotePort = 7127
+
+[[proxies]]
+name = "ssh-28"
+type = "tcp"
+localIP = "192.168.1.28"
+localPort = 22
+remotePort = 7128
+
+[[proxies]]
+name = "ssh-29"
+type = "tcp"
+localIP = "192.168.1.29"
+localPort = 22
+remotePort = 7129
+
+[[proxies]]
+name = "ssh-30"
+type = "tcp"
+localIP = "192.168.1.30"
+localPort = 22
+remotePort = 7130
+
+[[proxies]]
+name = "ssh-31"
+type = "tcp"
+localIP = "192.168.1.31"
+localPort = 22
+remotePort = 7131
+
+[[proxies]]
+name = "ssh-32"
+type = "tcp"
+localIP = "192.168.1.32"
+localPort = 22
+remotePort = 7132
