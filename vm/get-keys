@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 if [ ! -d ~/.ssh ]; then
         mkdir -m 700 ~/.ssh
