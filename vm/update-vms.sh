@@ -4,9 +4,8 @@ set -euo pipefail
 for p in `cat inventory`; do
         echo ">> $p"
 
-        # scp get-keys dev@$p: &&
         ssh dev@$p 'get-keys'
-        ssh dev@$p 'sudo apt update -y && sudo apt upgrade -y' &
+		ssh dev@$p 'sudo apt update -y && sudo apt upgrade -y && sudo reboot' &
 
         echo "<< $p"
 done
