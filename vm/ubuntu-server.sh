@@ -5,7 +5,7 @@ sudo apt update -y
 sudo apt upgrade -y
 
 # install packages
-sudo apt install -y wget git zsh gpg vim unzip jq telnet curl htop btop python3-pip exa micro apt-transport-https sqlite3 docker.io docker-compose
+sudo apt install -y wget git zsh gpg vim unzip jq telnet curl htop btop python3-pip eza micro apt-transport-https sqlite3 docker.io docker-compose
 sudo apt autoclean -y
 sudo apt autoremove -y
 
@@ -25,8 +25,8 @@ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.
 sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"agnoster\"/g' .zshrc
 
 #e[x|z]a
-echo 'alias ls="exa -hHbmgalT -L 1 --time-style=long-iso --icons"' >> ~/.zshrc
-echo 'alias lt="exa -hHbmgalT -L 4 --time-style=long-iso --icons"' >> ~/.zshrc
+echo 'alias ls="eza -hHbmgalT -L 1 --time-style=long-iso --icons"' >> ~/.zshrc
+echo 'alias lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"' >> ~/.zshrc
 
 #golang
 echo 'Installing golang'
