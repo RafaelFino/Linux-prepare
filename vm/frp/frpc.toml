@@ -2,7 +2,7 @@ user = "proxmox-proxy"
 serverAddr = "learnops.duckdns.org"
 serverPort = 443
 auth.method = "token"
-auth.token = "b9bc0957e86245438ca88cd9bc4df023f05fc6d2895c48879c34bf23e1f78d19"
+auth.token = "b9bc0957e86245438ca88cd9bc4dbc0957e86245438ca8879c34bf23e1f78d19"
 loginFailExit = false
 
 #webServer.addr = "192.168.0.92"
