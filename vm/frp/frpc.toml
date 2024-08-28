@@ -2,7 +2,7 @@ user = "proxmox-proxy"
 serverAddr = "learnops.duckdns.org"
 serverPort = 443
 auth.method = "token"
-auth.token = "SUPERSECRETUPPERTOKEN"
+auth.token = "b9bc0957e86245438ca88cd9bc4df023f05fc6d2895c48879c34bf23e1f78d19"
 loginFailExit = false
 
 #webServer.addr = "192.168.0.92"
@@ -11,21 +11,25 @@ loginFailExit = false
 #webServer.user = "root"
 #webServer.password = "frpr00t"
 
-#log.level = "debug"
-#log.to = "/var/log/frpc.log"
+log.level = "debug"
+log.to = "/var/log/frpc.log"
 log.maxDays = 3
 
 dnsServer = "192.168.0.12"
 
-#[[proxies]]
-#name = "bot"
-#type = "tcp"
-#remotePort = 7111
-#[proxies.plugin]
-#type = "http2http"
-#localAddr = "192.168.0.11:8080"
-#hostHeaderRewrite = "0.0.0.0"
-#requestHeaders.set.x-from-where = "frp"
+[[proxies]]
+name = "tools-http"
+type = "tcp"
+localIP = "192.168.1.11"
+localPort = 80
+remotePort = 7111
+
+[[proxies]]
+name = "tools-ssh"
+type = "tcp"
+localIP = "192.168.1.11"
+localPort = 22
+remotePort = 7100
 
 [[proxies]]
 name = "ssh-12"

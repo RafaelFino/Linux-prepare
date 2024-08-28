@@ -8,15 +8,26 @@ fi
 export http_proxy='http://192.168.1.10:3128'
 export https_proxy='http://192.168.1.10:3128'
 
-curl -sS https://rgt-tools.duckdns.org/drive/api/public/dl/JzcWHOIA/plataforma/vm-users.json | tr '[:upper:]' '[:lower:]' | jq -r ".all[]? , .$(hostname)[]?" | sort | uniq  > ~/.ssh/users
+hn="$(echo $(hostname) | tr '[:upper]' '[:lower]')"   
+echo "  Running on $(hostname)"
+if [ "${hn:0:2}" = "vm" ]; then
+	userQ=".all[]? , .vms[]? , .\"$hn\"[]? "
+	echo "  VM Instance found!"
+else 
+	userQ=".all[]? , .\"$hn\"[]? "
+	echo "  Non VM Instance found!"
+fi
+# echo $userQ
+curl -sS https://rgt-tools.duckdns.org/drive/api/public/dl/JzcWHOIA/plataforma/vm-users.json | tr '[:upper:]' '[:lower:]' | jq -r "$userQ" | sort | uniq  > ~/.ssh/users
 
 if [ -f ~/.ssh/authorized_keys ]; then
         cat  ~/.ssh/authorized_keys > ~/.ssh/gh_keys
 fi
 
+echo "  Including keys on authorized keys for:"
 while read u; do
-        echo "Getting keys for $u"
         if [ ! -z "$u" ]; then
+        		echo "    - $u"
                 curl -sS "https://github.com/$u.keys" >> ~/.ssh/gh_keys
         fi
 done <~/.ssh/users
@@ -24,5 +35,5 @@ done <~/.ssh/users
 sort ~/.ssh/gh_keys | uniq > ~/.ssh/authorized_keys
 
 if [ -f ~/.ssh/gh_keys ]; then
-        rm ~/.ssh/gh_keys
+         rm ~/.ssh/gh_keys
 fi
