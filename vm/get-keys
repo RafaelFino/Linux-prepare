@@ -5,8 +5,8 @@ if [ ! -d ~/.ssh ]; then
         mkdir -m 700 ~/.ssh
 fi
 
-export http_proxy='http://192.168.1.10:3128'
-export https_proxy='http://192.168.1.10:3128'
+export http_proxy='http://proxy:3128'
+export https_proxy='http://proxy:3128'
 
 hn="$(echo $(hostname) | tr '[:upper]' '[:lower]')"   
 echo "  Running on $(hostname)"
@@ -32,7 +32,7 @@ while read u; do
         fi
 done <~/.ssh/users
 
-sort ~/.ssh/gh_keys | uniq > ~/.ssh/authorized_keys
+sort ~/.ssh/gh_keys | grep '^ssh*' | uniq > ~/.ssh/authorized_keys
 
 if [ -f ~/.ssh/gh_keys ]; then
          rm ~/.ssh/gh_keys
