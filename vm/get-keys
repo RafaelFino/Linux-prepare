@@ -29,6 +29,9 @@ while read u; do
         if [ ! -z "$u" ]; then
         		echo "    - $u"
                 curl -sS "https://github.com/$u.keys" >> ~/.ssh/gh_keys
+                if [ ! -d "/media/share/$u" ]; then
+                	mkdir "/media/share/$u"
+                fi
         fi
 done <~/.ssh/users
 
