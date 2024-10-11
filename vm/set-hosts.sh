@@ -12,7 +12,7 @@ for p in `cat inventory`; do
 	ssh dev@$p "echo 'ff02::1 ip6-allnodes' | sudo tee -a /etc/hosts"
 	ssh dev@$p "echo 'ff02::2 ip6-allrouters' | sudo tee -a /etc/hosts"
 	
-	ssh dev@$p "echo '192.168.1.8 storage' |sudo  tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.8 storage' |sudo tee -a /etc/hosts"
 	ssh dev@$p "echo '192.168.1.9 server' | sudo tee -a /etc/hosts"
 	ssh dev@$p "echo '192.168.1.10 proxy' | sudo tee -a /etc/hosts"
 	ssh dev@$p "echo '192.168.1.11 tools' | sudo tee -a /etc/hosts"
