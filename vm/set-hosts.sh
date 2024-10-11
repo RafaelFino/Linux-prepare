@@ -1,0 +1,46 @@
+#!/bin/bash
+set -euo pipefail
+
+for p in `cat inventory`; do
+	echo ">> $p - Set hosts"
+
+	ssh dev@$p "echo '127.0.0.1 $p' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '127.0.0.1 localhost' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '::1     ip6-localhost ip6-loopback' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo 'fe00::0 ip6-localnet' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo 'ff00::0 ip6-mcastprefix' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo 'ff02::1 ip6-allnodes' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo 'ff02::2 ip6-allrouters' | sudo tee -a /etc/hosts"
+	
+	ssh dev@$p "echo '192.168.1.8 storage' |sudo  tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.9 server' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.10 proxy' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.11 tools' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.12 vm112' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.13 vm113' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.14 vm114' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.15 vm115' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.16 vm116' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.17 vm117' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.18 vm118' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.19 vm119' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.20 vm120' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.21 vm121' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.22 vm122' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.23 vm123' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.24 vm124' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.25 vm125' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.26 vm126' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.27 vm127' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.28 vm128' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.29 vm129' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.30 vm130' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.31 vm131' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.32 vm132' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.33 vm133' | sudo tee -a /etc/hosts"
+	ssh dev@$p "echo '192.168.1.34 vm134' | sudo tee -a /etc/hosts"
+	ssh dev@$p "cat /etc/hosts | tr '[:upper:]' '[:lower:]' | tr -s ' ' | sort | uniq | sudo tee /etc/hosts"
+
+	echo "<< $p - Done!"
+done
+echo "Done!"
