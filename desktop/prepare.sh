@@ -12,7 +12,7 @@ sudo apt update -y
 sudo apt upgrade -y
 
 # install packages
-sudo apt install -y vim unzip jq telnet curl htop terminator docker.io docker-compose python3 python3-pip kate mousepad eza micro btop apt-transport-https gpg zlib1g dotnet-sdk-8.0 dotnet-runtime-8.0 aspnetcore-runtime-8.0 sqlite3 code
+sudo apt install -y vim unzip jq telnet curl htop terminator docker.io docker-compose python3 python3-pip kate mousepad eza micro btop apt-transport-https gpg zlib1g dotnet-sdk-8.0 dotnet-runtime-8.0 aspnetcore-runtime-8.0 sqlite3 code batcat
 sudo apt autoclean -y
 sudo apt autoremove -y
 
@@ -43,6 +43,10 @@ sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"agnoster\"/g' .zshrc
 #e[x|z]a
 echo 'alias ls="eza -hHbmgalT -L 1 --time-style=long-iso --icons"' >> ~/.zshrc
 echo 'alias lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"' >> ~/.zshrc
+
+#cat
+echo 'alias cat="batcat -p"' >> ~/.zshrc
+echo 'alias bat="batcat"' >> ~/.zshrc
 
 #golang
 echo 'Installing golang'
