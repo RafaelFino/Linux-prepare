@@ -36,15 +36,18 @@ git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git
 ./nerd-fonts/install.sh
 rm -rf nerd-fonts
 
+# install oh-my-bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" && \
+echo 'alias ls="eza -hHbmgalT -L 1 --time-style=long-iso --icons"' >> ~/.bashrc && \
+echo 'alias lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"' >> ~/.bashrc && \
+echo 'alias cat="batcat -p"' >> ~/.bashrc
+echo 'alias bat="batcat"' >> ~/.bashrc
+
 #install oh-my-zsh
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"agnoster\"/g' .zshrc
-
-#e[x|z]a
 echo 'alias ls="eza -hHbmgalT -L 1 --time-style=long-iso --icons"' >> ~/.zshrc
 echo 'alias lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"' >> ~/.zshrc
-
-#cat
 echo 'alias cat="batcat -p"' >> ~/.zshrc
 echo 'alias bat="batcat"' >> ~/.zshrc
 
