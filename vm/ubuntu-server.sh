@@ -5,7 +5,7 @@ sudo apt update -y
 sudo apt upgrade -y
 
 # install packages
-sudo apt install -y wget git zsh gpg vim unzip jq telnet curl htop btop python3-pip eza micro apt-transport-https sqlite3 docker.io docker-compose bat
+sudo apt install -y wget git zsh gpg vim unzip jq telnet curl htop btop python3-pip eza micro apt-transport-https sqlite3 docker.io docker-compose docker-buildx-plugin docker-compose-plugin bat
 sudo apt autoclean -y
 sudo apt autoremove -y
 
