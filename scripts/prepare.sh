@@ -4,11 +4,12 @@
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Usage: $0 [options]"
     echo "Options:"
-    echo "  -docker   Install docker"
-    echo "  -u=<user> Install user env for user plus root"
-    echo "  -go       Install golang"
-    echo "  -jvm      Install jvm"
-    echo "  -dotnet   Install dotnet"
+    echo "  -docker         Install docker"
+    echo "  -u=<user>       Install user env for user plus root"
+    echo "  -go             Install golang"
+    echo "  -jvm            Install jvm"
+    echo "  -dotnet         Install dotnet"
+    echo "  -code-server    Install code-server"
     exit 0
 fi
 
@@ -99,4 +100,15 @@ if [[ " ${args[@]} " =~ " -dotnet " ]]; then
         echo "Installing dotnet..."
         bash ./dotnet.sh
     fi    
+fi
+
+# Check arg -code-server for code-server
+if [[ " ${args[@]} " =~ " -code-server " ]]; then
+    # check if code-server is installed
+    if command -v code-server &> /dev/null; then
+        echo "Code-server is already installed"
+    else
+        echo "Installing code-server..."
+        bash ./code-server.sh
+    fi
 fi
