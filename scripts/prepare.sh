@@ -67,8 +67,11 @@ if [[ " ${args[@]} " =~ " -u=" ]]; then
         fi                        
     fi 
 
+    cp ./user-env.sh /home/$user/
     cd /home/$user
     sudo -H -u $user bash ./user-env.sh $user
+    rm /home/$user/user-env.sh
+    cd -
 fi
 
 # Check arg -go for golang
