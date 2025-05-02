@@ -55,7 +55,7 @@ if [[ " ${args[@]} " =~ " -u=" ]]; then
     # Check if user exists
     if ! id "$user" &>/dev/null; then
         echo "User $user does not exist. Creating user..."
-        sudo adduser $user
+        sudo adduser -m --gecos "" $user
         sudo usermod -aG sudo $user
         # Add user to sudo group
         sudo usermod -aG sudo $user
