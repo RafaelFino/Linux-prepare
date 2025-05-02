@@ -10,6 +10,8 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "  -jvm            Install jvm"
     echo "  -dotnet         Install dotnet"
     echo "  -code-server    Install code-server"
+    echo "  -desktop        Install desktop applications"
+    echo "  -h, --help      Show this help message"
     exit 0
 fi
 
@@ -111,4 +113,10 @@ if [[ " ${args[@]} " =~ " -code-server " ]]; then
         echo "Installing code-server..."
         bash ./code-server.sh
     fi
+fi
+
+# Check args -desktop for desktop
+if [[ " ${args[@]} " =~ " -desktop " ]]; then
+    echo "Installing desktop..."
+    bash ./desktop.sh
 fi
