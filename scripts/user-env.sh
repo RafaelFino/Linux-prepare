@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # change directory to home
-cd ~
 
 # install env
 git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime
@@ -30,5 +29,3 @@ else
     echo 'alias lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"' >> ~/.zshrc
     echo 'PATH=$PATH:/usr/local/go/bin' >> ~/.zshrc
 fi
-
-cd -
