@@ -56,7 +56,6 @@ if [[ " ${args[@]} " =~ " -u=" ]]; then
     if ! id "$user" &>/dev/null; then
         echo "User $user does not exist. Creating user..."
         sudo adduser -m --gecos "" $user
-        sudo usermod -aG sudo $user
         # Add user to sudo group
         sudo usermod -aG sudo $user
         # Check if docker group exists
@@ -68,6 +67,7 @@ if [[ " ${args[@]} " =~ " -u=" ]]; then
         fi                        
     fi 
 
+    cd /home/$user
     sudo -H -u $user bash ./user-env.sh $user
 fi
 
