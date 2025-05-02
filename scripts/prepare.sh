@@ -4,6 +4,7 @@
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     echo "Usage: $0 [options]"
     echo "Options:"
+    echo "  -base           Install base packages"
     echo "  -docker         Install docker"
     echo "  -u=<user>       Install user env for user plus root"
     echo "  -go             Install golang"
@@ -23,7 +24,10 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-bash ./base.sh
+# Check arg -base for base packages
+if [[ " ${args[@]} " =~ " -base " ]]; then
+    bash ./base.sh
+fi
 
 # Check arg -docker for docker
 if [[ " ${args[@]} " =~ " -docker " ]]; then
