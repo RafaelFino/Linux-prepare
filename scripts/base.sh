@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
+echo "Timezone set to America/Sao_Paulo"
+echo "America/Sao_Paulo" | sudo tee /etc/timezone
+
+echo "Installing base packages..."
 apt update -y
-timedatectl set-timezone America/Sao_Paulo
-apt install ntp ntpdate -y
-systemctl restart ntp
-systemctl status ntp
 apt install -y wget git zsh gpg zip vim unzip jq telnet curl htop btop python3 python3-pip eza micro btop apt-transport-https gpg zlib1g sqlite3 fzf sudo
 apt install -y 
 apt autoclean -y
