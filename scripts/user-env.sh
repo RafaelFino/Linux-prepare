@@ -5,7 +5,6 @@
 # install vim
 # check if vim is installed
 if [ -d ~/.vim_runtime ]; then
-then
     echo "Vim is already installed"
 else
     git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime
