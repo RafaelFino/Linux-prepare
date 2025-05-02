@@ -8,4 +8,4 @@ if [ ! -d "$HOME/.sdkman" ]; then
 fi
 
 # jvm
-sdk install java'
+sdk install java's
