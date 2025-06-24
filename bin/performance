@@ -5,6 +5,7 @@ gov="performance"
 for ((c=0; c < n; c++))
 do
 	echo "Change governor to CPU${c} to ${gov}"
-	sudo cpufreq-set -c ${c} -g ${gov} 
+	sudo cpufreq-set -c ${c} -g ${gov}
+	sudo cpufreq-set -c ${c} -d 3.4Ghz -u 5Ghz 
 done
-
+cpufreq-info
