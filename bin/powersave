@@ -5,6 +5,8 @@ gov="powersave"
 for ((c=0; c < n; c++))
 do
 	echo "Change governor to CPU${c} to ${gov}"
-	sudo cpufreq-set -c ${c} -g ${gov} 
-done
+	sudo cpufreq-set -c ${c} -g ${gov}
+	sudo cpufreq-set -c ${c} -u 1200mhz
 
+done
+cpufreq-info
