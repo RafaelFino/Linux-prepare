@@ -2,6 +2,14 @@
 
 sudo apt update -y
 
+#install zsh/vim fonts
+git clone --depth=1 https://github.com/powerline/fonts.git
+./fonts/install.sh
+rm -rf fonts
+git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git
+./nerd-fonts/install.sh
+rm -rf nerd-fonts
+
 # install vscode application on desktop
 wget https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64 -O vscode.deb
 sudo dpkg -i vscode.deb
