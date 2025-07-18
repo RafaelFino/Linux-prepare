@@ -18,12 +18,6 @@ fi
 
 args=("$@")
 
-# Check if the script is being run with root privileges
-if [ "$EUID" -ne 0 ]; then
-    echo "Please run as root"
-    exit 1
-fi
-
 # Check arg -base for base packages
 if [[ " ${args[@]} " =~ " -base " ]]; then
     bash ./base.sh
@@ -52,8 +46,8 @@ if [[ " ${args[@]} " =~ " -u=" ]]; then
 
     # Check if user is empty
     if [ -z "$user" ]; then
-        echo "User name is empty"
-        exit 1
+        echo "User name is empty, getting user from environment variable USER"
+        user=${USER:-$(whoami)}
     fi
 
     # Check if user exists
