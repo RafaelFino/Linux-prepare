@@ -20,7 +20,7 @@ args=("$@")
 
 # Check arg -base for base packages
 if [[ " ${args[@]} " =~ " -base " ]]; then
-    bash ./base.sh
+    sudo -H -u root bash ./scripts/base.sh
 fi
 
 # Check arg -docker for docker
@@ -30,12 +30,12 @@ if [[ " ${args[@]} " =~ " -docker " ]]; then
         echo "Docker is already installed"
     else
         echo "Installing docker..."
-        bash ./docker.sh
+        sudo -H -u root bash ./scripts/docker.sh
     fi
 fi
 
 echo "Installing user env for root..."
-sudo -H -u root bash ./user-env.sh root
+sudo -H -u root bash ./scripts/user-env.sh root
 
 # Check arg -u for user env
 if [[ " ${args[@]} " =~ " -u=" ]]; then
@@ -65,11 +65,18 @@ if [[ " ${args[@]} " =~ " -u=" ]]; then
         fi                        
     fi 
 
-    cp ./user-env.sh /home/$user/
+    cp ./scripts/user-env.sh /home/$user/
     cd /home/$user
-    sudo -H -u $user bash ./user-env.sh $user
+    sudo -H -u $user bash /home/$user/user-env.sh $user
     rm /home/$user/user-env.sh
+
     cd -
+
+    # Check args -desktop for desktop
+    if [[ " ${args[@]} " =~ " -desktop " ]]; then
+        echo "Installing desktop applications..."
+        sudo -H -u $user bash ./scripts/desktop.sh
+    fi
 fi
 
 # Check arg -go for golang
@@ -79,7 +86,7 @@ if [[ " ${args[@]} " =~ " -go " ]]; then
         echo "Golang is already installed"
     else
         echo "Installing golang..."
-        bash ./golang.sh
+        sudo -H -u root ./scripts/golang.sh
     fi
 fi
 
@@ -90,7 +97,7 @@ if [[ " ${args[@]} " =~ " -jvm " ]]; then
         echo "JVM is already installed"
     else
         echo "Installing jvm..."
-        bash ./jvm.sh
+        sudo -H -u root ./scripts/jvm.sh
     fi
 fi
 
@@ -101,7 +108,7 @@ if [[ " ${args[@]} " =~ " -dotnet " ]]; then
         echo "Dotnet is already installed"
     else
         echo "Installing dotnet..."
-        bash ./dotnet.sh
+        sudo -H -u root ./scripts/otnet.sh
     fi    
 fi
 
@@ -112,12 +119,6 @@ if [[ " ${args[@]} " =~ " -code-server " ]]; then
         echo "Code-server is already installed"
     else
         echo "Installing code-server..."
-        bash ./code-server.sh
+        sudo -H -u root ./scripts/code-server.sh
     fi
-fi
-
-# Check args -desktop for desktop
-if [[ " ${args[@]} " =~ " -desktop " ]]; then
-    echo "Installing desktop..."
-    bash ./desktop.sh
 fi
