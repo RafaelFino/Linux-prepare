@@ -1,4 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+IFS=$'\n\t'
+
+
 
 sudo apt update -y
 

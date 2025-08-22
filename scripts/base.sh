@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
+IFS=$'\n\t'
+
+
+
 echo "Timezone set to America/Sao_Paulo"
 echo "America/Sao_Paulo" | sudo tee /etc/timezone
 

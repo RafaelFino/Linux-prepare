@@ -1,4 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+IFS=$'\n\t'
 
 # code-server
 wget -qO- https://code-server.dev/install.sh | sh  

@@ -1,4 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+IFS=$'\n\t'
 
 # check if script run to show help only
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
@@ -20,7 +24,7 @@ args=("$@")
 
 # Check arg -base for base packages
 if [[ " ${args[@]} " =~ " -base " ]]; then
-    sudo -H -u root bash ./scripts/base.sh
+    sudo -H -u root bash ./base.sh
 fi
 
 # Check arg -docker for docker
@@ -30,12 +34,12 @@ if [[ " ${args[@]} " =~ " -docker " ]]; then
         echo "Docker is already installed"
     else
         echo "Installing docker..."
-        sudo -H -u root bash ./scripts/docker.sh
+        sudo -H -u root bash ./docker.sh
     fi
 fi
 
 echo "Installing user env for root..."
-sudo -H -u root bash ./scripts/user-env.sh root
+sudo -H -u root bash ./user-env.sh root
 
 # Check arg -u for user env
 if [[ " ${args[@]} " =~ " -u=" ]]; then
@@ -65,7 +69,7 @@ if [[ " ${args[@]} " =~ " -u=" ]]; then
         fi                        
     fi 
 
-    cp ./scripts/user-env.sh /home/$user/
+    cp ./user-env.sh /home/$user/
     cd /home/$user
     sudo -H -u $user bash /home/$user/user-env.sh $user
     rm /home/$user/user-env.sh
@@ -75,7 +79,7 @@ if [[ " ${args[@]} " =~ " -u=" ]]; then
     # Check args -desktop for desktop
     if [[ " ${args[@]} " =~ " -desktop " ]]; then
         echo "Installing desktop applications..."
-        sudo -H -u $user bash ./scripts/desktop.sh
+        sudo -H -u $user bash ./desktop.sh
     fi
 fi
 
@@ -86,7 +90,7 @@ if [[ " ${args[@]} " =~ " -go " ]]; then
         echo "Golang is already installed"
     else
         echo "Installing golang..."
-        sudo -H -u root ./scripts/golang.sh
+        sudo -H -u root ./golang.sh
     fi
 fi
 
@@ -97,7 +101,7 @@ if [[ " ${args[@]} " =~ " -jvm " ]]; then
         echo "JVM is already installed"
     else
         echo "Installing jvm..."
-        sudo -H -u root ./scripts/jvm.sh
+        sudo -H -u root ./jvm.sh
     fi
 fi
 
@@ -108,7 +112,7 @@ if [[ " ${args[@]} " =~ " -dotnet " ]]; then
         echo "Dotnet is already installed"
     else
         echo "Installing dotnet..."
-        sudo -H -u root ./scripts/otnet.sh
+        sudo -H -u root ./dotnet.sh
     fi    
 fi
 
@@ -119,6 +123,6 @@ if [[ " ${args[@]} " =~ " -code-server " ]]; then
         echo "Code-server is already installed"
     else
         echo "Installing code-server..."
-        sudo -H -u root ./scripts/code-server.sh
+        sudo -H -u root ./code-server.sh
     fi
 fi
