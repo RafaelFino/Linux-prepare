@@ -23,7 +23,7 @@ show_help() {
     echo "Exemplos:"
     echo "  Instalar ambiente para o usuário 'developer' com Docker, Go, JVM e .NET:"
     echo ""
-    echo "  $0 -u=developer -docker -go -jvm -dotnet`
+    echo "  $0 -u=developer -docker -go -jvm -dotnet"
     echo ""
     echo "  Instalar ambiente para múltiplos usuários 'user1' e 'user2' com Docker:"
     echo ""
