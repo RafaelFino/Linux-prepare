@@ -82,7 +82,7 @@ install_user_env() {
     else
         log "Installing Vim..."
         git clone --depth=1 https://github.com/amix/vimrc.git $HOME_DIR/.vim_runtime
-        sudo -H -u $user 'sh $HOME_DIR/.vim_runtime/install_awesome_vimrc.sh'
+        sudo -H -u $user `sh $HOME_DIR/.vim_runtime/install_awesome_vimrc.sh`
         echo set nu >> $HOME_DIR/.vim_runtime/my_configs.vim
     fi
           
@@ -90,7 +90,7 @@ install_user_env() {
         log "Oh My Bash is already installed"
     else
         log "Installing Oh My Bash..."  
-        sudo -H -u $user 'curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh | bash'
+        sudo -H -u $user `curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh | bash`
 
         log "Setting aliases for Oh My Bash"
         if which eza; then
@@ -109,7 +109,7 @@ install_user_env() {
         log "Oh My Zsh is already installed"
     else
         log "Installing Oh My Zsh..."  
-        sudo -H -u $user 'curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash'
+        sudo -H -u $user `curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash`
         sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"frisk\"/g' $HOME_DIR/.zshrc
 
         log "Setting aliases for Oh My Zsh"
