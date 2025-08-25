@@ -283,6 +283,7 @@ install_dekstop() {
     else
         log "Cloning Powerline fonts"
         git clone --depth=1 https://github.com/powerline/fonts.git /tmp/fonts
+        chown 666 /tmp/fonts/install.sh
     fi
 
     log "Installing Powerline fonts"
@@ -293,6 +294,7 @@ install_dekstop() {
     else        
         log "Cloning Nerd fonts"
         git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git /tmp/nerd-fonts
+        chown 666 /tmp/nerd-fonts/install.sh
     fi
 
     log "Installing Nerd fonts"
@@ -308,9 +310,6 @@ install_dekstop() {
         log "Install vscode application on desktop"
         echo "code code/add-microsoft-repo boolean true" | sudo debconf-set-selections
         sudo apt install code -y 
-        #wget 'https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64' -O vscode.deb
-        #sudo dpkg -i /tmp/vscode.deb
-        #rm /tmp/vscode.deb
     fi
 
     log "Install terminal emulators"
