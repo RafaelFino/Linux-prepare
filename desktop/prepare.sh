@@ -65,6 +65,14 @@ error_exit() {
   exit 1
 }
 
+run_as() {
+    local user=$1
+    shift
+
+    log "Running command as $user -> $*"
+    sudo -u "$user" bash -c "$*"
+}
+
 install_user_env() {
     local user=$1
     log "Installing user env for $user..."
@@ -84,11 +92,11 @@ install_user_env() {
         log "Check if docker group exists"
         if ! getent group docker > /dev/null; then
             log "Create docker group"
-            sudo groupadd docker
-            
-            log "Add user to docker group"
-            sudo usermod -aG docker $user                   
+            sudo groupadd docker                
         fi
+
+        log "Add user to docker group"
+        sudo usermod -aG docker $user
     fi
 
     local HOME_DIR=$(eval echo "~$user")
@@ -99,21 +107,26 @@ install_user_env() {
     if [ -d $HOME_DIR/.vim_runtime ]; then
         log "Vim is already installed"
     else
-        log "Installing Vim for $user..."
-        sudo -u "$user" bash -c 'git clone --depth=1 https://github.com/amix/vimrc.git $HOME_DIR/.vim_runtime'
-        
+        log "Installing Vim for $user on $HOME_DIR..."
+        run_as $user 'git clone --depth=1 https://github.com/amix/vimrc.git ~/.vim_runtime'
+                
+        if [ -f $HOME_DIR/.vimrc ]; then
+            log "Backing up existing .vimrc to .vimrc.backup"
+            mv $HOME_DIR/.vimrc $HOME_DIR/.vimrc.backup
+        fi
+
         log "Installing awesome vimrc"
-        sudo -u "$user" bash -c 'bash "$(~/.vim_runtime/install_awesome_vimrc.sh)"'
+        run_as $user '~/.vim_runtime/install_awesome_vimrc.sh'
         
         log "Setting line numbers in vim"
-        echo set nu >> $HOME_DIR/.vim_runtime/my_configs.vim
+        run_as $user 'echo set nu | tee -a ~/.vim_runtime/my_configs.vim'
     fi
           
     if [ -d $HOME_DIR/.oh-my-bash ]; then   
         log "Oh My Bash is already installed"
     else
         log "Installing Oh My Bash..."  
-        sudo -u "$user" bash -c 'bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"'
+        run_as $user 'curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh | bash'
 
         log "Setting aliases for Oh My Bash"
         if which eza; then
@@ -132,7 +145,7 @@ install_user_env() {
         log "Oh My Zsh is already installed"
     else
         log "Installing Oh My Zsh..." 
-        sudo -u "$user" bash -c 'bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
+        run_as $user 'curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash'
 
         sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"frisk\"/g' $HOME_DIR/.zshrc
 
@@ -233,7 +246,7 @@ install_jvm() {
     
     log "Installing JVM for $user..."
 
-    sudo -u "$user" bash -c 'curl -s "https://get.sdkman.io" | bash' || true
+    run_as $user 'curl -s "https://get.sdkman.io" | bash'
 
     # Inicializar SDKMAN! no shell do usuário
     INIT_SCRIPT="$HOME_DIR/.sdkman/bin/sdkman-init.sh"
@@ -243,7 +256,8 @@ install_jvm() {
         continue
     fi
 
-    sudo -u "$user" bash -c "source \"$INIT_SCRIPT\" && sdk install java"
+    run_as $user 'source ~/.sdkman/bin/sdkman-init.sh'
+    run_as $user 'sdk install java'
 }
 
 install_dekstop() {
@@ -305,11 +319,6 @@ args=("$@")
 
 install_base
 
-# Check arg -docker for docker install
-if [[ " ${args[@]} " =~ " -docker " ]]; then
-    install_docker
-fi
-
 # Check arg -go for golang
 if [[ " ${args[@]} " =~ " -go " ]]; then
     install_golang
@@ -353,6 +362,11 @@ for user in "${users[@]}"; do
 
     log "User $user processed"
 done
+
+# Check arg -docker for docker install
+if [[ " ${args[@]} " =~ " -docker " ]]; then
+    install_docker
+fi
 
 # Check installs
 sudo apt autoclean -y
