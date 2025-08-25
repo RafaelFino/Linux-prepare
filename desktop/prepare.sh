@@ -31,8 +31,6 @@ show_help() {
     echo "  $0 -u=user1,user2 -docker"
     echo ""
 }
-
-cd 
     
 BOLD="\033[1m"
 RESET="\033[0m"
@@ -142,13 +140,13 @@ install_user_env() {
 
         log "Setting aliases for Oh My Bash"
         if which eza; then
-            echo 'alias ls="eza -hHbmgalT -L 1 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.bashrc
-            echo 'alias lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.bashrc
+            run_as $user "echo 'alias ls=\"eza -hHbmgalT -L 1 --time-style=long-iso --icons\"' >> ~/.bashrc"
+            run_as $user "echo 'alias lt=\"eza -hHbmgalT -L 4 --time-style=long-iso --icons\"' >> ~/.bashrc"
         fi
 
         if which exa; then
-            echo 'alias ls="exa -hHbmgalT -L 1 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.bashrc
-            echo 'alias lt="exa -hHbmgalT -L 4 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.bashrc
+            run_as $user "echo 'alias ls=\"exa -hHbmgalT -L 1 --time-style=long-iso --icons\"' >> ~/.bashrc"
+            run_as $user "echo 'alias lt=\"exa -hHbmgalT -L 4 --time-style=long-iso --icons\"' >> ~/.bashrc"
         fi    
     fi
 
@@ -159,17 +157,19 @@ install_user_env() {
         log "Installing Oh My Zsh..." 
         run_as $user 'curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash'
 
-        sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"frisk\"/g' $HOME_DIR/.zshrc
+        sed -i 's/^ZSH_THEME=.*/ZSH_THEME="frisk"/' "$HOME_DIR/.zshrc"
+        sed -i 's/^plugins=.*/plugins=(git docker docker-compose vscode golang python)/' "$HOME_DIR/.zshrc"
+
 
         log "Setting aliases for Oh My Zsh"
-        if which eza; then
-            echo 'alias ls="eza -hHbmgalT -L 1 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.zshrc
-            echo 'alias lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.zshrc
+        if command -v eza &>/dev/null; then
+            run_as $user "echo 'alias ls=\"eza -hHbmgalT -L 1 --time-style=long-iso --icons\"' >> ~/.zshrc"
+            run_as $user "echo 'alias lt=\"eza -hHbmgalT -L 4 --time-style=long-iso --icons\"' >> ~/.zshrc"
         fi
 
-        if which exa; then
-            echo 'alias ls="exa -hHbmgalT -L 1 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.zshrc
-            echo 'alias lt="exa -hHbmgalT -L 4 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.zshrc
+        if command -v exa &>/dev/null; then
+            run_as $user "echo 'alias ls=\"exa -hHbmgalT -L 1 --time-style=long-iso --icons\"' >> ~/.zshrc"
+            run_as $user "echo 'alias lt=\"exa -hHbmgalT -L 4 --time-style=long-iso --icons\"' >> ~/.zshrc"
         fi        
     fi
 
@@ -187,9 +187,10 @@ install_base() {
 
     log "Installing base packages..."
     sudo apt update -y
-    sudo apt install -y wget git zsh gpg zip vim unzip jq telnet curl htop btop python3 python3-pip eza micro btop apt-transport-https gpg zlib1g sqlite3 fzf sudo
-    sudo apt install -y 
+    sudo apt install -y wget git zsh gpg zip vim unzip jq telnet curl htop btop \
+        python3 python3-pip eza micro apt-transport-https zlib1g sqlite3 fzf sudo
 
+    
     log "Base packages installed"    
 }
 
@@ -240,13 +241,19 @@ install_dotnet() {
         log ".NET is already installed"
     else
         log "Installing .NET..."
-        wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
-        sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg 
-        sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
-        sudo rm -f packages.microsoft.gpg
-        sudo apt update -y
-        sudo apt install -y apt-transport-https
-        sudo apt install -y dotnet-sdk-8.0 dotnet-runtime-8.0 aspnetcore-runtime-8.0
+        #wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+        #sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg 
+        #sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+        #sudo rm -f packages.microsoft.gpg
+        #sudo apt update -y
+
+        wget https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+        sudo dpkg -i packages-microsoft-prod.deb
+        rm packages-microsoft-prod.deb
+        
+        sudo apt update
+        sudo apt install -y apt-transport-https dotnet-sdk-8.0
+
 
         log ".NET installed"
     fi    
@@ -265,13 +272,12 @@ install_jvm() {
 
     if [[ ! -f "$INIT_SCRIPT" ]]; then
         log "SDKMAN! init script not found for user $user. Skipping JVM installation."
-        continue
+    else
+        run_as $user 'source ~/.sdkman/bin/sdkman-init.sh && sdk install java'
     fi
-
-    run_as $user 'source ~/.sdkman/bin/sdkman-init.sh && sdk install java'
 }
 
-install_dekstop() {
+install_desktop() {
     log "Installing desktop packages..."
     local user=$1
     local HOME_DIR=$(eval echo "~$user")
@@ -283,7 +289,7 @@ install_dekstop() {
     else
         log "Cloning Powerline fonts"
         git clone --depth=1 https://github.com/powerline/fonts.git /tmp/fonts
-        chown 666 /tmp/fonts/install.sh
+        chmod +rwx /tmp/fonts
     fi
 
     log "Installing Powerline fonts"
@@ -294,7 +300,7 @@ install_dekstop() {
     else        
         log "Cloning Nerd fonts"
         git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git /tmp/nerd-fonts
-        chown 666 /tmp/nerd-fonts/install.sh
+        chmod +rwx /tmp/nerd-fonts
     fi
 
     log "Installing Nerd fonts"
@@ -329,6 +335,11 @@ install_dekstop() {
 
 install_base
 
+# Check arg -docker for docker install
+if [[ " ${args[@]} " =~ " -docker " ]]; then
+    install_docker
+fi
+
 # Check arg -go for golang
 if [[ " ${args[@]} " =~ " -go " ]]; then
     install_golang
@@ -339,21 +350,21 @@ if [[ " ${args[@]} " =~ " -dotnet " ]]; then
     install_dotnet   
 fi
 
-# Create an array with users to install user env
-users=()
-# add root user
-users+=("root")  
-# add current user
-users+=(${USER:-$(whoami)})
+users_arg=""
 
-# Check arg -u for install
-if [[ " ${args[@]} " =~ " -u=" ]]; then
-    # Check if are multiple users declared in -u splitted by comma
-    users_arg=$(echo "${args[@]}" | grep -oP '(?<=-u=)[^ ]+')    
-    IFS=',' read -ra users <<< "$users_arg"
-    for user in "${users[@]}"; do
-        users+=("$user")
-    done
+for arg in "$@"; do
+    case $arg in
+        -u=*|--users=*)
+            users_arg="${arg#*=}" 
+            ;;
+    esac
+done
+
+users=("root" "$(whoami)")
+
+if [[ -n "$users_arg" ]]; then
+    IFS=',' read -ra extra_users <<< "$users_arg"
+    users+=("${extra_users[@]}")
 fi
 
 # For each user install user env and jvm
@@ -367,16 +378,11 @@ for user in "${users[@]}"; do
 
     # Check arg -desktop for desktop packages
     if [[ " ${args[@]} " =~ " -desktop " ]]; then
-        install_dekstop "$user"
+        install_desktop "$user"
     fi    
 
     log "User $user processed"
 done
-
-# Check arg -docker for docker install
-if [[ " ${args[@]} " =~ " -docker " ]]; then
-    install_docker
-fi
 
 # Check installs
 sudo apt autoclean -y
