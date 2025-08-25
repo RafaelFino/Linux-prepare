@@ -32,26 +32,6 @@ show_help() {
     echo ""
 }
 
-# check if no arguments were provided, continue with default user (current user)
-if [ "$#" -eq 0 ]; then
-    args=("-u=${USER:-$(whoami)}")
-else
-    # check if script run to show help only
-    if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-        show_help
-        exit 0
-    fi
-
-    args=("$@")
-
-    # Check if -all arg is present to add all options
-    if [[ " ${args[@]} " =~ " -all " ]]; then
-        # Add all options except -all itself
-        args+=("-docker" "-go" "-jvm" "-dotnet" "-desktop")
-        # Remove -all from args
-    fi
-fi
-
 cd 
     
 BOLD="\033[1m"
@@ -72,6 +52,30 @@ error_exit() {
   echo "Erro: $*" >&2
   exit 1
 }
+
+args=("$@")
+
+# check if no arguments were provided, continue with default user (current user)
+if [ "$#" -eq 0 ]; then
+    args=("-u=${USER:-$(whoami)}")
+else
+    # check if script run to show help only
+    if [[ "$1" == "--help" || "$1" == "-h" ]]; then
+        show_help
+        exit 0
+    fi
+
+    # Check if -all arg is present to add all options
+    if [[ " ${args[@]} " =~ " -all " ]]; then
+        log "Option -all detected, adding all options"
+        args+=("-docker" "-go" "-jvm" "-dotnet" "-desktop")
+    fi
+
+    log "Arguments provided:"
+    for arg in "${args[@]}"; do
+        log "   Option selected: $arg"
+    done
+fi
 
 run_as() {
     local user=$1
@@ -302,9 +306,11 @@ install_dekstop() {
         log "Vscode is already installed"
     else
         log "Install vscode application on desktop"
-        wget 'https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64' -O vscode.deb
-        sudo dpkg -i /tmp/vscode.deb
-        rm /tmp/vscode.deb
+        echo "code code/add-microsoft-repo boolean true" | sudo debconf-set-selections
+        sudo apt install code -y 
+        #wget 'https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64' -O vscode.deb
+        #sudo dpkg -i /tmp/vscode.deb
+        #rm /tmp/vscode.deb
     fi
 
     log "Install terminal emulators"
@@ -321,8 +327,6 @@ install_dekstop() {
 
     log "Desktop packages installed"
 }
-
-args=("$@")
 
 install_base
 
