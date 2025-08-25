@@ -31,12 +31,21 @@ show_help() {
     echo ""
 }
 
-# check if script run to show help only
-if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-    show_help
-    exit 0
+# check if no arguments were provided, continue with default user (current user)
+if [ "$#" -eq 0 ]; then
+    args=("-u=${USER:-$(whoami)}")
+else
+    # check if script run to show help only
+    if [[ "$1" == "--help" || "$1" == "-h" ]]; then
+        show_help
+        exit 0
+    fi
+
+    args=("$@")
 fi
 
+cd 
+    
 BOLD="\033[1m"
 RESET="\033[0m"
 CYAN="\033[36m"
@@ -90,9 +99,11 @@ install_user_env() {
     if [ -d $HOME_DIR/.vim_runtime ]; then
         log "Vim is already installed"
     else
-        log "Installing Vim..."
-        git clone --depth=1 https://github.com/amix/vimrc.git $HOME_DIR/.vim_runtime
-        sudo -H -u $user `sh $HOME_DIR/.vim_runtime/install_awesome_vimrc.sh`
+        log "Installing Vim for $user..."
+        sudo -u $user `git clone --depth=1 https://github.com/amix/vimrc.git $HOME_DIR/.vim_runtime`
+        sudo -H -u $user $HOME_DIR/.vim_runtime/install_awesome_vimrc.sh
+        
+        log "Setting line numbers in vim"
         echo set nu >> $HOME_DIR/.vim_runtime/my_configs.vim
     fi
           
@@ -100,20 +111,17 @@ install_user_env() {
         log "Oh My Bash is already installed"
     else
         log "Installing Oh My Bash..."  
-        curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh > /tmp/omb_install.sh
-        chmod +x /tmp/omb_install.sh
-
-        sudo -H -u $user /tmp/omb_install.sh
+        sudo -u "$user" bash -c 'bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"'
 
         log "Setting aliases for Oh My Bash"
         if which eza; then
-            echo 'alias ls="eza -hHbmgalT -L 1 --time-style=long-iso --icons"' >> $HOME_DIR/.bashrc
-            echo 'alias lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"' >> $HOME_DIR/.bashrc
+            echo 'alias ls="eza -hHbmgalT -L 1 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.bashrc
+            echo 'alias lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.bashrc
         fi
 
         if which exa; then
-            echo 'alias ls="exa -hHbmgalT -L 1 --time-style=long-iso --icons"' >> $HOME_DIR/.bashrc
-            echo 'alias lt="exa -hHbmgalT -L 4 --time-style=long-iso --icons"' >> $HOME_DIR/.bashrc 
+            echo 'alias ls="exa -hHbmgalT -L 1 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.bashrc
+            echo 'alias lt="exa -hHbmgalT -L 4 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.bashrc
         fi    
     fi
 
@@ -121,22 +129,20 @@ install_user_env() {
     if [ -d $HOME_DIR/.oh-my-zsh ]; then
         log "Oh My Zsh is already installed"
     else
-        log "Installing Oh My Zsh..."  
-        curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh > /tmp/omz_install.sh
-        chmod +x /tmp/omz_install.sh
-        sudo -H -u $user `/tmp/omz_install.sh --unattended`
+        log "Installing Oh My Zsh..." 
+        sudo -u "$user" bash -c 'bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"'
 
         sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"frisk\"/g' $HOME_DIR/.zshrc
 
         log "Setting aliases for Oh My Zsh"
         if which eza; then
-            echo 'alias ls="eza -hHbmgalT -L 1 --time-style=long-iso --icons"' >> $HOME_DIR/.zshrc
-            echo 'alias lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"' >> $HOME_DIR/.zshrc 
+            echo 'alias ls="eza -hHbmgalT -L 1 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.zshrc
+            echo 'alias lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.zshrc
         fi
 
         if which exa; then
-            echo 'alias ls="exa -hHbmgalT -L 1 --time-style=long-iso --icons"' >> $HOME_DIR/.zshrc
-            echo 'alias lt="exa -hHbmgalT -L 4 --time-style=long-iso --icons"' >> $HOME_DIR/.zshrc
+            echo 'alias ls="exa -hHbmgalT -L 1 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.zshrc
+            echo 'alias lt="exa -hHbmgalT -L 4 --time-style=long-iso --icons"' | tee -a $HOME_DIR/.zshrc
         fi        
     fi
 
@@ -149,15 +155,15 @@ install_user_env() {
 }
 
 install_base() {
+    log "Timezone set to America/Sao_Paulo"
+    echo "America/Sao_Paulo" | sudo tee /etc/timezone
+
     log "Installing base packages..."
     sudo apt update -y
     sudo apt install -y wget git zsh gpg zip vim unzip jq telnet curl htop btop python3 python3-pip eza micro btop apt-transport-https gpg zlib1g sqlite3 fzf sudo
     sudo apt install -y 
 
-    log "Base packages installed"
-
-    log "Timezone set to America/Sao_Paulo"
-    echo "America/Sao_Paulo" | sudo tee /etc/timezone    
+    log "Base packages installed"    
 }
 
 install_docker() {
@@ -189,10 +195,15 @@ install_golang() {
         log "Removing golang tarball"
         rm golang.tar.gz
 
-        if ! grep -q "PATH" /etc/environment; then
-            log "Adding golang to PATH in /etc/environment"
-            echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/environment
+        # check if /etc/environment already contains golang path
+        if grep -q "/usr/local/go/bin" /etc/environment; then
+            log "Golang path already exists in /etc/environment"
+        else
+            log "Adding golang to PATH in /etc/profile"
+            echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee -a /etc/environment > /dev/null
         fi
+
+        source /etc/environment
     fi
 }
 
@@ -218,7 +229,7 @@ install_jvm() {
     local user=$1
     local HOME_DIR=$(eval echo "~$user")
     
-    log "Instalando SDKMAN! para $user em $HOME_DIR"
+    log "Installing JVM for $user..."
 
     sudo -u "$user" bash -c 'curl -s "https://get.sdkman.io" | bash' || true
 
@@ -226,11 +237,10 @@ install_jvm() {
     INIT_SCRIPT="$HOME_DIR/.sdkman/bin/sdkman-init.sh"
 
     if [[ ! -f "$INIT_SCRIPT" ]]; then
-        log "SDKMAN! não encontrado para $user, pulando..."
+        log "SDKMAN! init script not found for user $user. Skipping JVM installation."
         continue
     fi
 
-    log "Instalando Java $JAVA_VERSION para $user"
     sudo -u "$user" bash -c "source \"$INIT_SCRIPT\" && sdk install java"
 }
 
@@ -285,10 +295,10 @@ fi
 
 # Create an array with users to install user env
 users=()
-# add current user
-users+=(${USER:-$(whoami)})
 # add root user
 users+=("root")  
+# add current user
+users+=(${USER:-$(whoami)})
 
 # Check arg -u for install
 if [[ " ${args[@]} " =~ " -u=" ]]; then
@@ -302,19 +312,20 @@ fi
 
 # For each user install user env and jvm
 for user in "${users[@]}"; do
+    log "Processing user: $user"
     install_user_env "$user"
 
     if [[ " ${args[@]} " =~ " -jvm " ]]; then
         install_jvm "$user"
     fi
-done
 
-# Check arg -desktop for desktop packages
-if [[ " ${args[@]} " =~ " -desktop " ]]; then
-    for user in "${users[@]}"; do
+    # Check arg -desktop for desktop packages
+    if [[ " ${args[@]} " =~ " -desktop " ]]; then
         install_dekstop "$user"
-    done
-fi
+    fi    
+
+    log "User $user processed"
+done
 
 # Check installs
 sudo apt autoclean -y
