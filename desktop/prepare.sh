@@ -17,6 +17,7 @@ show_help() {
     echo " | -jvm       | Instala o SDKMAN! e a versão padrão do Java (atualmente 21).                                    |"
     echo " | -dotnet    | Instala o .NET SDK e Runtime.                                                                   |"
     echo " | -desktop   | Instala aplicações e fontes para ambiente desktop (VSCode, Chrome, fontes Powerline e Nerd).    |"
+    echo " | -all       | Instala todas as opções acima.                                                                 |"
     echo " | -h, --help | Mostra esta ajuda.                                                                              |"
     echo " |------------|-------------------------------------------------------------------------------------------------|"
     echo ""
@@ -42,6 +43,13 @@ else
     fi
 
     args=("$@")
+
+    # Check if -all arg is present to add all options
+    if [[ " ${args[@]} " =~ " -all " ]]; then
+        # Add all options except -all itself
+        args+=("-docker" "-go" "-jvm" "-dotnet" "-desktop")
+        # Remove -all from args
+    fi
 fi
 
 cd 
@@ -256,8 +264,7 @@ install_jvm() {
         continue
     fi
 
-    run_as $user 'source ~/.sdkman/bin/sdkman-init.sh'
-    run_as $user 'sdk install java'
+    run_as $user 'source ~/.sdkman/bin/sdkman-init.sh && sdk install java'
 }
 
 install_dekstop() {
@@ -275,7 +282,7 @@ install_dekstop() {
     fi
 
     log "Installing Powerline fonts"
-    sudo -H -u $user /tmp/fonts/install.sh
+    run_as $user '/tmp/fonts/install.sh'
 
     if [ -d /tmp/nerd-fonts ]; then
         log "Nerd fonts already cloned"
@@ -285,7 +292,7 @@ install_dekstop() {
     fi
 
     log "Installing Nerd fonts"
-    sudo -H -u $user /tmp/nerd-fonts/install.sh
+    run_as $user '/tmp/nerd-fonts/install.sh'
 
     log "Install ms core fonts"
     sudo apt install -y ttf-mscorefonts-installer
@@ -295,9 +302,9 @@ install_dekstop() {
         log "Vscode is already installed"
     else
         log "Install vscode application on desktop"
-        wget https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64 -O vscode.deb
-        sudo dpkg -i vscode.deb
-        rm vscode.deb
+        wget 'https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64' -O vscode.deb
+        sudo dpkg -i /tmp/vscode.deb
+        rm /tmp/vscode.deb
     fi
 
     log "Install terminal emulators"
