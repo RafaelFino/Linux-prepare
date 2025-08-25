@@ -250,28 +250,53 @@ install_dekstop() {
     local HOME_DIR=$(eval echo "~$user")
 
     log "Installing fonts for desktop..."
-    cd /tmp
-    git clone --depth=1 https://github.com/powerline/fonts.git
+    
+    if [ -d /tmp/fonts ]; then
+        log "Powerline fonts already cloned"
+    else
+        log "Cloning Powerline fonts"
+        git clone --depth=1 https://github.com/powerline/fonts.git /tmp/fonts
+    fi
+
+    log "Installing Powerline fonts"
     sudo -H -u $user /tmp/fonts/install.sh
 
-    git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git
+    if [ -d /tmp/nerd-fonts ]; then
+        log "Nerd fonts already cloned"
+    else        
+        log "Cloning Nerd fonts"
+        git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git /tmp/nerd-fonts
+    fi
+
+    log "Installing Nerd fonts"
     sudo -H -u $user /tmp/nerd-fonts/install.sh
 
     log "Install ms core fonts"
     sudo apt install -y ttf-mscorefonts-installer
 
-    log "Install vscode application on desktop"
-    wget https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64 -O vscode.deb
-    sudo dpkg -i vscode.deb
-    rm vscode.deb
+    # Check if vscode is installed
+    if command -v code &> /dev/null; then
+        log "Vscode is already installed"
+    else
+        log "Install vscode application on desktop"
+        wget https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64 -O vscode.deb
+        sudo dpkg -i vscode.deb
+        rm vscode.deb
+    fi
 
     log "Install terminal emulators"
-    sudo apt install -y terminator tilix alacritty tmux kitty
+    sudo apt install -y terminator alacritty
 
-    log "Install chrome browser"
-    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-    sudo dpkg -i google-chrome-stable_current_amd64.deb
-    rm google-chrome-stable_current_amd64.deb
+    if command -v google-chrome &> /dev/null; then
+        log "Chrome is already installed"
+    else
+        log "Install chrome browser"
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        sudo dpkg -i google-chrome-stable_current_amd64.deb
+        rm google-chrome-stable_current_amd64.deb
+    fi
+
+    log "Desktop packages installed"
 }
 
 args=("$@")
