@@ -100,8 +100,10 @@ install_user_env() {
         log "Vim is already installed"
     else
         log "Installing Vim for $user..."
-        sudo -u $user `git clone --depth=1 https://github.com/amix/vimrc.git $HOME_DIR/.vim_runtime`
-        sudo -H -u $user $HOME_DIR/.vim_runtime/install_awesome_vimrc.sh
+        sudo -u "$user" bash -c 'git clone --depth=1 https://github.com/amix/vimrc.git $HOME_DIR/.vim_runtime'
+        
+        log "Installing awesome vimrc"
+        sudo -u "$user" bash -c 'bash "$(~/.vim_runtime/install_awesome_vimrc.sh)"'
         
         log "Setting line numbers in vim"
         echo set nu >> $HOME_DIR/.vim_runtime/my_configs.vim
