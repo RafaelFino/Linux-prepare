@@ -37,8 +37,18 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
     exit 0
 fi
 
+BOLD="\033[1m"
+RESET="\033[0m"
+CYAN="\033[36m"
+GREEN="\033[32m"
+
 log() {
-  echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*"
+  local msg="$*"
+  local timestamp
+  timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+
+  # Timestamp em ciano, mensagem em verde
+  echo -e "${BOLD}${CYAN}[${timestamp}]${RESET} ${GREEN}${msg}${RESET}"
 }
 
 error_exit() {
@@ -86,11 +96,14 @@ install_user_env() {
         echo set nu >> $HOME_DIR/.vim_runtime/my_configs.vim
     fi
           
-    if [ -d $HOME_DIR/.oh-my-bash ]; then
+    if [ -d $HOME_DIR/.oh-my-bash ]; then   
         log "Oh My Bash is already installed"
     else
         log "Installing Oh My Bash..."  
-        sudo -H -u $user `curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh | bash`
+        curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh > /tmp/omb_install.sh
+        chmod +x /tmp/omb_install.sh
+
+        sudo -H -u $user /tmp/omb_install.sh
 
         log "Setting aliases for Oh My Bash"
         if which eza; then
@@ -109,7 +122,10 @@ install_user_env() {
         log "Oh My Zsh is already installed"
     else
         log "Installing Oh My Zsh..."  
-        sudo -H -u $user `curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash`
+        curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh > /tmp/omz_install.sh
+        chmod +x /tmp/omz_install.sh
+        sudo -H -u $user `/tmp/omz_install.sh --unattended`
+
         sed -i 's/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"frisk\"/g' $HOME_DIR/.zshrc
 
         log "Setting aliases for Oh My Zsh"
