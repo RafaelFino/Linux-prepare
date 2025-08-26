@@ -304,8 +304,8 @@ install_desktop() {
         chmod +rwx /tmp/fonts
     fi
 
-    log "Installing Powerline fonts"
-    run_as $user '/tmp/fonts/install.sh'
+    log "Installing Powerline fonts"    
+    run_as $user 'cd /tmp/fonts && ./install.sh'
 
     if [ -d /tmp/nerd-fonts ]; then
         log "Nerd fonts already cloned"
@@ -316,7 +316,7 @@ install_desktop() {
     fi
 
     log "Installing Nerd fonts"
-    run_as $user '/tmp/nerd-fonts/install.sh'
+    run_as $user '/tmp/nerd-fonts && ./install.sh'
 
     log "Install ms core fonts"
     sudo apt install -y ttf-mscorefonts-installer
