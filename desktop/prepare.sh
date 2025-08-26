@@ -17,7 +17,7 @@ show_help() {
     echo " | -jvm       | Instala o SDKMAN! e a versão padrão do Java (atualmente 21).                                    |"
     echo " | -dotnet    | Instala o .NET SDK e Runtime.                                                                   |"
     echo " | -desktop   | Instala aplicações e fontes para ambiente desktop (VSCode, Chrome, fontes Powerline e Nerd).    |"
-    echo " | -all       | Instala todas as opções acima.                                                                 |"
+    echo " | -all       | Instala todas as opções acima.                                                                  |"
     echo " | -h, --help | Mostra esta ajuda.                                                                              |"
     echo " |------------|-------------------------------------------------------------------------------------------------|"
     echo ""
@@ -50,6 +50,18 @@ error_exit() {
   echo "Erro: $*" >&2
   exit 1
 }
+
+# sudo needs to be run with -E to preserve environment variables
+if [ "$EUID" -ne 0 ]; then
+    if command -v sudo &> /dev/null; then
+        log "Running script with sudo..."
+        sudo -E bash "$0" "$@"
+        exit $?
+    else
+        error_exit "This script must be run as root or with sudo privileges."
+    fi
+fi
+
 
 args=("$@")
 
