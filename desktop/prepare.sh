@@ -300,23 +300,21 @@ install_desktop() {
         log "Powerline fonts already cloned"
     else
         log "Cloning Powerline fonts"
-        git clone --depth=1 https://github.com/powerline/fonts.git /tmp/fonts
-        chmod +rwx /tmp/fonts
+        git clone --depth=1 https://github.com/powerline/fonts.git $HOME_DIR/fonts
     fi
 
     log "Installing Powerline fonts"    
-    run_as $user 'cd /tmp/fonts && ./install.sh'
+    run_as $user 'cd ~/fonts && ./install.sh'
 
     if [ -d /tmp/nerd-fonts ]; then
         log "Nerd fonts already cloned"
     else        
         log "Cloning Nerd fonts"
-        git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git /tmp/nerd-fonts
-        chmod +rwx /tmp/nerd-fonts
+        git clone --depth=1 https://github.com/ryanoasis/nerd-fonts.git $HOME_DIR/nerd-fonts
     fi
 
     log "Installing Nerd fonts"
-    run_as $user '/tmp/nerd-fonts && ./install.sh'
+    run_as $user '~/nerd-fonts && ./install.sh'
 
     log "Install ms core fonts"
     sudo apt install -y ttf-mscorefonts-installer
