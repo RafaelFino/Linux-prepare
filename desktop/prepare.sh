@@ -240,10 +240,8 @@ install_golang() {
             log "Golang path already exists in /etc/environment"
         else
             log "Adding golang to PATH in /etc/profile"
-            echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee -a /etc/environment > /dev/null
+            echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee -a /etc/profile
         fi
-
-        source /etc/environment
     fi
 }
 
@@ -323,9 +321,8 @@ install_desktop() {
     if command -v code &> /dev/null; then
         log "Vscode is already installed"
     else
-        log "Install vscode application on desktop"
-        echo "code code/add-microsoft-repo boolean true" | sudo debconf-set-selections
-        sudo apt install code -y 
+        log "Install vscode application on desktop"        
+        sudo snap install code --classic
     fi
 
     log "Install terminal emulators"
