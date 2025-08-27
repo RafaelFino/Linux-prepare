@@ -264,7 +264,6 @@ install_dotnet() {
         sudo apt update
         sudo apt install -y apt-transport-https dotnet-sdk-8.0
 
-
         log ".NET installed"
     fi    
 }
@@ -288,13 +287,19 @@ install_jvm() {
 }
 
 install_desktop() {
+    # Check if root user, if root, skip desktop install
+    if [ "$user" == "root" ]; then
+        log "Skipping desktop installation for root user"
+        return
+    fi
+
     log "Installing desktop packages..."
     local user=$1
     local HOME_DIR=$(eval echo "~$user")
 
     log "Installing fonts for desktop..."
     
-    if [ -d /tmp/fonts ]; then
+    if [ -d /$HOME_DIR/fonts ]; then
         log "Powerline fonts already cloned"
     else
         log "Cloning Powerline fonts"
@@ -304,7 +309,7 @@ install_desktop() {
     log "Installing Powerline fonts"    
     run_as $user 'cd ~/fonts && ./install.sh'
 
-    if [ -d /tmp/nerd-fonts ]; then
+    if [ -d /$HOME_DIR/nerd-fonts ]; then
         log "Nerd fonts already cloned"
     else        
         log "Cloning Nerd fonts"
