@@ -317,7 +317,7 @@ install_desktop() {
     fi
 
     log "Installing Nerd fonts"
-    run_as $user '~/nerd-fonts && ./install.sh'
+    run_as $user 'cd ~/nerd-fonts && ./install.sh'
 
     log "Install ms core fonts"
     sudo apt install -y ttf-mscorefonts-installer
