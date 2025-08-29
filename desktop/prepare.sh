@@ -397,6 +397,7 @@ for user in "${users[@]}"; do
 done
 
 # Check installs
+sudo apt upgrade -y
 sudo apt autoclean -y
 sudo apt autoremove -y
 sudo apt install -y -f
