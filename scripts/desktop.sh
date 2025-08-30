@@ -4,8 +4,6 @@ set -euo pipefail
 
 IFS=$'\n\t'
 
-
-
 sudo apt update -y
 
 #install zsh/vim fonts
@@ -29,7 +27,7 @@ rm vscode.deb
 # Install terminal emulators
 sudo apt install -y terminator tilix alacritty tmux kitty
 
-# Install chorme browser
+# Install chrome browser
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome-stable_current_amd64.deb
 rm google-chrome-stable_current_amd64.deb
