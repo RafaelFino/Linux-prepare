@@ -1,0 +1,40 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install sudo and basic tools
+RUN apt-get update && \
+    apt-get install -y sudo curl wget git ca-certificates gnupg && \
+    apt-get clean
+
+# Simulate Xubuntu environment by installing XFCE indicators
+# Note: We don't install full XFCE to keep image size reasonable
+RUN apt-get update && \
+    apt-get install -y xfce4-session --no-install-recommends && \
+    apt-get clean
+
+# Create test user
+RUN useradd -m -s /bin/bash testuser && \
+    echo "testuser:testuser" | chpasswd && \
+    usermod -aG sudo testuser && \
+    echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Set XDG_CURRENT_DESKTOP to simulate XFCE environment
+ENV XDG_CURRENT_DESKTOP=XFCE
+
+# Copy script from project root
+COPY ./scripts/prepare.sh /tmp/prepare.sh
+RUN chmod +x /tmp/prepare.sh
+
+# Run script (desktop should be auto-detected due to XFCE)
+RUN /tmp/prepare.sh -u=testuser
+
+# Copy validation script
+COPY ./tests/scripts/validate.sh /tmp/validate.sh
+RUN chmod +x /tmp/validate.sh
+
+# Set working directory
+WORKDIR /home/testuser
+
+# Default command
+CMD ["/bin/bash"]

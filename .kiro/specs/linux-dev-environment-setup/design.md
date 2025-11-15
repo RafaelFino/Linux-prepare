@@ -990,6 +990,50 @@ RUN command -v docker && \
 CMD ["/bin/zsh"]
 ```
 
+#### Dockerfile para Xubuntu
+```dockerfile
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV XDG_CURRENT_DESKTOP=XFCE
+
+# Instalar XFCE para simular ambiente Xubuntu
+RUN apt-get update && \
+    apt-get install -y xfce4-session --no-install-recommends
+
+# Copiar e executar script
+COPY scripts/prepare.sh /tmp/prepare.sh
+RUN chmod +x /tmp/prepare.sh && \
+    /tmp/prepare.sh -u=testuser
+
+# Validar detecção de desktop
+RUN test -n "$XDG_CURRENT_DESKTOP"
+
+CMD ["/bin/zsh"]
+```
+
+#### Dockerfile para Linux Mint
+```dockerfile
+FROM linuxmintd/mint22-amd64
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Copiar script
+COPY scripts/prepare.sh /tmp/prepare.sh
+
+# Executar script
+RUN chmod +x /tmp/prepare.sh && \
+    /tmp/prepare.sh -u=testuser
+
+# Validar instalações
+RUN command -v docker && \
+    command -v go && \
+    command -v python3 && \
+    command -v zsh
+
+CMD ["/bin/zsh"]
+```
+
 ### Scripts de Validação
 
 #### validate.sh
@@ -1272,6 +1316,8 @@ Brief description of the project
 ## Supported Environments
 - Ubuntu Desktop (20.04, 22.04, 24.04)
 - Debian (13)
+- Xubuntu (24.04)
+- Linux Mint (22+)
 - Raspberry Pi (Ubuntu)
 - Odroid (Ubuntu)
 - Oracle Cloud Infrastructure
@@ -1889,6 +1935,8 @@ PLUGINS="git docker golang python ..."
 # Testa:
 - Ubuntu 20.04, 22.04, 24.04
 - Debian 13
+- Xubuntu 24.04
+- Linux Mint 22
 - Idempotência (2 execuções)
 - Validação de componentes
 ```

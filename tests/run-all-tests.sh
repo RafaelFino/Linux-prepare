@@ -33,6 +33,18 @@ docker build -f tests/docker/Dockerfile.debian-13 -t linux-prepare-test-debian-1
 docker run --rm linux-prepare-test-debian-13 /tmp/validate.sh
 echo ""
 
+# Test Xubuntu 24.04
+echo "--- Testing Xubuntu 24.04 ---"
+docker build -f tests/docker/Dockerfile.xubuntu-24.04 -t linux-prepare-test-xubuntu-24.04 .
+docker run --rm linux-prepare-test-xubuntu-24.04 /tmp/validate.sh
+echo ""
+
+# Test Linux Mint 22
+echo "--- Testing Linux Mint 22 ---"
+docker build -f tests/docker/Dockerfile.mint-22 -t linux-prepare-test-mint-22 .
+docker run --rm linux-prepare-test-mint-22 /tmp/validate.sh
+echo ""
+
 # Test Idempotence (run script twice)
 echo "--- Testing Idempotence ---"
 echo "Building image with script run twice..."

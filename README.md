@@ -87,9 +87,15 @@ sudo ./prepare.sh --skip-docker --skip-go --skip-python --skip-kotlin --skip-jvm
 |--------------|---------|--------|
 | Ubuntu | 22.04, 24.04 | ✅ Fully Supported |
 | Debian | 13 | ✅ Fully Supported |
-| Linux Mint | 21+  | ✅ Fully Supported |
+| Xubuntu | 24.04 | ✅ Fully Supported |
+| Linux Mint | 22+  | ✅ Fully Supported |
 | Raspberry Pi OS | Latest | ✅ Supported (ARM) |
 | Amazon Linux | 2 | ⚠️ Limited (uses yum) |
+
+**Notes:**
+- **Xubuntu**: Tested with XFCE desktop environment detection
+- **Linux Mint**: Based on Ubuntu LTS, fully compatible with all features
+- All distributions are tested in automated CI/CD pipeline
 
 ## 🎮 Usage
 
@@ -563,6 +569,8 @@ groups
 
 ## 🧪 Testing
 
+> **Quick Reference**: See [tests/QUICK-REFERENCE.md](tests/QUICK-REFERENCE.md) for all test commands
+
 ### Quick Test (5-10 minutes)
 
 ```bash
@@ -571,6 +579,15 @@ groups
 ```
 
 This tests basic installation with Docker, Go, Python, and terminal tools on Ubuntu 24.04.
+
+### Test Derivatives Only (30 minutes)
+
+```bash
+# Test Xubuntu and Linux Mint
+./tests/test-derivatives.sh
+```
+
+This tests Xubuntu 24.04 (XFCE) and Linux Mint 22 specifically.
 
 ### Full Automated Testing (15-30 minutes)
 
@@ -582,6 +599,8 @@ This tests basic installation with Docker, Go, Python, and terminal tools on Ubu
 This runs comprehensive tests on:
 - Ubuntu 24.04
 - Debian 13
+- Xubuntu 24.04
+- Linux Mint 22
 - Idempotency (script runs twice)
 
 ### Individual Distribution Test
@@ -594,6 +613,14 @@ docker run --rm test-ubuntu /tmp/validate.sh
 # Test Debian 13
 docker build -f tests/docker/Dockerfile.debian-13 -t test-debian .
 docker run --rm test-debian /tmp/validate.sh
+
+# Test Xubuntu 24.04
+docker build -f tests/docker/Dockerfile.xubuntu-24.04 -t test-xubuntu .
+docker run --rm test-xubuntu /tmp/validate.sh
+
+# Test Linux Mint 22
+docker build -f tests/docker/Dockerfile.mint-22 -t test-mint .
+docker run --rm test-mint /tmp/validate.sh
 ```
 
 ### Manual Testing in Container
@@ -658,6 +685,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📚 Additional Resources
 
+### Project Documentation
+- [Distribution Testing Guide](tests/DISTRIBUTIONS.md) - Detailed info about tested distributions
+- [Testing Guide](tests/TESTING.md) - How to run tests
+
+### External Documentation
 - [Ansible Documentation](https://docs.ansible.com/)
 - [Docker Documentation](https://docs.docker.com/)
 - [Golang Documentation](https://golang.org/doc/)

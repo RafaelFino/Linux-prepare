@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Xubuntu 24.04 support with XFCE desktop detection testing
+- Linux Mint 22 support with full compatibility testing
+- Comprehensive distribution testing (Ubuntu, Debian, Xubuntu, Mint)
+- `test-derivatives.sh` script for quick Xubuntu/Mint testing
+- Distribution testing guide (tests/DISTRIBUTIONS.md)
+- Automated CI/CD testing for all supported distributions
+
+### Changed
+- Updated all Debian references from version 11/12 to version 13
+- Enhanced testing documentation with distribution-specific notes
+- Improved distribution support matrix in README
+
 ## [2.0.0] - 2024-11-15
 
 ### Added

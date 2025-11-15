@@ -69,8 +69,10 @@ Thank you for your interest in contributing! This document provides guidelines f
 ### Manual Testing
 
 Test your changes on:
-- Ubuntu 22.04 (minimum)
+- Ubuntu 24.04 (recommended)
 - Debian 13 (recommended)
+- Xubuntu 24.04 (for desktop detection)
+- Linux Mint 22 (for derivative compatibility)
 - Other distributions if applicable
 
 ### Automated Testing
@@ -130,8 +132,10 @@ Brief description of changes
 - [ ] Code refactoring
 
 ## Testing
-- [ ] Tested on Ubuntu 22.04
+- [ ] Tested on Ubuntu 24.04
 - [ ] Tested on Debian 13
+- [ ] Tested on Xubuntu 24.04 (if desktop changes)
+- [ ] Tested on Linux Mint 22 (if derivative changes)
 - [ ] Tested idempotency
 - [ ] Automated tests pass
 

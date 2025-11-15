@@ -13,14 +13,23 @@
 # Certifique-se de estar no diretório raiz do projeto
 cd /caminho/para/linux-prepare
 
-# Execute todos os testes
+# Execute todos os testes (Ubuntu, Debian, Xubuntu, Mint, Idempotência)
 ./tests/run-all-tests.sh
 ```
 
+### Teste Apenas Derivados (Xubuntu e Mint)
+
+```bash
+# Teste rápido apenas para Xubuntu e Linux Mint
+./tests/test-derivatives.sh
+```
+
 **O que será testado:**
-1. ✅ Ubuntu 22.04 - Instalação completa
+1. ✅ Ubuntu 24.04 - Instalação completa
 2. ✅ Debian 13 - Instalação completa
-3. ✅ Idempotência - Script executado 2x
+3. ✅ Xubuntu 24.04 - Instalação completa com detecção de desktop
+4. ✅ Linux Mint 22 - Instalação completa
+5. ✅ Idempotência - Script executado 2x
 
 **Tempo estimado:** 15-30 minutos (dependendo da conexão)
 
@@ -38,6 +47,20 @@ docker run --rm test-ubuntu /tmp/validate.sh
 # Do diretório raiz do projeto
 docker build -f tests/docker/Dockerfile.debian-13 -t test-debian .
 docker run --rm test-debian /tmp/validate.sh
+```
+
+#### Xubuntu 24.04
+```bash
+# Do diretório raiz do projeto
+docker build -f tests/docker/Dockerfile.xubuntu-24.04 -t test-xubuntu .
+docker run --rm test-xubuntu /tmp/validate.sh
+```
+
+#### Linux Mint 22
+```bash
+# Do diretório raiz do projeto
+docker build -f tests/docker/Dockerfile.mint-22 -t test-mint .
+docker run --rm test-mint /tmp/validate.sh
 ```
 
 ### Teste Interativo (Para Debug)
