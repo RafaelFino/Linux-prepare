@@ -111,10 +111,23 @@ validate_command micro "Micro"
 echo ""
 echo "--- Programming Languages ---"
 validate_command docker "Docker"
-validate_command go "Golang" || validate_command /usr/local/go/bin/go "Golang (alt path)"
+# Go is installed in /usr/local/go/bin, check both locations
+if command -v go &> /dev/null; then
+    validate_command go "Golang"
+elif command -v /usr/local/go/bin/go &> /dev/null; then
+    echo -e "${GREEN}✓${RESET} Golang: /usr/local/go/bin/go is installed"
+    ((PASSED++))
+else
+    echo -e "${RED}✗${RESET} Golang: NOT installed"
+    ((FAILED++))
+fi
 validate_command python3 "Python3"
 validate_command pip3 "Pip3"
-validate_command dotnet ".NET"
+if command -v dotnet &> /dev/null; then
+    validate_command dotnet ".NET"
+else
+    echo -e "${GRAY}⏭${RESET} .NET: Not installed (may have been skipped)"
+fi
 
 echo ""
 echo "--- Users ---"

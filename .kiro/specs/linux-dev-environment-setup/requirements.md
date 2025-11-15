@@ -86,27 +86,29 @@ Este documento especifica os requisitos para evolução do script `prepare.sh`, 
 
 ### Requisito 6
 
-**User Story:** Como administrador de sistemas, eu quero que o script instale emuladores de terminal modernos, para que os Usuários-Alvo tenham opções de Terminal-Emulador poderosos e configuráveis.
+**User Story:** Como administrador de sistemas, eu quero que o script instale emuladores de terminal modernos automaticamente quando um ambiente desktop for detectado, para que os Usuários-Alvo tenham opções de Terminal-Emulador poderosos e configuráveis.
 
 #### Critérios de Aceitação
 
-1. WHEN o argumento `-desktop` é fornecido, THE Sistema SHALL instalar Terminator
-2. WHEN o argumento `-desktop` é fornecido, THE Sistema SHALL instalar Alacritty
+1. WHEN ambiente desktop é detectado, THE Sistema SHALL instalar Terminator
+2. WHEN ambiente desktop é detectado, THE Sistema SHALL instalar Alacritty
 3. WHEN Terminator é instalado, THE Sistema SHALL criar arquivo de configuração padrão em `~/.config/terminator/config` para cada Usuário-Alvo
 4. WHEN Alacritty é instalado, THE Sistema SHALL criar arquivo de configuração padrão em `~/.config/alacritty/alacritty.yml` para cada Usuário-Alvo
 5. WHEN emuladores de terminal são instalados, THE Sistema SHALL configurar fontes Nerd Fonts como padrão nas configurações
+6. WHEN ambiente desktop NÃO é detectado, THE Sistema SHALL pular instalação de emuladores de terminal
 
 ### Requisito 7
 
-**User Story:** Como administrador de sistemas, eu quero que o script instale e configure fontes Powerline e Nerd Fonts, para que os terminais exibam símbolos e ícones corretamente.
+**User Story:** Como administrador de sistemas, eu quero que o script instale e configure fontes Powerline e Nerd Fonts automaticamente quando um ambiente desktop for detectado, para que os terminais exibam símbolos e ícones corretamente.
 
 #### Critérios de Aceitação
 
-1. WHEN o argumento `-desktop` é fornecido, THE Sistema SHALL clonar o repositório de Powerline-Fonts
-2. WHEN o argumento `-desktop` é fornecido, THE Sistema SHALL executar o script de instalação de Powerline-Fonts para cada Usuário-Alvo
-3. WHEN o argumento `-desktop` é fornecido, THE Sistema SHALL clonar o repositório de Nerd-Fonts
-4. WHEN o argumento `-desktop` é fornecido, THE Sistema SHALL instalar fontes selecionadas de Nerd-Fonts (FiraCode, JetBrainsMono, Hack) para cada Usuário-Alvo
+1. WHEN ambiente desktop é detectado, THE Sistema SHALL clonar o repositório de Powerline-Fonts
+2. WHEN ambiente desktop é detectado, THE Sistema SHALL executar o script de instalação de Powerline-Fonts para cada Usuário-Alvo
+3. WHEN ambiente desktop é detectado, THE Sistema SHALL clonar o repositório de Nerd-Fonts
+4. WHEN ambiente desktop é detectado, THE Sistema SHALL instalar fontes selecionadas de Nerd-Fonts (FiraCode, JetBrainsMono, Hack) para cada Usuário-Alvo
 5. WHEN fontes são instaladas, THE Sistema SHALL atualizar o cache de fontes do sistema executando `fc-cache -fv`
+6. WHEN ambiente desktop NÃO é detectado, THE Sistema SHALL pular instalação de fontes
 
 ### Requisito 8
 
@@ -206,8 +208,8 @@ Este documento especifica os requisitos para evolução do script `prepare.sh`, 
 
 #### Critérios de Aceitação
 
-1. WHEN nenhum argumento é fornecido, THE Sistema SHALL instalar todos os componentes por padrão (exceto desktop)
-2. WHEN o argumento `--skip-desktop` é fornecido, THE Sistema SHALL pular a instalação de componentes desktop (VSCode, Chrome, emuladores de terminal, fontes)
+1. WHEN nenhum argumento é fornecido, THE Sistema SHALL instalar todos os componentes de desenvolvimento por padrão
+2. WHEN nenhum argumento é fornecido, THE Sistema SHALL detectar automaticamente se há ambiente desktop e instalar componentes desktop apenas se detectado
 3. WHEN o argumento `--skip-docker` é fornecido, THE Sistema SHALL pular a instalação do Docker e Docker Compose
 4. WHEN o argumento `--skip-python` é fornecido, THE Sistema SHALL pular a instalação do Python e suas ferramentas
 5. WHEN o argumento `--skip-go` é fornecido, THE Sistema SHALL pular a instalação do Golang
@@ -215,7 +217,6 @@ Este documento especifica os requisitos para evolução do script `prepare.sh`, 
 7. WHEN o argumento `--skip-dotnet` é fornecido, THE Sistema SHALL pular a instalação do .NET SDK
 8. WHEN o argumento `--skip-kotlin` é fornecido, THE Sistema SHALL pular a instalação do Kotlin
 9. WHEN o argumento `-u=user1,user2` é fornecido, THE Sistema SHALL criar e configurar os usuários especificados além de root e usuário atual
-10. WHEN o argumento `--desktop` é fornecido, THE Sistema SHALL instalar componentes desktop (comportamento opt-in para desktop)
 
 ### Requisito 16
 
@@ -484,3 +485,54 @@ Este documento especifica os requisitos para evolução do script `prepare.sh`, 
 18. THE Sistema SHALL instalar pacote `sudo` para execução de comandos privilegiados
 19. WHEN pacotes base são instalados, THE Sistema SHALL executar `apt update` antes da instalação
 20. WHEN pacotes base são instalados, THE Sistema SHALL usar flag `-y` para instalação não-interativa
+
+### Requisito 36
+
+**User Story:** Como administrador de sistemas, eu quero que o script detecte automaticamente se há um ambiente desktop rodando, para que componentes desktop sejam instalados apenas quando apropriado.
+
+#### Critérios de Aceitação
+
+1. THE Sistema SHALL detectar automaticamente a presença de ambiente desktop antes de instalar componentes
+2. WHEN ambiente desktop é detectado, THE Sistema SHALL instalar componentes desktop (VSCode, Chrome, fontes, emuladores de terminal)
+3. WHEN ambiente desktop NÃO é detectado, THE Sistema SHALL pular instalação de componentes desktop
+4. THE Sistema SHALL detectar os seguintes ambientes desktop: GNOME, KDE Plasma, XFCE, MATE, Cinnamon, LXDE
+5. THE Sistema SHALL verificar processos em execução: gnome-shell, plasmashell, xfce4-session, mate-session, cinnamon-session, lxsession
+6. THE Sistema SHALL verificar variáveis de ambiente: DISPLAY, XDG_CURRENT_DESKTOP, WAYLAND_DISPLAY
+7. THE Sistema SHALL verificar sockets X11: /tmp/.X11-unix/X0
+8. THE Sistema SHALL verificar systemd graphical target ativo
+9. THE Sistema SHALL registrar no log qual tipo de ambiente foi detectado ou se nenhum foi encontrado
+10. THE Sistema SHALL usar sintaxe ${VARIABLE:-} para evitar erros com variáveis não definidas
+
+### Requisito 37
+
+**User Story:** Como administrador de sistemas, eu quero que o script verifique a disponibilidade de pacotes antes de tentar instalá-los, para que erros de instalação sejam evitados e o script seja mais robusto.
+
+#### Critérios de Aceitação
+
+1. WHEN o script tenta instalar um pacote, THE Sistema SHALL verificar se o pacote está disponível no gerenciador de pacotes antes da instalação
+2. WHEN o gerenciador de pacotes é apt, THE Sistema SHALL usar comando `apt-cache search` ou `apt-cache policy` para verificar disponibilidade
+3. WHEN um pacote não está disponível, THE Sistema SHALL registrar mensagem de aviso informando que o pacote será pulado
+4. WHEN um pacote não está disponível, THE Sistema SHALL continuar a execução sem interromper o script
+5. WHEN múltiplos pacotes são instalados em um único comando, THE Sistema SHALL verificar disponibilidade de cada pacote individualmente
+6. WHEN um pacote está disponível, THE Sistema SHALL prosseguir com a instalação normalmente
+7. THE Sistema SHALL registrar no log quais pacotes foram verificados e seu status de disponibilidade
+8. WHEN verificação de disponibilidade falha por erro de rede ou cache, THE Sistema SHALL tentar atualizar cache com `apt update` e verificar novamente
+9. THE Sistema SHALL usar timeout apropriado para comandos de verificação para evitar travamentos
+10. WHEN um pacote tem nome alternativo ou está em repositório diferente, THE Sistema SHALL sugerir alternativas no log se disponível
+
+### Requisito 38
+
+**User Story:** Como administrador de sistemas, eu quero que o script tente pacotes alternativos quando o pacote preferido não estiver disponível, para que a instalação seja bem-sucedida em diferentes distribuições Linux.
+
+#### Critérios de Aceitação
+
+1. WHEN o pacote `docker-compose-v2` não está disponível, THE Sistema SHALL tentar instalar `docker-compose` (v1) como alternativa
+2. WHEN o pacote `eza` não está disponível, THE Sistema SHALL tentar instalar `exa` como alternativa
+3. WHEN um pacote alternativo é instalado, THE Sistema SHALL registrar no log qual alternativa foi usada
+4. WHEN nenhum pacote (preferido ou alternativo) está disponível, THE Sistema SHALL registrar aviso e continuar sem interromper
+5. THE Sistema SHALL verificar disponibilidade do pacote preferido primeiro antes de tentar alternativas
+6. WHEN um pacote alternativo é instalado com sucesso, THE Sistema SHALL validar sua instalação
+7. THE Sistema SHALL configurar aliases e variáveis de ambiente apropriadas para o pacote alternativo instalado
+8. WHEN `exa` é instalado no lugar de `eza`, THE Sistema SHALL usar os mesmos aliases configurados para `eza`
+9. WHEN `docker-compose` (v1) é instalado no lugar de `docker-compose-v2`, THE Sistema SHALL criar alias `docker compose` apontando para `docker-compose`
+10. THE Sistema SHALL registrar no log de resumo final quais pacotes alternativos foram usados

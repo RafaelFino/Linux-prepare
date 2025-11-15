@@ -85,9 +85,9 @@ sudo ./prepare.sh --skip-docker --skip-go --skip-python --skip-kotlin --skip-jvm
 
 | Distribution | Version | Status |
 |--------------|---------|--------|
-| Ubuntu | 20.04, 22.04, 24.04 | ✅ Fully Supported |
+| Ubuntu | 22.04, 24.04 | ✅ Fully Supported |
 | Debian | 11, 12 | ✅ Fully Supported |
-| Linux Mint | 20+  | ✅ Fully Supported |
+| Linux Mint | 21+  | ✅ Fully Supported |
 | Raspberry Pi OS | Latest | ✅ Supported (ARM) |
 | Amazon Linux | 2 | ⚠️ Limited (uses yum) |
 
@@ -99,12 +99,27 @@ sudo ./prepare.sh --skip-docker --skip-go --skip-python --skip-kotlin --skip-jvm
 sudo ./prepare.sh [OPTIONS]
 ```
 
+### 🔍 Smart Desktop Detection
+
+The script automatically detects if you're running a desktop environment:
+
+**Desktop Detected** (GNOME, KDE, XFCE, MATE, Cinnamon, LXDE):
+- ✅ Automatically installs desktop components (VSCode, Chrome, fonts, terminal emulators)
+
+**Server/Headless Detected** (Raspberry Pi, Cloud instances, SSH-only):
+- ❌ Skips desktop components automatically
+
+**Detection Methods:**
+- Checks for running desktop environment processes (gnome-shell, plasmashell, xfce4-session, etc.)
+- Detects X11 or Wayland display servers
+- Checks systemd graphical target
+- Examines environment variables (DISPLAY, XDG_CURRENT_DESKTOP, WAYLAND_DISPLAY)
+
 #### Options
 
 | Option | Description |
 |--------|-------------|
 | `-u=USER1,USER2` | Create and configure specified users (comma-separated) |
-| `--desktop` | Install desktop components (VSCode, Chrome, fonts, terminal emulators) |
 | `--skip-docker` | Skip Docker and Docker Compose installation |
 | `--skip-go` | Skip Golang installation |
 | `--skip-python` | Skip Python installation |
@@ -113,13 +128,19 @@ sudo ./prepare.sh [OPTIONS]
 | `--skip-dotnet` | Skip .NET SDK installation |
 | `-h, --help` | Show detailed help message |
 
+**Note**: Desktop components are automatically installed if a desktop environment is detected.
+
 #### Default Behavior
 
 **Without arguments**, the script installs:
 - ✅ All development tools (Docker, Go, Python, Kotlin, JVM, .NET)
 - ✅ Terminal tools (zsh, oh-my-zsh, oh-my-bash, eza, micro, vim)
 - ✅ Base packages (git, curl, wget, htop, btop, jq, fzf, etc.)
-- ❌ Desktop components (use `--desktop` to enable)
+- 🔍 Desktop components (AUTO-DETECTED)
+  - ✅ Installed if desktop environment detected (GNOME, KDE, XFCE, etc.)
+  - ❌ Skipped on servers/headless systems
+  - Use `--desktop` to force installation
+  - Use `--no-desktop` to disable
 
 **Users configured**: root + current user (add more with `-u=`)
 
@@ -128,17 +149,17 @@ sudo ./prepare.sh [OPTIONS]
 
 ### Example 1: Full Desktop Workstation
 ```bash
-# Install everything including desktop components
-sudo ./prepare.sh --desktop
+# Install everything (desktop auto-detected)
+sudo ./prepare.sh
 ```
-**Installs**: Docker, Go, Python, Kotlin, JVM, .NET, VSCode, Chrome, fonts, terminal emulators
+**Installs**: Docker, Go, Python, Kotlin, JVM, .NET, VSCode, Chrome, fonts, terminal emulators (if desktop detected)
 
 ### Example 2: Development Server (No Desktop)
 ```bash
-# Default behavior - all dev tools, no desktop
+# All dev tools (desktop auto-skipped on servers)
 sudo ./prepare.sh
 ```
-**Installs**: Docker, Go, Python, Kotlin, JVM, .NET, terminal tools
+**Installs**: Docker, Go, Python, Kotlin, JVM, .NET, terminal tools (no desktop on servers)
 
 ### Example 3: Docker + Go Only
 ```bash
@@ -156,10 +177,10 @@ sudo ./prepare.sh -u=developer,devops --desktop
 
 ### Example 5: Python Data Science Workstation
 ```bash
-# Python-focused setup with desktop
-sudo ./prepare.sh --desktop --skip-go --skip-kotlin --skip-jvm --skip-dotnet
+# Python-focused setup (desktop auto-detected)
+sudo ./prepare.sh --skip-go --skip-kotlin --skip-jvm --skip-dotnet
 ```
-**Installs**: Docker, Python, VSCode, Chrome, terminal tools
+**Installs**: Docker, Python, VSCode (if desktop), Chrome (if desktop), terminal tools
 
 ### Example 6: Go Microservices Server
 ```bash
@@ -170,10 +191,10 @@ sudo ./prepare.sh --skip-python --skip-kotlin --skip-jvm --skip-dotnet
 
 ### Example 7: .NET Development Environment
 ```bash
-# .NET with Docker, skip other languages
-sudo ./prepare.sh --desktop --skip-go --skip-python --skip-kotlin --skip-jvm
+# .NET with Docker, skip other languages (desktop auto-detected)
+sudo ./prepare.sh --skip-go --skip-python --skip-kotlin --skip-jvm
 ```
-**Installs**: Docker, .NET, VSCode, Chrome, terminal tools
+**Installs**: Docker, .NET, VSCode (if desktop), Chrome (if desktop), terminal tools
 
 ## 🌍 Environment-Specific Scripts
 
@@ -542,37 +563,60 @@ groups
 
 ## 🧪 Testing
 
-### Manual Testing
+### Quick Test (5-10 minutes)
 
 ```bash
-# Test on Ubuntu 22.04
-docker run -it ubuntu:22.04 bash
+# From project root directory
+./tests/quick-test.sh
+```
+
+This tests basic installation with Docker, Go, Python, and terminal tools on Ubuntu 24.04.
+
+### Full Automated Testing (15-30 minutes)
+
+```bash
+# From project root directory
+./tests/run-all-tests.sh
+```
+
+This runs comprehensive tests on:
+- Ubuntu 24.04
+- Debian 12
+- Idempotency (script runs twice)
+
+### Individual Distribution Test
+
+```bash
+# Test Ubuntu 24.04
+docker build -f tests/docker/Dockerfile.ubuntu-24.04 -t test-ubuntu .
+docker run --rm test-ubuntu /tmp/validate.sh
+
+# Test Debian 12
+docker build -f tests/docker/Dockerfile.debian-12 -t test-debian .
+docker run --rm test-debian /tmp/validate.sh
+```
+
+### Manual Testing in Container
+
+```bash
+# Interactive test
+docker run -it --rm -v $(pwd):/workspace -w /workspace ubuntu:24.04 bash
+
 # Inside container:
-apt update && apt install -y sudo git
-git clone https://github.com/RafaelFino/Linux-prepare.git
-cd Linux-prepare/scripts
-./prepare.sh
+apt update && apt install -y sudo
+./scripts/prepare.sh --skip-desktop
+./tests/scripts/validate.sh
 ```
 
-### Automated Testing
+### Validation Only
+
+If you've already run the script and want to validate:
 
 ```bash
-# Run all tests
-cd tests
-./run-all-tests.sh
-
-# Test specific distribution
-docker build -f docker/Dockerfile.ubuntu-22.04 -t test-ubuntu .
-docker run test-ubuntu
+./tests/scripts/validate.sh
 ```
 
-### Validation Script
-
-```bash
-# Validate installation
-cd tests/scripts
-./validate.sh
-```
+**See [tests/TESTING.md](tests/TESTING.md) for detailed testing guide.**
 
 ## 🤝 Contributing
 

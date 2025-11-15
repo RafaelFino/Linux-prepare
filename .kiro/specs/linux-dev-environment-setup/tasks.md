@@ -3,16 +3,20 @@
 - [x] 1. Refatorar e melhorar o script principal (scripts/prepare.sh)
   - Implementar sistema de logging colorido em inglês com timestamps e símbolos
   - Implementar sistema de detecção de estado para idempotência completa
-  - Adicionar suporte para argumentos --skip-* (--skip-docker, --skip-go, --skip-jvm, --skip-dotnet, --skip-desktop)
+  - Implementar verificação de disponibilidade de pacotes antes da instalação
+  - Adicionar suporte para argumentos --skip-* (--skip-docker, --skip-go, --skip-jvm, --skip-dotnet)
+  - Implementar detecção automática de ambiente desktop
   - Atualizar função show_help() com documentação detalhada de todos os argumentos
   - Implementar configuração de timezone para America/Sao_Paulo
-  - _Requirements: 12.1, 12.2, 12.3, 12.4, 12.5, 13.1, 13.2, 13.3, 13.4, 13.5, 15.1-15.9, 18.1-18.9, 28.1-28.10, 32.1-32.5_
+  - _Requirements: 12.1, 12.2, 12.3, 12.4, 12.5, 13.1, 13.2, 13.3, 13.4, 13.5, 15.1-15.9, 18.1-18.10, 28.1-28.10, 32.1-32.5, 36.1-36.10, 37.1-37.10_
 
 - [x] 2. Implementar instalação de pacotes base
   - Criar função install_base() que instala todos os pacotes essenciais via apt
+  - Implementar função check_package_available() para verificar disponibilidade no repositório
+  - Implementar função install_packages_safe() que verifica disponibilidade antes de instalar
   - Implementar verificação individual de cada pacote antes da instalação
   - Adicionar validação pós-instalação de pacotes críticos
-  - _Requirements: 33.1-33.20_
+  - _Requirements: 33.1-33.20, 37.1-37.10_
 
 - [x] 3. Implementar instalação e configuração de Python
   - Criar função install_python() com verificação de estado

@@ -1,10 +1,10 @@
-FROM ubuntu:22.04
+FROM debian:13
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install sudo and basic tools
 RUN apt-get update && \
-    apt-get install -y sudo curl wget git && \
+    apt-get install -y sudo curl wget git ca-certificates gnupg && \
     apt-get clean
 
 # Create test user
@@ -13,15 +13,15 @@ RUN useradd -m -s /bin/bash testuser && \
     usermod -aG sudo testuser && \
     echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Copy script
-COPY scripts/prepare.sh /tmp/prepare.sh
+# Copy script from project root
+COPY ./scripts/prepare.sh /tmp/prepare.sh
 RUN chmod +x /tmp/prepare.sh
 
-# Run script (skip desktop components)
-RUN /tmp/prepare.sh -u=testuser --skip-desktop
+# Run script (desktop is NOT installed by default)
+RUN /tmp/prepare.sh -u=testuser
 
 # Copy validation script
-COPY tests/scripts/validate.sh /tmp/validate.sh
+COPY ./tests/scripts/validate.sh /tmp/validate.sh
 RUN chmod +x /tmp/validate.sh
 
 # Set working directory

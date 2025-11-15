@@ -112,6 +112,7 @@ log_skip()    # Mensagem de skip em cinza
 #### Verificações Implementadas
 ```bash
 check_package_installed()    # Verifica se pacote está instalado
+check_package_available()    # Verifica se pacote está disponível no repositório
 check_user_exists()          # Verifica se usuário existe
 check_group_exists()         # Verifica se grupo existe
 check_command_available()    # Verifica se comando está disponível
@@ -127,6 +128,46 @@ check_service_enabled()      # Verifica se serviço está habilitado
 3. Se não configurado → Executar instalação/configuração
 4. Validar resultado
 5. Log sucesso ou erro
+```
+
+#### Verificação de Disponibilidade de Pacotes
+```bash
+check_package_available() {
+    local package=$1
+    
+    # Verificar se pacote está disponível no cache do apt
+    if apt-cache policy "$package" 2>/dev/null | grep -q "Candidate:"; then
+        local version=$(apt-cache policy "$package" | grep "Candidate:" | awk '{print $2}')
+        if [ "$version" != "(none)" ]; then
+            return 0  # Pacote disponível
+        fi
+    fi
+    
+    return 1  # Pacote não disponível
+}
+
+install_packages_safe() {
+    local packages=("$@")
+    local available_packages=()
+    
+    log_info "Checking package availability..."
+    
+    for pkg in "${packages[@]}"; do
+        if check_package_available "$pkg"; then
+            log_success "Package '$pkg' is available"
+            available_packages+=("$pkg")
+        else
+            log_warning "Package '$pkg' not available in repositories, skipping"
+        fi
+    done
+    
+    if [ ${#available_packages[@]} -gt 0 ]; then
+        log_info "Installing available packages: ${available_packages[*]}"
+        apt install -y "${available_packages[@]}"
+    else
+        log_warning "No packages available to install"
+    fi
+}
 ```
 
 
