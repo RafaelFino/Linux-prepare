@@ -47,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for multiple users via `-u=user1,user2`
 - Automatic timezone configuration (America/Sao_Paulo)
 - Complete Ansible implementation with roles
-- Environment-specific scripts (Raspberry Pi, Odroid, OCI, AWS, GitHub, Killercoda)
+- Environment-specific scripts (Raspberry Pi, Odroid, OCI, GitHub, Killercoda)
 - Automated testing infrastructure with Docker
 - Validation scripts for installation verification
 - Comprehensive documentation (README.md, ansible/README.md, CONTRIBUTING.md)

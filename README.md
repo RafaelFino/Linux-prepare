@@ -608,9 +608,9 @@ linux-prepare/
 - **Issue**: Some configurations conflict with Codespaces defaults
 - **Solution**: Script preserves existing Codespaces configurations
 
-#### Cloud Instances (OCI, AWS)
+#### Cloud Instances (OCI)
 - **Issue**: Firewall blocking connections
-- **Solution**: Configure security groups/firewall rules in cloud console
+- **Solution**: Configure firewall rules in cloud console
 
 ### Getting Help
 

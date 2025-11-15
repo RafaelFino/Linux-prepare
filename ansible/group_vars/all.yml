@@ -131,4 +131,4 @@ desktop_terminal_emulators:
   - alacritty
 
 # Cloud-specific Configuration
-configure_firewall: false  # Set to true for cloud instances (OCI, AWS)
+configure_firewall: false  # Set to true for cloud instances (OCI)

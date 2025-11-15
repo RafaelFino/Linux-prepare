@@ -350,7 +350,7 @@ Este documento especifica os requisitos para evolução do script `prepare.sh`, 
 4. WHEN README.md é lido, THE Sistema SHALL incluir seção de pré-requisitos específicos para cada ambiente
 5. WHEN README.md é lido, THE Sistema SHALL incluir seção de troubleshooting com problemas comuns por ambiente
 6. WHEN README.md é lido, THE Sistema SHALL incluir diagrama ou fluxograma mostrando qual script usar em cada situação
-7. WHEN README.md é lido, THE Sistema SHALL incluir links para documentação oficial de cada plataforma (AWS, OCI, GitHub, Killercoda)
+7. WHEN README.md é lido, THE Sistema SHALL incluir links para documentação oficial de cada plataforma (OCI, GitHub, Killercoda)
 8. WHEN README.md é lido, THE Sistema SHALL incluir seção sobre a estrutura do projeto explicando organização de pastas (scripts, ansible, rasp, odroid, cloud)
 9. WHEN README.md é lido, THE Sistema SHALL incluir badges de status de testes para cada ambiente
 10. WHEN README.md é lido, THE Sistema SHALL incluir seção comparando abordagem Shell Scripts vs Ansible
@@ -396,7 +396,7 @@ Este documento especifica os requisitos para evolução do script `prepare.sh`, 
 1. THE Sistema SHALL incluir diretório `ansible/` com estrutura organizada de playbooks
 2. THE Sistema SHALL incluir playbook principal `ansible/site.yml` que orquestra toda a instalação
 3. THE Sistema SHALL incluir roles separadas para cada componente (docker, golang, python, kotlin, dotnet, zsh, terminal-tools)
-4. THE Sistema SHALL incluir playbook específico para cada ambiente (desktop, raspberry, odroid, oci, aws, github, killercoda)
+4. THE Sistema SHALL incluir playbook específico para cada ambiente (desktop, raspberry, odroid, oci, github, killercoda)
 5. WHEN playbooks são executados, THE Sistema SHALL usar módulos Ansible idiomáticos (apt, user, file, template, etc)
 6. WHEN playbooks são executados, THE Sistema SHALL ser idempotente por natureza do Ansible
 7. THE Sistema SHALL incluir arquivo `ansible/inventory` com exemplos de hosts

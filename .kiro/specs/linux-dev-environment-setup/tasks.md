@@ -112,7 +112,7 @@
   - Criar seção de troubleshooting com problemas comuns
   - Criar pelo menos 5 exemplos práticos de uso
   - Criar seção explicando estrutura de diretórios do projeto
-  - Adicionar seção dedicada para cada ambiente (Desktop, Raspberry Pi, Odroid, OCI, AWS, GitHub, Killercoda)
+  - Adicionar seção dedicada para cada ambiente (Desktop, Raspberry Pi, Odroid, OCI, GitHub, Killercoda)
   - Adicionar tabela comparativa de componentes por ambiente
   - Adicionar seção comparando Shell Scripts vs Ansible
   - _Requirements: 11.1-11.10, 26.1-26.10_

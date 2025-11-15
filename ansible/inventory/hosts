@@ -33,7 +33,6 @@ localhost ansible_connection=local
 # Cloud instances
 [cloud]
 # oci-instance-1 ansible_host=xxx.xxx.xxx.xxx ansible_user=ubuntu
-# aws-instance-1 ansible_host=xxx.xxx.xxx.xxx ansible_user=ec2-user
 
 [cloud:vars]
 configure_firewall=true
@@ -47,8 +46,7 @@ configure_firewall=true
 
 
 
-[aws:vars]
-configure_firewall=true
+
 
 # All ARM devices
 [arm:children]

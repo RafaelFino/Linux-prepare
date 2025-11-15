@@ -1,6 +1,6 @@
 ---
 # Cloud instance setup playbook
-# For OCI, AWS, and other cloud providers
+# For OCI and other cloud providers
 
 - name: Prepare Cloud Development Environment
   hosts: cloud
