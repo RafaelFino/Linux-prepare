@@ -29,7 +29,6 @@ linux-prepare/
 │   └── odroid-prepare.sh       # Script para Odroid
 ├── cloud/
 │   ├── oci-ubuntu.sh           # Script para Oracle Cloud
-│   ├── aws-ec2-prepare.sh      # Script para AWS EC2
 │   ├── github-workspace.sh     # Script para GitHub Codespaces
 │   └── killercoda.sh           # Script para Killercoda
 ├── ansible/
@@ -556,16 +555,6 @@ sudo iptables -F
 - Pular componentes desktop
 - Configurações de rede cloud
 - Otimizações para VM
-```
-
-#### AWS EC2 (cloud/aws-ec2-prepare.sh)
-```bash
-# Diferenças:
-- Usar yum ao invés de apt (Amazon Linux)
-- Configurar usuário ec2-user
-- Pular componentes desktop
-- Configurações específicas de AWS
-- Security groups via AWS CLI (opcional)
 ```
 
 #### GitHub Codespaces (cloud/github-workspace.sh)
@@ -1321,7 +1310,6 @@ Brief description of the project
 - Raspberry Pi (Ubuntu)
 - Odroid (Ubuntu)
 - Oracle Cloud Infrastructure
-- AWS EC2 (Amazon Linux)
 - GitHub Codespaces
 - Killercoda
 
@@ -1725,8 +1713,8 @@ graph TD
 
 **Razão**:
 - Foco em Ubuntu e Debian (mais comuns)
-- Exceção: AWS EC2 com Amazon Linux (usa yum)
 - Simplifica manutenção e testes
+- Melhor suporte e documentação
 
 **Impacto**:
 - Não funciona em Fedora, CentOS, Arch Linux

@@ -316,18 +316,6 @@ Este documento especifica os requisitos para evolução do script `prepare.sh`, 
 
 ### Requisito 23
 
-**User Story:** Como administrador de sistemas, eu quero scripts específicos para AWS EC2 com Amazon Linux, para que eu possa preparar instâncias EC2 na AWS.
-
-#### Critérios de Aceitação
-
-1. THE Sistema SHALL incluir script `cloud/aws-ec2-prepare.sh` baseado no script principal
-2. WHEN o script AWS é executado, THE Sistema SHALL usar gerenciador de pacotes `yum` ao invés de `apt`
-3. WHEN o script AWS é executado, THE Sistema SHALL instalar todos os componentes exceto desktop
-4. WHEN o script AWS é executado, THE Sistema SHALL configurar usuário padrão `ec2-user`
-5. THE Sistema SHALL documentar no README.md instruções específicas para AWS EC2 incluindo configuração de security groups
-
-### Requisito 24
-
 **User Story:** Como desenvolvedor, eu quero scripts específicos para GitHub Codespaces, para que eu possa preparar ambientes de desenvolvimento na nuvem do GitHub.
 
 #### Critérios de Aceitação
@@ -338,7 +326,7 @@ Este documento especifica os requisitos para evolução do script `prepare.sh`, 
 4. WHEN o script GitHub Codespaces é executado, THE Sistema SHALL preservar configurações existentes do Codespaces
 5. THE Sistema SHALL documentar no README.md instruções específicas para GitHub Codespaces
 
-### Requisito 25
+### Requisito 24
 
 **User Story:** Como educador ou estudante, eu quero scripts específicos para Killercoda, para que eu possa preparar ambientes de aprendizado interativos.
 
@@ -356,7 +344,7 @@ Este documento especifica os requisitos para evolução do script `prepare.sh`, 
 
 #### Critérios de Aceitação
 
-1. THE Sistema SHALL ter README.md com seção dedicada para cada tipo de ambiente (Desktop, Raspberry Pi, Odroid, OCI, AWS EC2, GitHub Codespaces, Killercoda)
+1. THE Sistema SHALL ter README.md com seção dedicada para cada tipo de ambiente (Desktop, Raspberry Pi, Odroid, OCI, GitHub Codespaces, Killercoda)
 2. WHEN README.md é lido, THE Sistema SHALL incluir tabela comparativa mostrando quais componentes são instalados em cada cenário
 3. WHEN README.md é lido, THE Sistema SHALL incluir exemplos de comandos específicos para cada ambiente
 4. WHEN README.md é lido, THE Sistema SHALL incluir seção de pré-requisitos específicos para cada ambiente

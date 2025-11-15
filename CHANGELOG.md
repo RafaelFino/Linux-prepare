@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Modern CLI Tools**: bat, httpie, yq, glances, neofetch, dust, gh, tig, screen, k9s, tldr
+- **Build Tools**: cmake, build-essential
+- **Database Clients**: postgresql-client, redis-tools
+- **Security Tools**: openssl, openssh-server, netcat-openbsd
+- **Desktop Tools**: Flameshot (screenshots), DBeaver CE (database GUI)
+- **Optional Tools Script** (`add-opt.sh`): Install Node.js, Rust, Ruby, Terraform, kubectl, Helm, lazygit, lazydocker, Starship, zoxide, Neovim, Postman, Insomnia, Obsidian, MongoDB tools, Poetry, pipx
 - Xubuntu 24.04 support with XFCE desktop detection testing
 - Linux Mint 22 support with full compatibility testing
 - Comprehensive distribution testing (Ubuntu, Debian, Xubuntu, Mint)
@@ -19,6 +25,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated all Debian references from version 11/12 to version 13
 - Enhanced testing documentation with distribution-specific notes
 - Improved distribution support matrix in README
+- Expanded base packages with modern CLI tools
+- Desktop components now include productivity tools
+- **Oh-My-Bash** and **Oh-My-Zsh** are now mandatory installations for all users
+- Validation tests now check for Oh-My-Bash installation
+
+### Removed
+- **Amazon Linux support**: Removed AWS EC2/Amazon Linux support to focus on Debian-based distributions
+- Removed `cloud/aws-ec2-prepare.sh` script
+- Removed Amazon Linux from documentation and comparison tables
 
 ## [2.0.0] - 2024-11-15
 

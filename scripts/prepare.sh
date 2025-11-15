@@ -687,6 +687,96 @@ install_eza() {
     return 1
 }
 
+install_yq() {
+    log_info "Installing yq (YAML processor)..."
+    
+    if check_command_available yq; then
+        log_skip "yq already installed"
+        return 0
+    fi
+    
+    log_info "Downloading yq..."
+    local arch=$(dpkg --print-architecture)
+    local yq_version="v4.40.5"
+    
+    if wget -qO /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/${yq_version}/yq_linux_${arch}"; then
+        chmod +x /usr/local/bin/yq
+        log_success "yq installed successfully"
+        return 0
+    else
+        log_warning "Failed to install yq"
+        return 1
+    fi
+}
+
+install_k9s() {
+    log_info "Installing k9s (Kubernetes TUI)..."
+    
+    if check_command_available k9s; then
+        log_skip "k9s already installed"
+        return 0
+    fi
+    
+    log_info "Downloading k9s..."
+    local arch=$(dpkg --print-architecture)
+    
+    # Map architecture names
+    case "$arch" in
+        amd64) arch="amd64" ;;
+        arm64) arch="arm64" ;;
+        *) log_warning "Unsupported architecture for k9s: $arch"; return 1 ;;
+    esac
+    
+    local k9s_version="v0.31.7"
+    local download_url="https://github.com/derailed/k9s/releases/download/${k9s_version}/k9s_Linux_${arch}.tar.gz"
+    
+    if wget -qO /tmp/k9s.tar.gz "$download_url"; then
+        tar -xzf /tmp/k9s.tar.gz -C /tmp k9s
+        mv /tmp/k9s /usr/local/bin/
+        chmod +x /usr/local/bin/k9s
+        rm /tmp/k9s.tar.gz
+        log_success "k9s installed successfully"
+        return 0
+    else
+        log_warning "Failed to install k9s"
+        return 1
+    fi
+}
+
+install_dust() {
+    log_info "Installing dust (disk usage analyzer)..."
+    
+    if check_command_available dust; then
+        log_skip "dust already installed"
+        return 0
+    fi
+    
+    log_info "Downloading dust..."
+    local arch=$(dpkg --print-architecture)
+    
+    # Map architecture names
+    case "$arch" in
+        amd64) arch="x86_64" ;;
+        arm64) arch="aarch64" ;;
+        *) log_warning "Unsupported architecture for dust: $arch"; return 1 ;;
+    esac
+    
+    local dust_version="v0.8.6"
+    local download_url="https://github.com/bootandy/dust/releases/download/${dust_version}/dust-${dust_version}-${arch}-unknown-linux-musl.tar.gz"
+    
+    if wget -qO /tmp/dust.tar.gz "$download_url" 2>/dev/null; then
+        tar -xzf /tmp/dust.tar.gz -C /tmp
+        mv /tmp/dust-${dust_version}-${arch}-unknown-linux-musl/dust /usr/local/bin/
+        chmod +x /usr/local/bin/dust
+        rm -rf /tmp/dust.tar.gz /tmp/dust-${dust_version}-${arch}-unknown-linux-musl
+        log_success "dust installed successfully"
+        return 0
+    else
+        log_warning "Failed to install dust (not critical)"
+        return 1
+    fi
+}
+
 install_base_packages() {
     log_info "Installing base packages..."
     
@@ -699,6 +789,9 @@ install_base_packages() {
         wget git zsh gpg zip unzip vim jq telnet curl htop btop
         python3 python3-pip micro apt-transport-https zlib1g
         sqlite3 fzf sudo ca-certificates gnupg
+        tldr bat httpie glances neofetch gh tig screen
+        redis-tools postgresql-client cmake build-essential
+        netcat-openbsd openssl openssh-server
     )
     
     # Check which packages need to be installed
@@ -726,6 +819,15 @@ install_base_packages() {
     
     # Install eza separately (requires special repository)
     install_eza
+    
+    # Install yq (YAML processor)
+    install_yq
+    
+    # Install k9s (Kubernetes TUI)
+    install_k9s
+    
+    # Install dust (disk usage analyzer)
+    install_dust
     
     # Validate critical packages
     local critical_commands=(git zsh vim curl wget python3 eza micro)
@@ -1402,6 +1504,24 @@ install_desktop_applications() {
         dpkg -i /tmp/chrome.deb || apt install -f -y
         rm /tmp/chrome.deb
         log_success "Google Chrome installed"
+    fi
+    
+    # Install Flameshot
+    if check_package_installed flameshot; then
+        log_skip "Flameshot already installed"
+    else
+        log_info "Installing Flameshot..."
+        apt install -y flameshot
+        log_success "Flameshot installed"
+    fi
+    
+    # Install DBeaver Community Edition
+    if check_command_available dbeaver-ce; then
+        log_skip "DBeaver already installed"
+    else
+        log_info "Installing DBeaver Community Edition..."
+        snap install dbeaver-ce
+        log_success "DBeaver installed"
     fi
 }
 

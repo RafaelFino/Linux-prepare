@@ -142,8 +142,7 @@ Distribuições:
 ├── Debian              ✅ Testado
 ├── Xubuntu             ✅ Testado
 ├── Linux Mint          ✅ Testado
-├── Raspberry Pi OS     ⚠️  Manual
-└── Amazon Linux        ⚠️  Manual
+└── Raspberry Pi OS     ⚠️  Manual
 ```
 
 ## 🔄 CI/CD Integration

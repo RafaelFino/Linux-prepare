@@ -148,10 +148,7 @@
   - Adicionar documentação específica no README.md incluindo configuração de rede
   - _Requirements: 22.1-22.5_
 
-- [x] 18. Atualizar scripts específicos para AWS EC2
-  - Atualizar cloud/aws-ec2-prepare.sh para usar yum ao invés de apt
-  - Configurar usuário padrão ec2-user
-  - Aplicar configurações específicas para AWS
+
   - Instalar todos os componentes exceto desktop
   - Adicionar documentação específica no README.md incluindo security groups
   - _Requirements: 23.1-23.5_

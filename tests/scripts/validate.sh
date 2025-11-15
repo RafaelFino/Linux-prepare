@@ -9,6 +9,7 @@
 # Colors
 GREEN="\033[32m"
 RED="\033[31m"
+GRAY="\033[90m"
 RESET="\033[0m"
 
 # Counters
@@ -109,6 +110,42 @@ validate_command eza "eza"
 validate_command micro "Micro"
 
 echo ""
+echo "--- Modern CLI Tools ---"
+validate_command bat "bat"
+validate_command httpie "httpie"
+validate_command yq "yq"
+validate_command glances "glances"
+validate_command neofetch "neofetch"
+# dust is optional (may not be available in all distros)
+if command -v dust &> /dev/null; then
+    validate_command dust "dust"
+else
+    echo -e "${GRAY}⏭${RESET} dust: Not installed (optional)"
+fi
+validate_command gh "GitHub CLI"
+validate_command tig "tig"
+validate_command screen "screen"
+validate_command k9s "k9s"
+validate_command tldr "tldr"
+
+echo ""
+echo "--- Build Tools ---"
+validate_command cmake "cmake"
+validate_command gcc "gcc (build-essential)"
+validate_command make "make (build-essential)"
+
+echo ""
+echo "--- Database Clients ---"
+validate_command psql "PostgreSQL client"
+validate_command redis-cli "Redis CLI"
+
+echo ""
+echo "--- Security & Network ---"
+validate_command openssl "OpenSSL"
+validate_command ssh "OpenSSH"
+validate_command nc "netcat"
+
+echo ""
 echo "--- Programming Languages ---"
 validate_command docker "Docker"
 # Go is installed in /usr/local/go/bin, check both locations
@@ -137,6 +174,7 @@ validate_user testuser
 echo ""
 echo "--- Shell Configuration ---"
 validate_directory ~/.oh-my-zsh "Oh-My-Zsh"
+validate_directory ~/.oh-my-bash "Oh-My-Bash"
 validate_file ~/.zshrc ".zshrc"
 validate_file ~/.bashrc ".bashrc"
 validate_directory ~/.vim_runtime "Vim Runtime"

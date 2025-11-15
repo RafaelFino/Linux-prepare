@@ -11,7 +11,7 @@ Automated scripts to prepare fresh Linux installations as complete development e
 This project provides comprehensive automation for setting up Linux development environments across multiple platforms:
 - **Desktop workstations** (Ubuntu, Debian, Mint)
 - **ARM devices** (Raspberry Pi, Odroid)
-- **Cloud instances** (Oracle Cloud, AWS EC2, GitHub Codespaces, Killercoda)
+- **Cloud instances** (Oracle Cloud, GitHub Codespaces, Killercoda)
 
 Choose between **Shell Scripts** (fast, standalone) or **Ansible** (scalable, declarative) implementations.
 
@@ -24,6 +24,23 @@ Choose between **Shell Scripts** (fast, standalone) or **Ansible** (scalable, de
 - ☕ **JVM (Java)** - Via SDKMAN for easy version management
 - 🎯 **Kotlin** - Via SDKMAN
 - 💜 **. NET SDK 8.0** - Cross-platform development
+- 🔨 **Build Tools** - cmake, build-essential
+- 🗄️ **Database Clients** - PostgreSQL, MySQL, Redis
+
+### Modern CLI Tools
+- 📂 **eza** - Modern ls replacement with icons and tree view
+- 🔍 **fzf** - Fuzzy finder for command history
+- 🦇 **bat** - Cat with syntax highlighting
+- 🌐 **httpie** - User-friendly HTTP client
+- 📋 **yq** - YAML processor (like jq for YAML)
+- 📊 **glances** - Advanced system monitor
+- 🎨 **neofetch** - System information tool
+- 💨 **dust** - Intuitive disk usage analyzer (optional)
+- 🐙 **gh** - GitHub CLI
+- 🌳 **tig** - Text-mode interface for Git
+- 🖥️ **screen** - Terminal multiplexer
+- ☸️ **k9s** - Kubernetes TUI
+- 📚 **tldr** - Simplified man pages
 
 ### Terminal Experience
 - 🐚 **Zsh** - Modern shell set as default
@@ -31,14 +48,19 @@ Choose between **Shell Scripts** (fast, standalone) or **Ansible** (scalable, de
 - 🎨 **Oh-My-Bash** - Enhanced Bash configuration
 - 📝 **Micro Editor** - Intuitive terminal editor (default)
 - 📝 **Vim** - With awesome vimrc configuration
-- 📂 **eza** - Modern ls replacement with icons and tree view
-- 🔍 **fzf** - Fuzzy finder for command history
 
-### Desktop Components (Optional)
+### Desktop Components (Auto-detected)
 - 💻 **VSCode** - Popular code editor
 - 🌐 **Google Chrome** - Web browser
+- 📸 **Flameshot** - Screenshot tool
+- 🗄️ **DBeaver CE** - Universal database tool
 - 🖥️ **Terminal Emulators** - Terminator & Alacritty
 - 🔤 **Fonts** - Powerline & Nerd Fonts (FiraCode, JetBrainsMono, Hack)
+
+### Security & Network Tools
+- 🔐 **OpenSSL** - Cryptography toolkit
+- 🔌 **OpenSSH Server** - Remote access
+- 🌐 **netcat** - Network utility
 
 ### System Configuration
 - 🌍 **Timezone**: America/Sao_Paulo
@@ -73,6 +95,39 @@ sudo ./prepare.sh -u=developer,devops --desktop
 sudo ./prepare.sh --skip-docker --skip-go --skip-python --skip-kotlin --skip-jvm --skip-dotnet
 ```
 
+### Optional Tools Installation
+After running the main script, you can install additional optional tools:
+
+```bash
+cd scripts
+
+# Install Node.js and Rust
+sudo ./add-opt.sh --nodejs --rust
+
+# Install Kubernetes tools
+sudo ./add-opt.sh --kubectl --helm
+
+# Install Git TUI tools
+sudo ./add-opt.sh --lazygit --delta
+
+# Install everything optional
+sudo ./add-opt.sh --all
+
+# See all options
+sudo ./add-opt.sh --help
+```
+
+**Available Optional Tools:**
+- **Languages**: Node.js, Rust, Ruby
+- **Infrastructure**: Terraform, kubectl, Helm
+- **Git Tools**: lazygit, delta
+- **Container Tools**: lazydocker
+- **Shell**: Starship, zoxide, tmux plugins
+- **Editors**: Neovim
+- **Desktop Apps**: Postman, Insomnia, Obsidian
+- **Database**: MongoDB tools
+- **Python**: Poetry, pipx
+
 ## 📋 Prerequisites
 
 - **Operating System**: Debian-based Linux (Ubuntu 20.04+, Debian 13+, Linux Mint, etc.)
@@ -90,7 +145,6 @@ sudo ./prepare.sh --skip-docker --skip-go --skip-python --skip-kotlin --skip-jvm
 | Xubuntu | 24.04 | ✅ Fully Supported |
 | Linux Mint | 22+  | ✅ Fully Supported |
 | Raspberry Pi OS | Latest | ✅ Supported (ARM) |
-| Amazon Linux | 2 | ⚠️ Limited (uses yum) |
 
 **Notes:**
 - **Xubuntu**: Tested with XFCE desktop environment detection
@@ -236,13 +290,7 @@ cd cloud
 sudo ./oci-ubuntu.sh
 ```
 
-### AWS EC2 (cloud/aws-ec2-prepare.sh)
-Configured for Amazon Linux 2 (uses yum instead of apt).
 
-```bash
-cd cloud
-sudo ./aws-ec2-prepare.sh
-```
 
 ### GitHub Codespaces (cloud/github-workspace.sh)
 Optimized for GitHub Codespaces environment.
@@ -263,32 +311,67 @@ curl https://raw.githubusercontent.com/RafaelFino/Linux-prepare/main/cloud/kille
 
 ## 📊 Component Comparison by Environment
 
-| Component | Desktop | Server | Raspberry Pi | Odroid | OCI | AWS EC2 | GitHub | Killercoda |
-|-----------|---------|--------|--------------|--------|-----|---------|--------|------------|
-| Base Packages | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Docker | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Golang | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Python | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Kotlin | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| JVM | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| .NET | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Zsh/Oh-My-Zsh | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Vim/Micro | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| eza | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| VSCode | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Chrome | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Fonts | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Terminal Emulators | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Component | Desktop | Server | Raspberry Pi | Odroid | OCI | GitHub | Killercoda |
+|-----------|---------|--------|--------------|--------|-----|--------|------------|
+| Base Packages | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Docker | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Golang | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Python | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Kotlin | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ |
+| JVM | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ |
+| .NET | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ |
+| Zsh/Oh-My-Zsh | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Vim/Micro | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| eza | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| VSCode | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Chrome | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Fonts | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Terminal Emulators | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
-*Desktop components require `--desktop` flag
+*Desktop components auto-detected
 
 ## 🛠️ What Gets Installed
 
 ### Base Packages
 ```
 wget, git, zsh, gpg, zip, unzip, vim, jq, telnet, curl, htop, btop,
-python3, python3-pip, eza, micro, apt-transport-https, zlib1g,
-sqlite3, fzf, sudo
+python3, python3-pip, micro, apt-transport-https, zlib1g, sqlite3,
+fzf, sudo, ca-certificates, gnupg
+```
+
+### Modern CLI Tools
+```
+eza         - Modern ls replacement with icons
+bat         - Cat with syntax highlighting  
+httpie      - User-friendly HTTP client
+yq          - YAML processor (like jq)
+glances     - Advanced system monitor
+neofetch    - System information display
+dust        - Intuitive disk usage analyzer
+gh          - GitHub CLI
+tig         - Text-mode Git interface
+screen      - Terminal multiplexer
+k9s         - Kubernetes TUI
+tldr        - Simplified man pages
+```
+
+### Build & Development Tools
+```
+cmake               - Cross-platform build system
+build-essential     - Compilation tools (gcc, g++, make)
+```
+
+### Database Clients
+```
+postgresql-client   - PostgreSQL client tools
+redis-tools         - Redis CLI and tools
+```
+
+### Security & Network
+```
+openssl            - Cryptography toolkit
+openssh-server     - SSH server
+netcat-openbsd     - Network utility
 ```
 
 ### Programming Languages
@@ -361,11 +444,13 @@ VISUAL=micro    # Visual editor
 - Enhanced syntax highlighting
 - Multiple plugins
 
-### Desktop Components (--desktop flag)
+### Desktop Components (Auto-detected)
 
 #### Applications
 - **VSCode**: Installed via snap
 - **Google Chrome**: Latest stable version
+- **Flameshot**: Screenshot tool with annotation
+- **DBeaver CE**: Universal database GUI tool
 
 #### Terminal Emulators
 - **Terminator**: Configured with transparency and Nerd Font
@@ -443,14 +528,14 @@ ansible-playbook -i inventory ansible/site.yml
 ```
 linux-prepare/
 ├── scripts/
-│   └── prepare.sh              # Main script for desktops/servers
+│   ├── prepare.sh              # Main script for desktops/servers
+│   └── add-opt.sh              # Optional tools installation
 ├── rasp/
 │   └── rasp4-prepare.sh        # Raspberry Pi 4 optimized
 ├── odroid/
 │   └── odroid-prepare.sh       # Odroid optimized
 ├── cloud/
 │   ├── oci-ubuntu.sh           # Oracle Cloud Infrastructure
-│   ├── aws-ec2-prepare.sh      # AWS EC2 (Amazon Linux)
 │   ├── github-workspace.sh     # GitHub Codespaces
 │   └── killercoda.sh           # Killercoda environments
 ├── ansible/
@@ -518,10 +603,6 @@ linux-prepare/
 #### Raspberry Pi / Odroid
 - **Issue**: Some packages not available for ARM
 - **Solution**: Script automatically detects architecture and uses ARM-compatible packages
-
-#### AWS EC2 (Amazon Linux)
-- **Issue**: Different package manager (yum vs apt)
-- **Solution**: Use the specific `aws-ec2-prepare.sh` script
 
 #### GitHub Codespaces
 - **Issue**: Some configurations conflict with Codespaces defaults
@@ -686,8 +767,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📚 Additional Resources
 
 ### Project Documentation
+- **[📚 Documentation Index](DOCS-INDEX.md)** - Complete guide to all documentation
+- [🆕 Optional Tools Guide](OPTIONAL-TOOLS.md) - Guide to 43 new tools added
 - [Distribution Testing Guide](tests/DISTRIBUTIONS.md) - Detailed info about tested distributions
 - [Testing Guide](tests/TESTING.md) - How to run tests
+- [Which Test to Run?](tests/WHICH-TEST.md) - Decision guide for testing
 
 ### External Documentation
 - [Ansible Documentation](https://docs.ansible.com/)
