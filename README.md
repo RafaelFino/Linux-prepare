@@ -75,7 +75,7 @@ sudo ./prepare.sh --skip-docker --skip-go --skip-python --skip-kotlin --skip-jvm
 
 ## 📋 Prerequisites
 
-- **Operating System**: Debian-based Linux (Ubuntu 20.04+, Debian 11+, Linux Mint, etc.)
+- **Operating System**: Debian-based Linux (Ubuntu 20.04+, Debian 13+, Linux Mint, etc.)
 - **Privileges**: Root or sudo access
 - **Network**: Internet connection required
 - **Disk Space**: ~5GB for full installation (less without desktop)
@@ -86,7 +86,7 @@ sudo ./prepare.sh --skip-docker --skip-go --skip-python --skip-kotlin --skip-jvm
 | Distribution | Version | Status |
 |--------------|---------|--------|
 | Ubuntu | 22.04, 24.04 | ✅ Fully Supported |
-| Debian | 11, 12 | ✅ Fully Supported |
+| Debian | 13 | ✅ Fully Supported |
 | Linux Mint | 21+  | ✅ Fully Supported |
 | Raspberry Pi OS | Latest | ✅ Supported (ARM) |
 | Amazon Linux | 2 | ⚠️ Limited (uses yum) |
@@ -581,7 +581,7 @@ This tests basic installation with Docker, Go, Python, and terminal tools on Ubu
 
 This runs comprehensive tests on:
 - Ubuntu 24.04
-- Debian 12
+- Debian 13
 - Idempotency (script runs twice)
 
 ### Individual Distribution Test
@@ -591,8 +591,8 @@ This runs comprehensive tests on:
 docker build -f tests/docker/Dockerfile.ubuntu-24.04 -t test-ubuntu .
 docker run --rm test-ubuntu /tmp/validate.sh
 
-# Test Debian 12
-docker build -f tests/docker/Dockerfile.debian-12 -t test-debian .
+# Test Debian 13
+docker build -f tests/docker/Dockerfile.debian-13 -t test-debian .
 docker run --rm test-debian /tmp/validate.sh
 ```
 

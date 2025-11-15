@@ -70,7 +70,7 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 Test your changes on:
 - Ubuntu 22.04 (minimum)
-- Debian 12 (recommended)
+- Debian 13 (recommended)
 - Other distributions if applicable
 
 ### Automated Testing
@@ -131,7 +131,7 @@ Brief description of changes
 
 ## Testing
 - [ ] Tested on Ubuntu 22.04
-- [ ] Tested on Debian 12
+- [ ] Tested on Debian 13
 - [ ] Tested idempotency
 - [ ] Automated tests pass
 

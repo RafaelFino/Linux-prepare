@@ -19,7 +19,7 @@ cd /caminho/para/linux-prepare
 
 **O que será testado:**
 1. ✅ Ubuntu 22.04 - Instalação completa
-2. ✅ Debian 12 - Instalação completa
+2. ✅ Debian 13 - Instalação completa
 3. ✅ Idempotência - Script executado 2x
 
 **Tempo estimado:** 15-30 minutos (dependendo da conexão)
@@ -33,10 +33,10 @@ docker build -f tests/docker/Dockerfile.ubuntu-22.04 -t test-ubuntu .
 docker run --rm test-ubuntu /tmp/validate.sh
 ```
 
-#### Debian 12
+#### Debian 13
 ```bash
 # Do diretório raiz do projeto
-docker build -f tests/docker/Dockerfile.debian-12 -t test-debian .
+docker build -f tests/docker/Dockerfile.debian-13 -t test-debian .
 docker run --rm test-debian /tmp/validate.sh
 ```
 

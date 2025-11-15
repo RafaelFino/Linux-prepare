@@ -115,7 +115,7 @@ NOTE: Desktop components (VSCode, Chrome, fonts, terminal emulators) are
 
 SUPPORTED DISTRIBUTIONS:
   - Ubuntu (20.04, 22.04, 24.04)
-  - Debian (11, 12)
+  - Debian (13)
   - Linux Mint
   - Other Debian-based distributions
 

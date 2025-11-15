@@ -967,7 +967,7 @@ CMD ["/bin/zsh"]
 
 #### Dockerfile para Debian
 ```dockerfile
-FROM debian:12
+FROM debian:13
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -1271,7 +1271,7 @@ Brief description of the project
 
 ## Supported Environments
 - Ubuntu Desktop (20.04, 22.04, 24.04)
-- Debian (11, 12)
+- Debian (13)
 - Raspberry Pi (Ubuntu)
 - Odroid (Ubuntu)
 - Oracle Cloud Infrastructure
@@ -1888,7 +1888,7 @@ PLUGINS="git docker golang python ..."
 
 # Testa:
 - Ubuntu 20.04, 22.04, 24.04
-- Debian 11, 12
+- Debian 13
 - Idempotência (2 execuções)
 - Validação de componentes
 ```

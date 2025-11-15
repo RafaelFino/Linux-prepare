@@ -10,7 +10,7 @@ This directory contains Ansible playbooks and roles for automated setup of Linux
 - **SSH access** to target hosts
 
 ### On Target Hosts
-- **Debian-based Linux**: Ubuntu 20.04+, Debian 11+, Linux Mint
+- **Debian-based Linux**: Ubuntu 20.04+, Debian 13+, Linux Mint
 - **Python 3**: Usually pre-installed
 - **SSH server**: Running and accessible
 - **Sudo privileges**: For the connecting user
