@@ -1,0 +1,25 @@
+---
+# Raspberry Pi setup playbook
+# Optimized for ARM architecture, skips heavy components
+
+- name: Prepare Raspberry Pi Development Environment
+  hosts: raspberry
+  become: yes
+  
+  vars:
+    install_desktop: false
+    install_docker: true
+    install_golang: true
+    install_python: true
+    install_kotlin: false  # Skip on ARM
+    install_jvm: false     # Skip on ARM
+    install_dotnet: false  # Skip on ARM
+  
+  roles:
+    - base
+    - docker
+    - golang
+    - python
+    - terminal-tools
+    - shell-config
+    - users

@@ -1,0 +1,39 @@
+---
+# Kotlin role - Install Kotlin via SDKMAN
+
+- name: Check if SDKMAN is installed
+  stat:
+    path: "{{ ansible_env.HOME }}/.sdkman/bin/sdkman-init.sh"
+  register: sdkman_check
+
+- name: Install SDKMAN
+  shell: curl -s "https://get.sdkman.io" | bash
+  args:
+    creates: "{{ ansible_env.HOME }}/.sdkman/bin/sdkman-init.sh"
+  when: not sdkman_check.stat.exists
+  become: no
+
+- name: Install Kotlin via SDKMAN
+  shell: |
+    source {{ ansible_env.HOME }}/.sdkman/bin/sdkman-init.sh
+    sdk install kotlin < /dev/null
+  args:
+    executable: /bin/bash
+  become: no
+  ignore_errors: yes
+
+- name: Validate Kotlin installation
+  shell: |
+    source {{ ansible_env.HOME }}/.sdkman/bin/sdkman-init.sh
+    kotlin -version
+  args:
+    executable: /bin/bash
+  register: kotlin_version
+  changed_when: false
+  become: no
+  ignore_errors: yes
+
+- name: Display Kotlin version
+  debug:
+    msg: "Kotlin installed: {{ kotlin_version.stdout }}"
+  when: kotlin_version.rc == 0

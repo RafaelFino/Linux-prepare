@@ -1,0 +1,52 @@
+---
+# .NET role - Install .NET SDK
+
+- name: Check if .NET is already installed
+  command: dotnet --version
+  register: dotnet_check
+  failed_when: false
+  changed_when: false
+
+- name: Download Microsoft package repository configuration
+  get_url:
+    url: "https://packages.microsoft.com/config/ubuntu/{{ ansible_distribution_version }}/packages-microsoft-prod.deb"
+    dest: /tmp/packages-microsoft-prod.deb
+  when: dotnet_check.rc != 0
+  ignore_errors: yes
+
+- name: Download Microsoft package repository configuration (fallback)
+  get_url:
+    url: "https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb"
+    dest: /tmp/packages-microsoft-prod.deb
+  when: dotnet_check.rc != 0
+  ignore_errors: yes
+
+- name: Install Microsoft package repository
+  apt:
+    deb: /tmp/packages-microsoft-prod.deb
+  when: dotnet_check.rc != 0
+
+- name: Update apt cache after adding Microsoft repository
+  apt:
+    update_cache: yes
+  when: dotnet_check.rc != 0
+
+- name: Install .NET SDK
+  apt:
+    name: "dotnet-sdk-{{ dotnet_version | default('8.0') }}"
+    state: present
+  when: dotnet_check.rc != 0
+
+- name: Cleanup Microsoft package
+  file:
+    path: /tmp/packages-microsoft-prod.deb
+    state: absent
+
+- name: Validate .NET installation
+  command: dotnet --version
+  register: dotnet_version_output
+  changed_when: false
+
+- name: Display .NET version
+  debug:
+    msg: ".NET installed: {{ dotnet_version_output.stdout }}"

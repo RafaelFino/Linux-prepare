@@ -1,0 +1,72 @@
+---
+# ============================================================================
+# Main Ansible Playbook for Linux Development Environment Setup
+# ============================================================================
+# This playbook prepares Linux systems as complete development environments
+# with modern tools, multiple programming languages, and optimized terminal
+# configurations.
+#
+# Usage:
+#   ansible-playbook -i inventory/hosts site.yml
+#   ansible-playbook -i inventory/hosts site.yml --tags "docker,golang"
+#   ansible-playbook -i inventory/hosts site.yml --skip-tags "desktop"
+# ============================================================================
+
+- name: Prepare Linux Development Environment
+  hosts: all
+  become: yes
+  
+  vars_files:
+    - group_vars/all.yml
+  
+  pre_tasks:
+    - name: Display target information
+      debug:
+        msg: "Configuring {{ inventory_hostname }} ({{ ansible_distribution }} {{ ansible_distribution_version }})"
+    
+    - name: Verify Debian-based distribution
+      fail:
+        msg: "This playbook only supports Debian-based distributions"
+      when: ansible_os_family != "Debian"
+  
+  roles:
+    - role: base
+      tags: ['base', 'always']
+    
+    - role: docker
+      when: install_docker | default(true)
+      tags: ['docker']
+    
+    - role: golang
+      when: install_golang | default(true)
+      tags: ['golang', 'go']
+    
+    - role: python
+      when: install_python | default(true)
+      tags: ['python']
+    
+    - role: kotlin
+      when: install_kotlin | default(true)
+      tags: ['kotlin']
+    
+    - role: dotnet
+      when: install_dotnet | default(true)
+      tags: ['dotnet']
+    
+    - role: terminal-tools
+      tags: ['terminal', 'tools']
+    
+    - role: shell-config
+      tags: ['shell', 'zsh', 'bash']
+    
+    - role: desktop
+      when: install_desktop | default(false)
+      tags: ['desktop', 'never']
+    
+    - role: users
+      tags: ['users']
+  
+  post_tasks:
+    - name: Display completion message
+      debug:
+        msg: "Development environment setup completed successfully!"

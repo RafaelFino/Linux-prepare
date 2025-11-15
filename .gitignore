@@ -1,1 +1,43 @@
-log.txt
+# Ansible
+*.retry
+ansible/*.log
+ansible/.vault_pass
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Logs
+*.log
+
+# Test artifacts
+tests/output/
+*.test
+
+# Secrets
+secrets.yml
+vault.yml
+*.key
+*.pem
+
+# Cache
+__pycache__/
+*.pyc
+.cache/
+
+# Build artifacts
+dist/
+build/

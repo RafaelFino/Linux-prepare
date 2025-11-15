@@ -1,0 +1,57 @@
+---
+# Golang role - Install Golang
+
+- name: Check if Golang is already installed
+  command: go version
+  register: go_check
+  failed_when: false
+  changed_when: false
+  environment:
+    PATH: "/usr/local/go/bin:{{ ansible_env.PATH }}"
+
+- name: Get latest Golang version
+  uri:
+    url: https://go.dev/VERSION?m=text
+    return_content: yes
+  register: go_latest
+  when: go_check.rc != 0
+
+- name: Download Golang
+  get_url:
+    url: "https://go.dev/dl/{{ go_latest.content | trim }}.linux-{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }}.tar.gz"
+    dest: /tmp/golang.tar.gz
+  when: go_check.rc != 0
+
+- name: Remove old Golang installation
+  file:
+    path: /usr/local/go
+    state: absent
+  when: go_check.rc != 0
+
+- name: Extract Golang
+  unarchive:
+    src: /tmp/golang.tar.gz
+    dest: /usr/local
+    remote_src: yes
+  when: go_check.rc != 0
+
+- name: Add Golang to system PATH
+  lineinfile:
+    path: /etc/profile
+    line: 'export PATH=$PATH:/usr/local/go/bin'
+    create: yes
+
+- name: Cleanup Golang tarball
+  file:
+    path: /tmp/golang.tar.gz
+    state: absent
+  when: go_check.rc != 0
+
+- name: Validate Golang installation
+  command: /usr/local/go/bin/go version
+  register: go_version
+  changed_when: false
+
+- name: Display Golang version
+  debug:
+    msg: "Golang installed: {{ go_version.stdout }}"

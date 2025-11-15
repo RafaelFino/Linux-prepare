@@ -1,0 +1,30 @@
+---
+# Users role - Create and configure users
+
+- name: Create development users
+  user:
+    name: "{{ item.username }}"
+    groups: "{{ item.groups }}"
+    shell: "{{ item.shell | default('/usr/bin/zsh') }}"
+    create_home: yes
+    state: present
+  loop: "{{ dev_users }}"
+  when: dev_users is defined
+
+- name: Ensure users are in sudo group
+  user:
+    name: "{{ item.username }}"
+    groups: sudo
+    append: yes
+  loop: "{{ dev_users }}"
+  when: dev_users is defined
+
+- name: Ensure users are in docker group (if Docker is installed)
+  user:
+    name: "{{ item.username }}"
+    groups: docker
+    append: yes
+  loop: "{{ dev_users }}"
+  when: 
+    - dev_users is defined
+    - install_docker | default(true)

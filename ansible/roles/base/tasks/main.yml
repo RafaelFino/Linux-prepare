@@ -1,0 +1,34 @@
+---
+# Base role - Install base packages and configure timezone
+
+- name: Configure timezone to America/Sao_Paulo
+  timezone:
+    name: America/Sao_Paulo
+  tags: ['timezone']
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install base packages
+  apt:
+    name: "{{ base_packages }}"
+    state: present
+  tags: ['packages']
+
+- name: Validate critical commands are available
+  command: "which {{ item }}"
+  register: command_check
+  failed_when: command_check.rc != 0
+  changed_when: false
+  loop:
+    - git
+    - zsh
+    - vim
+    - curl
+    - wget
+    - python3
+    - eza
+    - micro
+  tags: ['validation']

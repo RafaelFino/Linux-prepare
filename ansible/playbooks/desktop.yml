@@ -1,0 +1,28 @@
+---
+# Desktop workstation setup playbook
+# Installs all development tools plus desktop components
+
+- name: Prepare Desktop Development Environment
+  hosts: desktops
+  become: yes
+  
+  vars:
+    install_desktop: true
+    install_docker: true
+    install_golang: true
+    install_python: true
+    install_kotlin: true
+    install_jvm: true
+    install_dotnet: true
+  
+  roles:
+    - base
+    - docker
+    - golang
+    - python
+    - kotlin
+    - dotnet
+    - terminal-tools
+    - shell-config
+    - desktop
+    - users

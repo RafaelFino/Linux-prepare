@@ -1,0 +1,27 @@
+---
+# Python role - Install Python development tools
+
+- name: Install Python packages
+  apt:
+    name:
+      - python3-venv
+      - python3-dev
+    state: present
+
+- name: Validate Python installation
+  command: python3 --version
+  register: python_version
+  changed_when: false
+
+- name: Display Python version
+  debug:
+    msg: "Python installed: {{ python_version.stdout }}"
+
+- name: Validate pip installation
+  command: pip3 --version
+  register: pip_version
+  changed_when: false
+
+- name: Display pip version
+  debug:
+    msg: "pip installed: {{ pip_version.stdout }}"

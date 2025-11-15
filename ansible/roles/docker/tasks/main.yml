@@ -1,0 +1,45 @@
+---
+# Docker role - Install Docker and Docker Compose v2
+
+- name: Check if Docker is already installed
+  command: docker --version
+  register: docker_check
+  failed_when: false
+  changed_when: false
+
+- name: Install Docker packages
+  apt:
+    name:
+      - docker.io
+      - docker-compose-v2
+    state: present
+  when: docker_check.rc != 0
+
+- name: Ensure docker group exists
+  group:
+    name: docker
+    state: present
+
+- name: Enable and start Docker service
+  systemd:
+    name: docker
+    enabled: yes
+    state: started
+
+- name: Validate Docker installation
+  command: docker --version
+  register: docker_version
+  changed_when: false
+
+- name: Display Docker version
+  debug:
+    msg: "Docker installed: {{ docker_version.stdout }}"
+
+- name: Validate Docker Compose installation
+  command: docker compose version
+  register: compose_version
+  changed_when: false
+
+- name: Display Docker Compose version
+  debug:
+    msg: "Docker Compose installed: {{ compose_version.stdout }}"

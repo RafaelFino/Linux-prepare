@@ -1,0 +1,31 @@
+FROM debian:12
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install sudo and basic tools
+RUN apt-get update && \
+    apt-get install -y sudo curl wget git && \
+    apt-get clean
+
+# Create test user
+RUN useradd -m -s /bin/bash testuser && \
+    echo "testuser:testuser" | chpasswd && \
+    usermod -aG sudo testuser && \
+    echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Copy script
+COPY scripts/prepare.sh /tmp/prepare.sh
+RUN chmod +x /tmp/prepare.sh
+
+# Run script (skip desktop components)
+RUN /tmp/prepare.sh -u=testuser --skip-desktop
+
+# Copy validation script
+COPY tests/scripts/validate.sh /tmp/validate.sh
+RUN chmod +x /tmp/validate.sh
+
+# Set working directory
+WORKDIR /home/testuser
+
+# Default command
+CMD ["/bin/bash"]

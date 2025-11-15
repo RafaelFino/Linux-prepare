@@ -1,0 +1,73 @@
+# ============================================================================
+# Ansible Inventory File
+# ============================================================================
+# Define your hosts here. Group them by environment type for easier management.
+#
+# Usage:
+#   ansible-playbook -i inventory/hosts site.yml
+#   ansible-playbook -i inventory/hosts playbooks/desktop.yml
+# ============================================================================
+
+# Local machine (run Ansible locally)
+[local]
+localhost ansible_connection=local
+
+# Desktop workstations
+[desktops]
+# my-desktop ansible_host=192.168.1.100 ansible_user=myuser
+
+# Development servers
+[servers]
+# dev-server-1 ansible_host=192.168.1.101 ansible_user=developer
+# dev-server-2 ansible_host=192.168.1.102 ansible_user=developer
+
+# Raspberry Pi devices
+[raspberry]
+# rasp-pi-1 ansible_host=192.168.1.201 ansible_user=pi
+# rasp-pi-2 ansible_host=192.168.1.202 ansible_user=pi
+
+# Odroid devices
+[odroid]
+# odroid-1 ansible_host=192.168.1.211 ansible_user=odroid
+
+# Cloud instances
+[cloud]
+# oci-instance-1 ansible_host=xxx.xxx.xxx.xxx ansible_user=ubuntu
+# aws-instance-1 ansible_host=xxx.xxx.xxx.xxx ansible_user=ec2-user
+
+[cloud:vars]
+configure_firewall=true
+
+# Oracle Cloud Infrastructure
+[oci]
+# oci-vm-1 ansible_host=xxx.xxx.xxx.xxx ansible_user=ubuntu
+
+[oci:vars]
+configure_firewall=true
+
+# AWS EC2
+[aws]
+# ec2-instance-1 ansible_host=xxx.xxx.xxx.xxx ansible_user=ec2-user
+
+[aws:vars]
+configure_firewall=true
+
+# All ARM devices
+[arm:children]
+raspberry
+odroid
+
+[arm:vars]
+# ARM-specific variables
+install_kotlin=false
+install_jvm=false
+install_dotnet=false
+
+# All development machines (desktops + servers)
+[development:children]
+desktops
+servers
+
+# All hosts
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3

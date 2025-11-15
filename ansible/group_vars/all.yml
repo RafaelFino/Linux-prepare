@@ -1,0 +1,134 @@
+---
+# ============================================================================
+# Global Variables for All Hosts
+# ============================================================================
+# These variables control which components are installed and how they are
+# configured. Override these in host_vars/ for host-specific configuration.
+# ============================================================================
+
+# Timezone Configuration
+timezone: America/Sao_Paulo
+
+# Components to Install (default: true for all dev tools, false for desktop)
+install_docker: true
+install_golang: true
+install_python: true
+install_kotlin: true
+install_jvm: true
+install_dotnet: true
+install_desktop: false
+
+# Users to Configure
+# Add users here that should be created and configured
+dev_users:
+  - username: developer
+    groups: ['sudo', 'docker']
+    shell: /usr/bin/zsh
+  # - username: devops
+  #   groups: ['sudo', 'docker']
+  #   shell: /usr/bin/zsh
+
+# Shell Configuration
+zsh_theme: frisk
+
+zsh_plugins:
+  - git
+  - colorize
+  - command-not-found
+  - compleat
+  - composer
+  - cp
+  - debian
+  - dircycle
+  - docker
+  - docker-compose
+  - dotnet
+  - eza
+  - fzf
+  - gh
+  - golang
+  - grc
+  - nats
+  - pip
+  - postgres
+  - procs
+  - python
+  - qrcode
+  - redis-cli
+  - repo
+  - rust
+  - sdk
+  - ssh
+  - sudo
+  - systemd
+  - themes
+  - ubuntu
+  - vscode
+  - zsh-interactive-cd
+
+# Shell Aliases
+shell_aliases:
+  - alias: 'ls'
+    command: 'eza -hHbmgalT -L 1 --time-style=long-iso --icons'
+  - alias: 'lt'
+    command: 'eza -hHbmgalT -L 4 --time-style=long-iso --icons'
+  - alias: 'python'
+    command: 'python3'
+  - alias: 'pip'
+    command: 'pip3'
+
+# Environment Variables
+shell_env_vars:
+  - name: 'EDITOR'
+    value: 'micro'
+  - name: 'VISUAL'
+    value: 'micro'
+
+# Base Packages
+base_packages:
+  - wget
+  - git
+  - zsh
+  - gpg
+  - zip
+  - unzip
+  - vim
+  - jq
+  - telnet
+  - curl
+  - htop
+  - btop
+  - python3
+  - python3-pip
+  - eza
+  - micro
+  - apt-transport-https
+  - zlib1g
+  - sqlite3
+  - fzf
+  - sudo
+
+# Python Packages
+python_packages:
+  - python3-venv
+  - python3-dev
+
+# Golang Configuration
+golang_install_dir: /usr/local
+golang_version: latest  # or specify version like "1.21.5"
+
+# .NET Configuration
+dotnet_version: "8.0"
+
+# Desktop Applications (when install_desktop is true)
+desktop_fonts:
+  - FiraCode
+  - JetBrainsMono
+  - Hack
+
+desktop_terminal_emulators:
+  - terminator
+  - alacritty
+
+# Cloud-specific Configuration
+configure_firewall: false  # Set to true for cloud instances (OCI, AWS)

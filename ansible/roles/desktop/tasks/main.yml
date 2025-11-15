@@ -1,0 +1,120 @@
+---
+# Desktop role - Install desktop components
+
+- name: Install Powerline fonts
+  block:
+    - name: Clone Powerline fonts repository
+      git:
+        repo: https://github.com/powerline/fonts.git
+        dest: /tmp/powerline-fonts
+        depth: 1
+    
+    - name: Install Powerline fonts
+      shell: /tmp/powerline-fonts/install.sh
+      become: no
+    
+    - name: Cleanup Powerline fonts repository
+      file:
+        path: /tmp/powerline-fonts
+        state: absent
+
+- name: Install Nerd Fonts
+  block:
+    - name: Clone Nerd Fonts repository
+      git:
+        repo: https://github.com/ryanoasis/nerd-fonts.git
+        dest: /tmp/nerd-fonts
+        depth: 1
+    
+    - name: Install selected Nerd Fonts
+      shell: /tmp/nerd-fonts/install.sh {{ desktop_fonts | join(' ') }}
+      become: no
+    
+    - name: Cleanup Nerd Fonts repository
+      file:
+        path: /tmp/nerd-fonts
+        state: absent
+
+- name: Install MS Core Fonts
+  apt:
+    name: ttf-mscorefonts-installer
+    state: present
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Update font cache
+  command: fc-cache -fv
+  changed_when: false
+
+- name: Install terminal emulators
+  apt:
+    name: "{{ desktop_terminal_emulators }}"
+    state: present
+
+- name: Create Terminator config directory
+  file:
+    path: "{{ ansible_env.HOME }}/.config/terminator"
+    state: directory
+    mode: '0755'
+  become: no
+
+- name: Configure Terminator
+  copy:
+    dest: "{{ ansible_env.HOME }}/.config/terminator/config"
+    content: |
+      [global_config]
+        title_hide_sizetext = True
+      [profiles]
+        [[default]]
+          background_darkness = 0.9
+          background_type = transparent
+          font = FiraCode Nerd Font Mono 11
+          use_system_font = False
+          scrollback_infinite = True
+  become: no
+
+- name: Create Alacritty config directory
+  file:
+    path: "{{ ansible_env.HOME }}/.config/alacritty"
+    state: directory
+    mode: '0755'
+  become: no
+
+- name: Configure Alacritty
+  copy:
+    dest: "{{ ansible_env.HOME }}/.config/alacritty/alacritty.yml"
+    content: |
+      font:
+        normal:
+          family: FiraCode Nerd Font
+          style: Regular
+        size: 11.0
+      
+      window:
+        opacity: 0.9
+        padding:
+          x: 10
+          y: 10
+      
+      scrolling:
+        history: 10000
+  become: no
+
+- name: Install VSCode via snap
+  snap:
+    name: code
+    classic: yes
+
+- name: Download Google Chrome
+  get_url:
+    url: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    dest: /tmp/google-chrome.deb
+
+- name: Install Google Chrome
+  apt:
+    deb: /tmp/google-chrome.deb
+
+- name: Cleanup Chrome package
+  file:
+    path: /tmp/google-chrome.deb
+    state: absent

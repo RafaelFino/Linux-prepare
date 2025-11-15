@@ -1,0 +1,37 @@
+---
+# Terminal tools role - Install eza, micro, vim
+
+- name: Ensure eza is installed (already in base packages)
+  apt:
+    name: eza
+    state: present
+
+- name: Ensure micro is installed (already in base packages)
+  apt:
+    name: micro
+    state: present
+
+- name: Check if vim awesome configuration exists
+  stat:
+    path: "{{ ansible_env.HOME }}/.vim_runtime"
+  register: vim_config
+
+- name: Clone vim awesome configuration
+  git:
+    repo: https://github.com/amix/vimrc.git
+    dest: "{{ ansible_env.HOME }}/.vim_runtime"
+    depth: 1
+  when: not vim_config.stat.exists
+  become: no
+
+- name: Install vim awesome configuration
+  shell: sh {{ ansible_env.HOME }}/.vim_runtime/install_awesome_vimrc.sh
+  when: not vim_config.stat.exists
+  become: no
+
+- name: Enable line numbers in vim
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.vim_runtime/my_configs.vim"
+    line: 'set nu'
+    create: yes
+  become: no

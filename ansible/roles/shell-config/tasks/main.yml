@@ -1,0 +1,90 @@
+---
+# Shell configuration role - Configure Zsh, Bash, Oh-My-Zsh, Oh-My-Bash
+
+- name: Check if Oh-My-Zsh is installed
+  stat:
+    path: "{{ ansible_env.HOME }}/.oh-my-zsh"
+  register: ohmyzsh_check
+
+- name: Install Oh-My-Zsh
+  shell: RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  when: not ohmyzsh_check.stat.exists
+  become: no
+
+- name: Configure Oh-My-Zsh theme
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    regexp: '^ZSH_THEME='
+    line: 'ZSH_THEME="{{ zsh_theme }}"'
+  become: no
+
+- name: Configure Oh-My-Zsh plugins
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    regexp: '^plugins='
+    line: 'plugins=({{ zsh_plugins | join(" ") }})'
+  become: no
+
+- name: Check if Oh-My-Bash is installed
+  stat:
+    path: "{{ ansible_env.HOME }}/.oh-my-bash"
+  register: ohmybash_check
+
+- name: Install Oh-My-Bash
+  shell: curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh | bash
+  when: not ohmybash_check.stat.exists
+  become: no
+  ignore_errors: yes
+
+- name: Add shell aliases to .zshrc
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    line: "alias {{ item.alias }}='{{ item.command }}'"
+    create: yes
+  loop: "{{ shell_aliases }}"
+  become: no
+
+- name: Add shell aliases to .bashrc
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    line: "alias {{ item.alias }}='{{ item.command }}'"
+    create: yes
+  loop: "{{ shell_aliases }}"
+  become: no
+
+- name: Add environment variables to .zshrc
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    line: "export {{ item.name }}={{ item.value }}"
+    create: yes
+  loop: "{{ shell_env_vars }}"
+  become: no
+
+- name: Add environment variables to .bashrc
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    line: "export {{ item.name }}={{ item.value }}"
+    create: yes
+  loop: "{{ shell_env_vars }}"
+  become: no
+
+- name: Add Golang to PATH in .zshrc
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    line: 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin'
+    create: yes
+  become: no
+  when: install_golang | default(true)
+
+- name: Add Golang to PATH in .bashrc
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    line: 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin'
+    create: yes
+  become: no
+  when: install_golang | default(true)
+
+- name: Change default shell to zsh
+  user:
+    name: "{{ ansible_user_id }}"
+    shell: /usr/bin/zsh
