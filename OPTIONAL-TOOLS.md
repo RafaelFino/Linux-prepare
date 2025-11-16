@@ -21,13 +21,13 @@ Este documento descreve as **43 novas ferramentas** adicionadas ao projeto, divi
 | **httpie** | Cliente HTTP amigável | `http GET api.example.com` |
 | **yq** | Processador YAML (como jq) | `yq '.key' file.yaml` |
 | **glances** | Monitor de sistema avançado | `glances` |
-| **neofetch** | Informações do sistema | `neofetch` |
+| **neofetch** | Informações do sistema (opcional) | `neofetch` |
 | **dust** | Analisador de uso de disco (opcional) | `dust` |
 | **gh** | GitHub CLI | `gh repo list` |
 | **tig** | Interface Git em texto | `tig` |
 | **screen** | Multiplexer de terminal | `screen` |
 | **k9s** | Kubernetes TUI | `k9s` |
-| **tldr** | Man pages simplificadas | `tldr docker` |
+| **tldr** | Man pages simplificadas (opcional) | `tldr docker` |
 
 ### Build & Development Tools (2 ferramentas)
 | Ferramenta | Descrição |

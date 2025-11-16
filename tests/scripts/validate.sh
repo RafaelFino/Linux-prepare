@@ -111,11 +111,20 @@ validate_command micro "Micro"
 
 echo ""
 echo "--- Modern CLI Tools ---"
-validate_command bat "bat"
+# bat can be installed as 'bat' or 'batcat' depending on distribution
+if command -v bat &> /dev/null; then
+    validate_command bat "bat"
+elif command -v batcat &> /dev/null; then
+    echo -e "${GREEN}✓${RESET} bat: batcat is installed (Ubuntu/Debian naming)"
+    ((PASSED++))
+else
+    echo -e "${RED}✗${RESET} bat: NOT installed"
+    ((FAILED++))
+fi
 validate_command httpie "httpie"
 validate_command yq "yq"
 validate_command glances "glances"
-validate_command neofetch "neofetch"
+# neofetch is optional - validated later
 # dust is optional (may not be available in all distros)
 if command -v dust &> /dev/null; then
     validate_command dust "dust"
@@ -126,7 +135,18 @@ validate_command gh "GitHub CLI"
 validate_command tig "tig"
 validate_command screen "screen"
 validate_command k9s "k9s"
-validate_command tldr "tldr"
+# tldr is optional (may not be available in all distros)
+if command -v tldr &> /dev/null; then
+    validate_command tldr "tldr"
+else
+    echo -e "${GRAY}⏭${RESET} tldr: Not installed (optional)"
+fi
+# neofetch is optional (may not be available in all distros)
+if command -v neofetch &> /dev/null; then
+    validate_command neofetch "neofetch"
+else
+    echo -e "${GRAY}⏭${RESET} neofetch: Not installed (optional)"
+fi
 
 echo ""
 echo "--- Build Tools ---"

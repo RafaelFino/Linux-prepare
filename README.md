@@ -30,17 +30,17 @@ Choose between **Shell Scripts** (fast, standalone) or **Ansible** (scalable, de
 ### Modern CLI Tools
 - 📂 **eza** - Modern ls replacement with icons and tree view
 - 🔍 **fzf** - Fuzzy finder for command history
-- 🦇 **bat** - Cat with syntax highlighting
+- 🦇 **bat** - Cat with syntax highlighting (installed as `batcat` on Ubuntu, aliased to `bat`)
 - 🌐 **httpie** - User-friendly HTTP client
 - 📋 **yq** - YAML processor (like jq for YAML)
 - 📊 **glances** - Advanced system monitor
-- 🎨 **neofetch** - System information tool
+- 🎨 **neofetch** - System information tool (optional)
 - 💨 **dust** - Intuitive disk usage analyzer (optional)
 - 🐙 **gh** - GitHub CLI
 - 🌳 **tig** - Text-mode interface for Git
 - 🖥️ **screen** - Terminal multiplexer
 - ☸️ **k9s** - Kubernetes TUI
-- 📚 **tldr** - Simplified man pages
+- 📚 **tldr** - Simplified man pages (optional, installed via pip3 if not in repos)
 
 ### Terminal Experience
 - 🐚 **Zsh** - Modern shell set as default

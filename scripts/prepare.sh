@@ -777,6 +777,79 @@ install_dust() {
     fi
 }
 
+fix_bat_command() {
+    log_info "Fixing bat command (Ubuntu installs as batcat)..."
+    
+    # Check if bat command exists
+    if check_command_available bat; then
+        log_skip "bat command already available"
+        return 0
+    fi
+    
+    # Check if batcat exists (Ubuntu/Debian naming)
+    if check_command_available batcat; then
+        log_info "Creating bat symlink for batcat..."
+        ln -sf $(which batcat) /usr/local/bin/bat
+        log_success "bat command linked to batcat"
+        return 0
+    fi
+    
+    log_warning "Neither bat nor batcat found"
+    return 1
+}
+
+install_tldr() {
+    log_info "Installing tldr (simplified man pages)..."
+    
+    if check_command_available tldr; then
+        log_skip "tldr already installed"
+        return 0
+    fi
+    
+    # Try to install from apt first
+    if check_package_available tldr; then
+        apt install -y tldr
+        log_success "tldr installed from apt"
+        return 0
+    fi
+    
+    # Fallback: install via npm if available
+    if check_command_available npm; then
+        npm install -g tldr
+        log_success "tldr installed via npm"
+        return 0
+    fi
+    
+    # Fallback: install via pip3
+    if check_command_available pip3; then
+        pip3 install tldr
+        log_success "tldr installed via pip3"
+        return 0
+    fi
+    
+    log_warning "Could not install tldr (not critical)"
+    return 1
+}
+
+install_neofetch() {
+    log_info "Installing neofetch (system info tool)..."
+    
+    if check_command_available neofetch; then
+        log_skip "neofetch already installed"
+        return 0
+    fi
+    
+    # Try to install from apt
+    if check_package_available neofetch; then
+        apt install -y neofetch
+        log_success "neofetch installed"
+        return 0
+    fi
+    
+    log_warning "neofetch not available in repositories (not critical)"
+    return 1
+}
+
 install_base_packages() {
     log_info "Installing base packages..."
     
@@ -789,7 +862,7 @@ install_base_packages() {
         wget git zsh gpg zip unzip vim jq telnet curl htop btop
         python3 python3-pip micro apt-transport-https zlib1g
         sqlite3 fzf sudo ca-certificates gnupg
-        tldr bat httpie glances neofetch gh tig screen
+        bat httpie glances gh tig screen
         redis-tools postgresql-client cmake build-essential
         netcat-openbsd openssl openssh-server
     )
@@ -828,6 +901,15 @@ install_base_packages() {
     
     # Install dust (disk usage analyzer)
     install_dust
+    
+    # Fix bat command (Ubuntu installs as batcat)
+    fix_bat_command
+    
+    # Install tldr (may not be in all repos)
+    install_tldr
+    
+    # Install neofetch (may not be in all repos)
+    install_neofetch
     
     # Validate critical packages
     local critical_commands=(git zsh vim curl wget python3 eza micro)
