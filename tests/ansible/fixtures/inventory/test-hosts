@@ -1,0 +1,44 @@
+# ============================================================================
+# Ansible Test Inventory
+# ============================================================================
+# This inventory file defines test hosts for Ansible testing.
+# It is used by the test runner to execute playbooks in Docker containers.
+# ============================================================================
+
+[all:vars]
+ansible_connection=docker
+ansible_user=root
+ansible_python_interpreter=/usr/bin/python3
+
+# Ubuntu 24.04 test container
+[ubuntu]
+ubuntu-24.04 ansible_host=ansible-test-ubuntu-24.04
+
+# Debian 13 test container
+[debian]
+debian-13 ansible_host=ansible-test-debian-13
+
+# Xubuntu 24.04 test container
+[xubuntu]
+xubuntu-24.04 ansible_host=ansible-test-xubuntu-24.04
+
+# Linux Mint 22 test container
+[mint]
+mint-22 ansible_host=ansible-test-mint-22
+
+# Group for all desktop distributions
+[desktops:children]
+ubuntu
+xubuntu
+mint
+
+# Group for all server distributions
+[servers:children]
+debian
+
+# Group for all test containers
+[test_containers:children]
+ubuntu
+debian
+xubuntu
+mint

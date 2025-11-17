@@ -13,14 +13,14 @@
 # Certifique-se de estar no diretório raiz do projeto
 cd /caminho/para/linux-prepare
 
-# Execute todos os testes (Ubuntu, Debian, Xubuntu, Mint, Idempotência)
+# Execute todos os testes (Ubuntu, Debian, Xubuntu, Mint, Pop!_OS, Idempotência)
 ./tests/run-all-tests.sh
 ```
 
-### Teste Apenas Derivados (Xubuntu e Mint)
+### Teste Apenas Derivados (Xubuntu, Mint e Pop!_OS)
 
 ```bash
-# Teste rápido apenas para Xubuntu e Linux Mint
+# Teste rápido apenas para Xubuntu, Linux Mint e Pop!_OS
 ./tests/test-derivatives.sh
 ```
 

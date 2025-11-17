@@ -6,13 +6,13 @@
 ```bash
 ./tests/run-all-tests.sh
 ```
-⏱️ Tempo: ~80 minutos | 🎯 Testa: Ubuntu, Debian, Xubuntu, Mint, Idempotência
+⏱️ Tempo: ~100 minutos | 🎯 Testa: Ubuntu, Debian, Xubuntu, Mint, Pop!_OS, Idempotência
 
 ### Testar Apenas Derivados
 ```bash
 ./tests/test-derivatives.sh
 ```
-⏱️ Tempo: ~30 minutos | 🎯 Testa: Xubuntu, Mint
+⏱️ Tempo: ~45 minutos | 🎯 Testa: Xubuntu, Mint, Pop!_OS
 
 ### Teste Rápido (Ubuntu apenas)
 ```bash

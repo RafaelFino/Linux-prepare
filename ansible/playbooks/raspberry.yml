@@ -16,10 +16,10 @@
     install_dotnet: false  # Skip on ARM
   
   roles:
-    - base
-    - docker
-    - golang
-    - python
-    - terminal-tools
-    - shell-config
-    - users
+    - role: ../roles/base
+    - role: ../roles/docker
+    - role: ../roles/golang
+    - role: ../roles/python
+    - role: ../roles/terminal-tools
+    - role: ../roles/shell-config
+    - role: ../roles/users

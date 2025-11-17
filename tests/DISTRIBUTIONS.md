@@ -1,76 +1,39 @@
-# Guia de Distribuições Testadas
+# Distribuições Testadas
 
-Este documento descreve as distribuições Linux testadas e suas características específicas.
+Distribuições Linux suportadas e testadas.
 
-## 📋 Distribuições Principais
+## Principais
 
-### Ubuntu 24.04 LTS
-- **Base**: Debian
-- **Desktop**: GNOME (padrão)
-- **Testes**: Instalação completa de todos os componentes
-- **Uso**: Distribuição de referência para testes
+**Ubuntu 24.04**: Referência, GNOME, testes completos  
+**Debian 13**: Debian puro, sem desktop, validação base
 
-### Debian 13
-- **Base**: Debian puro
-- **Desktop**: Vários (GNOME, KDE, XFCE, etc.)
-- **Testes**: Instalação completa sem desktop
-- **Uso**: Validação de compatibilidade com Debian puro
+## Derivadas
 
-## 🎨 Distribuições Derivadas
-
-### Xubuntu 24.04
-- **Base**: Ubuntu 24.04
-- **Desktop**: XFCE
-- **Diferenças**:
-  - Ambiente desktop mais leve
-  - Mesmos repositórios do Ubuntu
-  - Detecção automática de desktop XFCE
-- **Testes**: 
-  - Validação de detecção de ambiente XFCE
-  - Instalação de componentes desktop
-  - Configuração de terminal emulators
-- **Por que testar**: Garantir que a detecção de desktop funciona com XFCE
-
-### Linux Mint 22
-- **Base**: Ubuntu 24.04 LTS
-- **Desktop**: Cinnamon (padrão)
-- **Diferenças**:
-  - Repositórios próprios do Mint
-  - Algumas ferramentas específicas do Mint
-  - Interface Cinnamon
-- **Testes**:
-  - Compatibilidade com repositórios do Mint
-  - Instalação completa de componentes
-  - Detecção de ambiente Cinnamon
-- **Por que testar**: Validar compatibilidade com derivados que têm repositórios próprios
+**Xubuntu 24.04**: XFCE, testa detecção desktop leve  
+**Linux Mint 22**: Cinnamon, repos próprios  
+**Pop!_OS 22.04**: GNOME Cosmic, workarounds EZA/Docker/VSCode
 
 ## 🔍 Matriz de Compatibilidade
 
-| Recurso | Ubuntu | Debian | Xubuntu | Mint |
-|---------|--------|--------|---------|------|
-| Docker | ✅ | ✅ | ✅ | ✅ |
-| Golang | ✅ | ✅ | ✅ | ✅ |
-| Python | ✅ | ✅ | ✅ | ✅ |
-| .NET | ✅ | ✅ | ✅ | ✅ |
-| JVM/Kotlin | ✅ | ✅ | ✅ | ✅ |
-| Zsh/Oh-My-Zsh | ✅ | ✅ | ✅ | ✅ |
-| Desktop Detection | ✅ GNOME | ❌ Server | ✅ XFCE | ✅ Cinnamon |
-| VSCode | ✅ | ✅ | ✅ | ✅ |
-| Chrome | ✅ | ✅ | ✅ | ✅ |
-| Fonts | ✅ | ✅ | ✅ | ✅ |
+| Recurso | Ubuntu | Debian | Xubuntu | Mint | Pop!_OS |
+|---------|--------|--------|---------|------|---------|
+| Docker | ✅ | ✅ | ✅ | ✅ | ✅ (workaround) |
+| Golang | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Python | ✅ | ✅ | ✅ | ✅ | ✅ |
+| .NET | ✅ | ✅ | ✅ | ✅ | ✅ |
+| JVM/Kotlin | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Zsh/Oh-My-Zsh | ✅ | ✅ | ✅ | ✅ | ✅ |
+| EZA | ✅ | ✅ | ✅ | ✅ | ✅ (workaround) |
+| Desktop Detection | ✅ GNOME | ❌ Server | ✅ XFCE | ✅ Cinnamon | ✅ GNOME Cosmic |
+| VSCode | ✅ snap | ✅ snap | ✅ snap | ✅ snap | ✅ apt (workaround) |
+| Chrome | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Fonts | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-## 🧪 Estratégia de Testes
+## Testes
 
-### Testes Completos (run-all-tests.sh)
-Executa testes em todas as distribuições:
-1. Ubuntu 24.04 - Baseline
-2. Debian 13 - Compatibilidade Debian puro
-3. Xubuntu 24.04 - Desktop XFCE
-4. Linux Mint 22 - Derivado com repositórios próprios
-5. Idempotência - Execução dupla
-
-### Testes de Derivados (test-derivatives.sh)
-Executa apenas Xubuntu e Mint para validação rápida de derivados.
+**run-all-tests.sh**: Todas distros + idempotência (~100min)  
+**test-derivatives.sh**: Xubuntu + Mint + Pop!_OS (~45min)  
+**quick-test.sh**: Ubuntu apenas (~15min)
 
 ## 📝 Notas de Implementação
 
@@ -111,9 +74,13 @@ Para adicionar uma nova distribuição aos testes:
 4. Documentar diferenças neste arquivo
 5. Executar testes completos
 
-## 📚 Referências
 
-- [Ubuntu Releases](https://wiki.ubuntu.com/Releases)
-- [Debian Releases](https://www.debian.org/releases/)
-- [Xubuntu](https://xubuntu.org/)
-- [Linux Mint](https://linuxmint.com/)
+
+
+## Pop!_OS Workarounds
+
+**EZA**: cargo install to /usr/local/bin → fallback exa  
+**Docker**: Remove conflitos → repos Pop!_OS  
+**VSCode**: Repo Microsoft → apt install
+
+**Note**: Binários instalados em `/usr/local/bin` (acesso global)

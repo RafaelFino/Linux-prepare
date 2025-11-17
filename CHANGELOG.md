@@ -8,20 +8,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Pop!_OS Support**: Full compatibility with Pop!_OS 22.04 including specific workarounds for EZA, Docker, and VSCode
+- **Desktop Control Flags**: `--desktop` to force installation and `--skip-desktop` to skip installation
+- **Quick Start Guide**: Beginner-friendly guide from git clone to execution in README
+- **Usage Scenarios**: 5 practical examples showing common use cases
 - **Modern CLI Tools**: bat, httpie, yq, glances, neofetch, dust, gh, tig, screen, k9s, tldr
 - **Build Tools**: cmake, build-essential
 - **Database Clients**: postgresql-client, redis-tools
 - **Security Tools**: openssl, openssh-server, netcat-openbsd
 - **Desktop Tools**: Flameshot (screenshots), DBeaver CE (database GUI)
 - **Optional Tools Script** (`add-opt.sh`): Install Node.js, Rust, Ruby, Terraform, kubectl, Helm, lazygit, lazydocker, Starship, zoxide, Neovim, Postman, Insomnia, Obsidian, MongoDB tools, Poetry, pipx
-- Xubuntu 24.04 support with XFCE desktop detection testing
+- Xubuntu 24.04 support with XFCE desktop environment detection testing
 - Linux Mint 22 support with full compatibility testing
-- Comprehensive distribution testing (Ubuntu, Debian, Xubuntu, Mint)
+- Pop!_OS 22.04 test container and validation
+- Comprehensive distribution testing (Ubuntu, Debian, Xubuntu, Mint, Pop!_OS)
 - `test-derivatives.sh` script for quick Xubuntu/Mint testing
 - Distribution testing guide (tests/DISTRIBUTIONS.md)
 - Automated CI/CD testing for all supported distributions
 
 ### Changed
+- **Desktop Detection**: Now clearly documented with automatic detection and manual override options
+- **Documentation Structure**: Reorganized README with Quick Start at the top and dedicated Desktop Components section
+- **Documentation Simplification**: All docs reduced by 60-90% for clarity (student-friendly)
+- **Distribution Table**: Updated to include Pop!_OS with desktop support indicator
+- **VSCode Installation**: Uses apt repository method on Pop!_OS instead of snap
+- **Docker Installation**: Uses Pop!_OS repositories with specific workarounds
+- **EZA Installation**: Falls back to cargo or exa on Pop!_OS when repository fails
+- **Cargo Binaries**: Now installed to `/usr/local/bin` for system-wide access (all users)
+- **Snap/Cargo Dependencies**: Auto-installed when needed
 - Updated all Debian references from version 11/12 to version 13
 - Enhanced testing documentation with distribution-specific notes
 - Improved distribution support matrix in README

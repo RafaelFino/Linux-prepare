@@ -1,0 +1,46 @@
+# Pop!_OS 22.04 Test Container for Script Testing
+# System76's Ubuntu-based distribution
+
+FROM ubuntu:22.04
+
+# Prevent interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=America/Sao_Paulo
+
+# Simulate Pop!_OS by modifying os-release
+RUN echo 'NAME="Pop!_OS"' > /etc/os-release && \
+    echo 'VERSION="22.04 LTS"' >> /etc/os-release && \
+    echo 'ID=pop' >> /etc/os-release && \
+    echo 'ID_LIKE="ubuntu debian"' >> /etc/os-release && \
+    echo 'PRETTY_NAME="Pop!_OS 22.04 LTS"' >> /etc/os-release && \
+    echo 'VERSION_ID="22.04"' >> /etc/os-release && \
+    echo 'HOME_URL="https://pop.system76.com"' >> /etc/os-release && \
+    echo 'SUPPORT_URL="https://support.system76.com"' >> /etc/os-release && \
+    echo 'BUG_REPORT_URL="https://github.com/pop-os/pop/issues"' >> /etc/os-release && \
+    echo 'PRIVACY_POLICY_URL="https://system76.com/privacy"' >> /etc/os-release && \
+    echo 'UBUNTU_CODENAME=jammy' >> /etc/os-release && \
+    echo 'LOGO=distributor-logo-pop-os' >> /etc/os-release
+
+# Install minimal requirements
+RUN apt-get update && \
+    apt-get install -y \
+    sudo \
+    systemd \
+    ca-certificates \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy scripts
+COPY scripts/ /tmp/scripts/
+COPY tests/scripts/validate.sh /tmp/validate.sh
+
+# Make scripts executable
+RUN chmod +x /tmp/scripts/*.sh /tmp/validate.sh
+
+# Run the prepare script (skip desktop for container)
+RUN /tmp/scripts/prepare.sh --skip-desktop || true
+
+# Validate installation
+RUN /tmp/validate.sh
+
+CMD ["/bin/bash"]

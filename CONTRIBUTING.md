@@ -77,23 +77,72 @@ Test your changes on:
 
 ### Automated Testing
 
+#### Script Tests
+
 ```bash
-# Run all tests
+# Run all script tests
 ./tests/run-all-tests.sh
 
+# Quick test (Ubuntu only)
+./tests/quick-test.sh
+
+# Test derivatives only
+./tests/test-derivatives.sh
+
 # Test specific distribution
-docker build -f tests/docker/Dockerfile.ubuntu-22.04 -t test .
+docker build -f tests/docker/Dockerfile.ubuntu-24.04 -t test .
 docker run --rm test /tmp/validate.sh
 ```
 
+#### Ansible Tests
+
+```bash
+# Run all Ansible tests
+./tests/ansible/run-ansible-tests.sh
+
+# Quick test (Ubuntu only)
+./tests/ansible/quick-test.sh
+
+# Test derivatives only
+./tests/ansible/test-derivatives.sh
+
+# Test specific playbook
+./tests/ansible/run-ansible-tests.sh --playbook server.yml
+
+# Test specific role
+./tests/ansible/run-ansible-tests.sh --role docker
+```
+
+📖 **Para documentação completa de testes Ansible**, veja [tests/ansible/README.md](tests/ansible/README.md)
+
 ### Validation Checklist
+
+#### Para Mudanças em Scripts
 
 - [ ] Script runs without errors
 - [ ] All components install correctly
 - [ ] Script is idempotent (can run multiple times)
 - [ ] Logging is clear and informative
 - [ ] Documentation is updated
-- [ ] Tests pass
+- [ ] Script tests pass (`./tests/run-all-tests.sh`)
+
+#### Para Mudanças em Ansible
+
+- [ ] Playbook/role runs without errors
+- [ ] All components install correctly
+- [ ] Playbook/role is idempotent
+- [ ] YAML syntax is correct
+- [ ] ansible-lint passes
+- [ ] Variables are documented
+- [ ] Documentation is updated
+- [ ] Ansible tests pass (`./tests/ansible/run-ansible-tests.sh`)
+
+#### Para Ambos
+
+- [ ] Tested on multiple distributions
+- [ ] Desktop detection works correctly (if applicable)
+- [ ] No breaking changes to existing functionality
+- [ ] Commit messages are clear and descriptive
 
 ## 🎯 Areas for Contribution
 

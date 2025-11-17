@@ -1,0 +1,58 @@
+# ============================================================================
+# Xubuntu 24.04 Test Environment for Ansible
+# ============================================================================
+# This Dockerfile creates a test environment for validating Ansible playbooks
+# on Xubuntu 24.04 with XFCE desktop environment detection.
+# ============================================================================
+
+FROM ubuntu:24.04
+
+# Prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+# Install Python 3, SSH, sudo, and basic dependencies for Ansible
+RUN apt-get update && \
+    apt-get install -y \
+        python3 \
+        python3-pip \
+        python3-apt \
+        openssh-server \
+        sudo \
+        systemd \
+        systemd-sysv \
+        ca-certificates \
+        gnupg \
+        lsb-release \
+        apt-transport-https \
+        software-properties-common \
+        xfce4-session && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Configure SSH
+RUN mkdir /var/run/sshd && \
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+# Create test user with sudo privileges
+RUN useradd -m -s /bin/bash -G sudo testuser && \
+    echo 'testuser:testpass' | chpasswd && \
+    echo 'testuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# Set root password for testing
+RUN echo 'root:rootpass' | chpasswd
+
+# Simulate XFCE desktop environment detection
+ENV XDG_CURRENT_DESKTOP=XFCE
+ENV DESKTOP_SESSION=xfce
+
+# Copy validation script
+COPY tests/ansible/scripts/validate-ansible.sh /tmp/validate-ansible.sh
+RUN chmod +x /tmp/validate-ansible.sh
+
+# Expose SSH port
+EXPOSE 22
+
+# Start SSH service
+CMD ["/usr/sbin/sshd", "-D"]

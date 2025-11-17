@@ -1,0 +1,232 @@
+---
+# ============================================================================
+# Ansible Test Configuration
+# ============================================================================
+# This file defines test distributions, playbooks, roles, and validation
+# criteria for the Ansible testing framework.
+# ============================================================================
+
+distributions:
+  - name: ubuntu-24.04
+    image: ubuntu:24.04
+    dockerfile: tests/ansible/docker/Dockerfile.ubuntu-24.04
+    desktop: gnome
+    description: "Ubuntu 24.04 LTS - Baseline distribution"
+    
+  - name: debian-13
+    image: debian:13
+    dockerfile: tests/ansible/docker/Dockerfile.debian-13
+    desktop: none
+    description: "Debian 13 - Pure Debian compatibility"
+    
+  - name: xubuntu-24.04
+    image: ubuntu:24.04
+    dockerfile: tests/ansible/docker/Dockerfile.xubuntu-24.04
+    desktop: xfce
+    description: "Xubuntu 24.04 - XFCE desktop environment"
+    
+  - name: mint-22
+    image: linuxmintd/mint22-amd64
+    dockerfile: tests/ansible/docker/Dockerfile.mint-22
+    desktop: cinnamon
+    description: "Linux Mint 22 - Derivative with own repositories"
+  
+  - name: popos-22.04
+    image: ubuntu:22.04
+    dockerfile: tests/ansible/docker/Dockerfile.popos-22.04
+    desktop: gnome
+    description: "Pop!_OS 22.04 - System76 Ubuntu derivative with GNOME Cosmic"
+
+playbooks:
+  - name: site.yml
+    path: ansible/site.yml
+    test_all_distros: true
+    description: "Main playbook - full environment setup"
+    
+  - name: server.yml
+    path: ansible/playbooks/server.yml
+    test_all_distros: true
+    description: "Server setup without desktop components"
+    
+  - name: desktop.yml
+    path: ansible/playbooks/desktop.yml
+    test_distros: [ubuntu-24.04, xubuntu-24.04, mint-22, popos-22.04]
+    description: "Desktop workstation setup"
+    
+  - name: cloud.yml
+    path: ansible/playbooks/cloud.yml
+    test_all_distros: true
+    description: "Cloud instance setup"
+    
+  - name: raspberry.yml
+    path: ansible/playbooks/raspberry.yml
+    test_distros: [debian-13]
+    description: "Raspberry Pi setup"
+
+roles:
+  - name: base
+    path: ansible/roles/base
+    required: true
+    description: "Base packages and timezone configuration"
+    
+  - name: docker
+    path: ansible/roles/docker
+    required: true
+    description: "Docker and Docker Compose installation"
+    
+  - name: golang
+    path: ansible/roles/golang
+    required: true
+    description: "Golang installation and configuration"
+    
+  - name: python
+    path: ansible/roles/python
+    required: true
+    description: "Python 3 and pip installation"
+    
+  - name: kotlin
+    path: ansible/roles/kotlin
+    required: true
+    description: "Kotlin and JVM installation"
+    
+  - name: dotnet
+    path: ansible/roles/dotnet
+    required: true
+    description: ".NET SDK installation"
+    
+  - name: terminal-tools
+    path: ansible/roles/terminal-tools
+    required: true
+    description: "Modern terminal tools (eza, micro, vim)"
+    
+  - name: shell-config
+    path: ansible/roles/shell-config
+    required: true
+    description: "Zsh and Bash configuration"
+    
+  - name: desktop
+    path: ansible/roles/desktop
+    required: false
+    desktop_only: true
+    description: "Desktop components and applications"
+    
+  - name: users
+    path: ansible/roles/users
+    required: true
+    description: "User management and configuration"
+
+# Component validation criteria (mirrors tests/scripts/validate.sh)
+validation:
+  base_commands:
+    - git
+    - zsh
+    - vim
+    - curl
+    - wget
+    - htop
+    - btop
+    - jq
+    - fzf
+    - eza
+    - micro
+  
+  cli_tools:
+    - name: bat
+      alternatives: [bat, batcat]  # Ubuntu/Debian naming difference
+    - httpie
+    - yq
+    - glances
+    - gh
+    - tig
+    - screen
+    - k9s
+    - name: dust
+      optional: true
+    - name: tldr
+      optional: true
+    - name: neofetch
+      optional: true
+  
+  build_tools:
+    - cmake
+    - gcc
+    - make
+  
+  database_clients:
+    - psql
+    - redis-cli
+  
+  security_network:
+    - openssl
+    - ssh
+    - nc
+  
+  programming:
+    - docker
+    - name: go
+      alternatives: [go, /usr/local/go/bin/go]
+    - python3
+    - pip3
+    - name: dotnet
+      optional: true  # May be skipped in some scenarios
+  
+  shell_config:
+    directories:
+      - ~/.oh-my-zsh
+      - ~/.oh-my-bash
+      - ~/.vim_runtime
+    files:
+      - ~/.zshrc
+      - ~/.bashrc
+    aliases:
+      - name: ls
+        files: [~/.zshrc, ~/.bashrc]
+      - name: lt
+        files: [~/.zshrc, ~/.bashrc]
+    env_vars:
+      - name: EDITOR
+        value: micro
+        files: [~/.zshrc]
+      - name: VISUAL
+        value: micro
+        files: [~/.zshrc]
+  
+  desktop_components:
+    - code
+    - google-chrome
+    - terminator
+    - alacritty
+
+# Idempotency configuration
+idempotency:
+  # Tasks that are allowed to change on second run
+  exclude_tasks:
+    - "Download*"
+    - "Fetch*"
+    - "Get latest*"
+    - "Update apt cache"
+    - "Gather facts"
+
+# Test execution settings
+test_settings:
+  # Maximum concurrent distribution tests
+  max_parallel: 4
+  
+  # Timeout for individual tests (seconds)
+  test_timeout: 1800  # 30 minutes
+  
+  # Retry failed tests
+  retry_on_failure: false
+  
+  # Keep containers after test failure for debugging
+  keep_failed_containers: false
+  
+  # Verbose output
+  verbose: false
+
+# Test user configuration
+test_user:
+  username: testuser
+  groups: [sudo, docker]
+  shell: /usr/bin/zsh
+  create_home: true

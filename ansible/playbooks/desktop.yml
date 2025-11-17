@@ -16,13 +16,13 @@
     install_dotnet: true
   
   roles:
-    - base
-    - docker
-    - golang
-    - python
-    - kotlin
-    - dotnet
-    - terminal-tools
-    - shell-config
-    - desktop
-    - users
+    - role: ../roles/base
+    - role: ../roles/docker
+    - role: ../roles/golang
+    - role: ../roles/python
+    - role: ../roles/kotlin
+    - role: ../roles/dotnet
+    - role: ../roles/terminal-tools
+    - role: ../roles/shell-config
+    - role: ../roles/desktop
+    - role: ../roles/users

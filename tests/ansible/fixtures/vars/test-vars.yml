@@ -1,0 +1,85 @@
+---
+# ============================================================================
+# Ansible Test Variables
+# ============================================================================
+# This file contains test-specific variables for Ansible playbook execution.
+# These variables enable all components for comprehensive testing.
+# ============================================================================
+
+# Enable all installation flags for comprehensive testing
+install_docker: true
+install_golang: true
+install_python: true
+install_kotlin: true
+install_jvm: true
+install_dotnet: true
+install_desktop: false  # Set per test based on distribution
+
+# Test user configuration
+dev_users:
+  - username: testuser
+    groups: ['sudo', 'docker']
+    shell: /usr/bin/zsh
+    create_home: true
+
+# Shell configuration
+zsh_theme: frisk
+zsh_plugins:
+  - git
+  - docker
+  - golang
+  - python
+  - kubectl
+  - helm
+
+# Timezone
+timezone: UTC
+
+# Base packages (additional to role defaults)
+additional_packages:
+  - vim
+  - curl
+  - wget
+  - htop
+  - jq
+
+# Docker configuration
+docker_users:
+  - testuser
+
+# Golang configuration
+golang_version: "1.21.5"
+golang_install_dir: /usr/local
+
+# Python configuration
+python_packages:
+  - pip
+  - virtualenv
+  - pipenv
+
+# .NET configuration
+dotnet_version: "8.0"
+
+# Desktop configuration (when enabled)
+desktop_packages:
+  - code
+  - google-chrome-stable
+  - terminator
+  - alacritty
+
+# Terminal tools
+terminal_tools:
+  - eza
+  - micro
+  - bat
+  - httpie
+  - yq
+  - glances
+  - gh
+  - tig
+  - screen
+  - k9s
+
+# Test-specific settings
+test_mode: true
+skip_interactive: true

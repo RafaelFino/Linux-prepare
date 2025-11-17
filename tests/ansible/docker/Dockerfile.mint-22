@@ -1,0 +1,57 @@
+# ============================================================================
+# Linux Mint 22 Test Environment for Ansible
+# ============================================================================
+# This Dockerfile creates a test environment for validating Ansible playbooks
+# on Linux Mint 22 with Cinnamon desktop environment detection.
+# ============================================================================
+
+FROM linuxmintd/mint22-amd64
+
+# Prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+# Install Python 3, SSH, sudo, and basic dependencies for Ansible
+RUN apt-get update && \
+    apt-get install -y \
+        python3 \
+        python3-pip \
+        python3-apt \
+        openssh-server \
+        sudo \
+        systemd \
+        systemd-sysv \
+        ca-certificates \
+        gnupg \
+        lsb-release \
+        apt-transport-https \
+        software-properties-common && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Configure SSH
+RUN mkdir -p /var/run/sshd && \
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+# Create test user with sudo privileges
+RUN useradd -m -s /bin/bash -G sudo testuser && \
+    echo 'testuser:testpass' | chpasswd && \
+    echo 'testuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# Set root password for testing
+RUN echo 'root:rootpass' | chpasswd
+
+# Simulate Cinnamon desktop environment detection
+ENV XDG_CURRENT_DESKTOP=X-Cinnamon
+ENV DESKTOP_SESSION=cinnamon
+
+# Copy validation script
+COPY tests/ansible/scripts/validate-ansible.sh /tmp/validate-ansible.sh
+RUN chmod +x /tmp/validate-ansible.sh
+
+# Expose SSH port
+EXPOSE 22
+
+# Start SSH service
+CMD ["/usr/sbin/sshd", "-D"]

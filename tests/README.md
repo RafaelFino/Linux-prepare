@@ -6,17 +6,27 @@ Este diretório contém toda a infraestrutura de testes automatizados do projeto
 
 ```
 tests/
-├── docker/                      # Dockerfiles para cada distribuição
+├── docker/                      # Dockerfiles para cada distribuição (scripts)
 │   ├── Dockerfile.ubuntu-24.04
 │   ├── Dockerfile.debian-13
 │   ├── Dockerfile.xubuntu-24.04
 │   └── Dockerfile.mint-22
 ├── scripts/                     # Scripts de validação
 │   └── validate.sh
-├── run-all-tests.sh            # Executa todos os testes
-├── test-derivatives.sh         # Testa apenas Xubuntu e Mint
-├── quick-test.sh               # Teste rápido (Ubuntu)
-├── TESTING.md                  # Guia completo de testes
+├── ansible/                     # Framework de testes Ansible
+│   ├── README.md               # Documentação completa de testes Ansible
+│   ├── run-ansible-tests.sh   # Runner principal de testes Ansible
+│   ├── quick-test.sh           # Teste rápido Ansible (Ubuntu)
+│   ├── test-derivatives.sh     # Testa derivados Ansible
+│   ├── config/                 # Configuração de testes
+│   ├── docker/                 # Dockerfiles para testes Ansible
+│   ├── scripts/                # Scripts de teste Ansible
+│   ├── fixtures/               # Inventários e variáveis de teste
+│   └── results/                # Resultados dos testes
+├── run-all-tests.sh            # Executa todos os testes de scripts
+├── test-derivatives.sh         # Testa apenas Xubuntu, Mint e Pop!_OS (scripts)
+├── quick-test.sh               # Teste rápido (Ubuntu, scripts)
+├── TESTING.md                  # Guia completo de testes de scripts
 ├── DISTRIBUTIONS.md            # Info sobre distribuições
 ├── TEST-MATRIX.md              # Matriz detalhada de testes
 └── QUICK-REFERENCE.md          # Referência rápida de comandos
@@ -24,22 +34,37 @@ tests/
 
 ## 🚀 Início Rápido
 
-### Executar Todos os Testes
+### Testes de Scripts (Bash)
+
 ```bash
+# Executar todos os testes de scripts
 ./tests/run-all-tests.sh
-```
 
-### Testar Apenas Derivados
-```bash
+# Testar apenas derivados
 ./tests/test-derivatives.sh
-```
 
-### Teste Rápido
-```bash
+# Teste rápido
 ./tests/quick-test.sh
 ```
 
+### Testes Ansible
+
+```bash
+# Executar todos os testes Ansible
+./tests/ansible/run-ansible-tests.sh
+
+# Teste rápido Ansible
+./tests/ansible/quick-test.sh
+
+# Testar derivados Ansible
+./tests/ansible/test-derivatives.sh
+```
+
+📖 **Para documentação completa de testes Ansible**, veja [ansible/README.md](ansible/README.md)
+
 ## 📚 Documentação
+
+### Testes de Scripts
 
 | Arquivo | Descrição |
 |---------|-----------|
@@ -48,6 +73,12 @@ tests/
 | **[TESTING.md](TESTING.md)** | Guia completo de como executar testes |
 | **[DISTRIBUTIONS.md](DISTRIBUTIONS.md)** | Detalhes sobre cada distribuição testada |
 | **[TEST-MATRIX.md](TEST-MATRIX.md)** | Matriz completa de cobertura de testes |
+
+### Testes Ansible
+
+| Arquivo | Descrição |
+|---------|-----------|
+| **[ansible/README.md](ansible/README.md)** | 📖 Documentação completa de testes Ansible |
 
 ## 🎯 Distribuições Testadas
 
@@ -59,11 +90,23 @@ tests/
 
 ## ⏱️ Tempo de Execução
 
+### Testes de Scripts
+
 | Teste | Tempo Estimado |
 |-------|----------------|
 | Quick Test | ~15 minutos |
 | Derivatives | ~30 minutos |
 | Full Suite | ~80 minutos |
+
+### Testes Ansible
+
+| Teste | Tempo Estimado |
+|-------|----------------|
+| Quick Test | ~15 minutos |
+| Derivatives | ~30 minutos |
+| Full Suite | ~80 minutos |
+
+**Nota**: Os testes de scripts e Ansible validam os mesmos componentes e distribuições.
 
 ## 🔧 Requisitos
 

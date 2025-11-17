@@ -16,7 +16,7 @@ Você modificou...
    └─> ./tests/run-all-tests.sh (todos)
 
 🎨 Detecção de desktop?
-   └─> ./tests/test-derivatives.sh (Xubuntu + Mint)
+   └─> ./tests/test-derivatives.sh (Xubuntu + Mint + Pop!_OS)
 
 📦 Instalação de pacotes?
    └─> ./tests/quick-test.sh (Ubuntu rápido)
@@ -40,7 +40,7 @@ Você modificou...
 | Teste | Tempo | Distribuições | Quando Usar |
 |-------|-------|---------------|-------------|
 | **quick-test.sh** | ~15 min | Ubuntu 24.04 | Validação rápida, mudanças pequenas |
-| **test-derivatives.sh** | ~30 min | Xubuntu, Mint | Mudanças em desktop detection |
+| **test-derivatives.sh** | ~45 min | Xubuntu, Mint, Pop!_OS | Mudanças em desktop detection ou derivados |
 | **run-all-tests.sh** | ~80 min | Todas + Idempotência | Antes de commit importante, release |
 
 ## 🎯 Por Cenário

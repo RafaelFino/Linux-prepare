@@ -101,6 +101,9 @@ OPTIONS:
   -u=USER1,USER2    Create and configure specified users (comma-separated)
                     Note: root and current user are always configured
   
+  --desktop         Force desktop components installation (even on servers)
+  --skip-desktop    Skip desktop components installation (even on desktops)
+  
   --skip-docker     Skip Docker and Docker Compose installation
   --skip-go         Skip Golang installation
   --skip-python     Skip Python installation
@@ -111,7 +114,8 @@ OPTIONS:
   -h, --help        Show this help message
 
 NOTE: Desktop components (VSCode, Chrome, fonts, terminal emulators) are
-      automatically installed if a desktop environment is detected.
+      automatically detected and installed. Use --desktop or --skip-desktop
+      to override automatic detection.
 
 SUPPORTED DISTRIBUTIONS:
   - Ubuntu (20.04, 22.04, 24.04)
@@ -123,22 +127,28 @@ EXAMPLES:
   1. Full installation (desktop auto-detected):
      sudo ./prepare.sh
 
-  2. Server setup without Docker:
-     sudo ./prepare.sh --skip-docker
+  2. Force desktop on server:
+     sudo ./prepare.sh --desktop
 
-  3. Minimal setup (only base tools and terminal configuration):
-     sudo ./prepare.sh --skip-docker --skip-go --skip-python --skip-kotlin --skip-jvm --skip-dotnet
+  3. Skip desktop on workstation:
+     sudo ./prepare.sh --skip-desktop
 
-  4. Create multiple users:
-     sudo ./prepare.sh -u=developer,devops
+  4. Server setup without Docker:
+     sudo ./prepare.sh --skip-docker --skip-desktop
 
-  5. Workstation without .NET and Kotlin:
+  5. Minimal setup (only base tools and terminal configuration):
+     sudo ./prepare.sh --skip-docker --skip-go --skip-python --skip-kotlin --skip-jvm --skip-dotnet --skip-desktop
+
+  6. Create multiple users with desktop:
+     sudo ./prepare.sh -u=developer,devops --desktop
+
+  7. Workstation without .NET and Kotlin:
      sudo ./prepare.sh --skip-dotnet --skip-kotlin
 
-  6. Go and Python only (skip other languages):
+  8. Go and Python only (skip other languages):
      sudo ./prepare.sh --skip-kotlin --skip-jvm --skip-dotnet
 
-  7. Docker and Go development environment:
+  9. Docker and Go development environment:
      sudo ./prepare.sh --skip-python --skip-kotlin --skip-jvm --skip-dotnet
 
 WHAT GETS INSTALLED:
@@ -299,6 +309,20 @@ check_service_enabled() {
 # Distribution Detection
 # ============================================================================
 
+detect_popos() {
+    if [ ! -f /etc/os-release ]; then
+        return 1
+    fi
+    
+    source /etc/os-release
+    
+    if [[ "$ID" == "pop" ]] || [[ "$NAME" == *"Pop!_OS"* ]]; then
+        return 0
+    fi
+    
+    return 1
+}
+
 detect_distribution() {
     if [ ! -f /etc/os-release ]; then
         log_error "Cannot detect Linux distribution (/etc/os-release not found)"
@@ -307,9 +331,14 @@ detect_distribution() {
     
     source /etc/os-release
     
-    # Check if it's Debian-based
-    if [[ "$ID" == "debian" ]] || [[ "$ID" == "ubuntu" ]] || [[ "$ID_LIKE" == *"debian"* ]] || [[ "$ID_LIKE" == *"ubuntu"* ]]; then
+    # Check if it's Debian-based (including Pop!_OS)
+    if [[ "$ID" == "debian" ]] || [[ "$ID" == "ubuntu" ]] || [[ "$ID" == "pop" ]] || [[ "$ID_LIKE" == *"debian"* ]] || [[ "$ID_LIKE" == *"ubuntu"* ]]; then
         log_success "Detected Debian-based distribution: $PRETTY_NAME"
+        
+        # Special message for Pop!_OS
+        if detect_popos; then
+            log_info "Pop!_OS detected - using optimized installation methods"
+        fi
         
         # Verify apt is available
         if ! check_command_available apt; then
@@ -320,7 +349,7 @@ detect_distribution() {
         return 0
     else
         log_error "Unsupported distribution: $PRETTY_NAME"
-        log_error "This script only supports Debian-based distributions (Debian, Ubuntu, Mint, etc.)"
+        log_error "This script only supports Debian-based distributions (Debian, Ubuntu, Mint, Pop!_OS, etc.)"
         exit 1
     fi
 }
@@ -422,14 +451,14 @@ check_privileges() {
 # Argument Parsing
 # ============================================================================
 
-# Default configuration: install everything except desktop
+# Default configuration: install everything
 INSTALL_DOCKER=true
 INSTALL_GO=true
 INSTALL_PYTHON=true
 INSTALL_KOTLIN=true
 INSTALL_JVM=true
 INSTALL_DOTNET=true
-INSTALL_DESKTOP=false
+INSTALL_DESKTOP="auto"  # auto, force, skip
 
 # Users to configure
 USERS_TO_CONFIGURE=()
@@ -447,6 +476,14 @@ parse_arguments() {
                 IFS=',' read -ra extra_users <<< "$users_arg"
                 USERS_TO_CONFIGURE+=("${extra_users[@]}")
                 log_info "Will configure additional users: ${extra_users[*]}"
+                ;;
+            --desktop)
+                INSTALL_DESKTOP="force"
+                log_info "Desktop components will be FORCED (manual override)"
+                ;;
+            --skip-desktop)
+                INSTALL_DESKTOP="skip"
+                log_info "Desktop components will be SKIPPED (manual override)"
                 ;;
             --skip-docker)
                 INSTALL_DOCKER=false
@@ -480,20 +517,29 @@ parse_arguments() {
         esac
     done
     
-    # Auto-detect desktop environment (always)
-    if detect_desktop_environment; then
-        INSTALL_DESKTOP=true
-        log_success "Desktop environment detected - desktop components will be installed automatically"
-    else
-        INSTALL_DESKTOP=false
-        log_info "No desktop environment detected - desktop components will NOT be installed"
+    # Apply desktop installation logic
+    if [ "$INSTALL_DESKTOP" == "auto" ]; then
+        # Auto-detect desktop environment
+        if detect_desktop_environment; then
+            INSTALL_DESKTOP="true"
+            log_success "Desktop environment detected - desktop components will be installed automatically"
+        else
+            INSTALL_DESKTOP="false"
+            log_info "No desktop environment detected - desktop components will NOT be installed"
+        fi
+    elif [ "$INSTALL_DESKTOP" == "force" ]; then
+        INSTALL_DESKTOP="true"
+        log_success "Desktop components will be installed (forced by --desktop flag)"
+    elif [ "$INSTALL_DESKTOP" == "skip" ]; then
+        INSTALL_DESKTOP="false"
+        log_info "Desktop components will be skipped (forced by --skip-desktop flag)"
     fi
     
     # Show configuration summary
     if [ $# -eq 0 ]; then
         log_info "No arguments provided. Using default configuration:"
         log_info "  - Installing all development components"
-        log_info "  - Desktop components: $([ "$INSTALL_DESKTOP" = true ] && echo "YES (auto-detected)" || echo "NO (server mode)")"
+        log_info "  - Desktop components: $([ "$INSTALL_DESKTOP" = "true" ] && echo "YES (auto-detected)" || echo "NO (server mode)")"
         log_info "  - Configuring users: root, $(whoami)"
     fi
 }
@@ -656,7 +702,51 @@ install_eza() {
         return 0
     fi
     
-    # Try to add eza repository and install
+    # Pop!_OS specific handling
+    if detect_popos; then
+        log_info "Pop!_OS detected - using alternative installation method for eza"
+        
+        # Ensure cargo is available
+        if ! check_command_available cargo; then
+            log_info "Installing cargo for eza installation..."
+            if apt install -y cargo; then
+                log_success "cargo installed"
+            else
+                log_warning "Failed to install cargo"
+            fi
+        fi
+        
+        # Try cargo install first
+        if check_command_available cargo; then
+            log_info "Installing eza via cargo to /usr/local/bin..."
+            # Install to temporary location first
+            if CARGO_HOME=/tmp/cargo-install cargo install eza --root /usr/local 2>/dev/null; then
+                log_success "eza installed via cargo to /usr/local/bin (accessible to all users)"
+                # Clean up temporary cargo home
+                rm -rf /tmp/cargo-install
+                return 0
+            else
+                log_warning "cargo install failed, trying fallback"
+                rm -rf /tmp/cargo-install
+            fi
+        fi
+        
+        # Fallback to exa from repos
+        if check_package_available exa; then
+            log_info "Installing exa as fallback..."
+            if apt install -y exa; then
+                # Create symlink for eza command
+                ln -sf $(which exa) /usr/local/bin/eza 2>/dev/null || true
+                log_success "exa installed and linked to eza command"
+                return 0
+            fi
+        fi
+        
+        log_warning "Could not install eza or exa on Pop!_OS, will use standard ls"
+        return 1
+    fi
+    
+    # Try to add eza repository and install (standard method)
     log_info "Adding eza repository..."
     if mkdir -p /etc/apt/keyrings && \
        wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | gpg --dearmor -o /etc/apt/keyrings/gierens.gpg 2>/dev/null && \
@@ -944,6 +1034,49 @@ install_docker() {
         return 0
     fi
     
+    # Pop!_OS specific handling
+    if detect_popos; then
+        log_info "Pop!_OS detected - using System76 recommended Docker installation method"
+        
+        # Remove conflicting packages
+        apt remove -y docker docker-engine docker.io containerd runc 2>/dev/null || true
+        
+        # Update package list
+        apt update
+        
+        # Install from Pop!_OS repos (they maintain docker.io)
+        log_info "Installing docker.io and docker-compose from Pop!_OS repositories..."
+        if apt install -y docker.io docker-compose; then
+            log_success "Docker and Docker Compose installed from Pop!_OS repos"
+        else
+            log_error "Failed to install Docker on Pop!_OS"
+            return 1
+        fi
+        
+        # Create docker group if it doesn't exist
+        if ! check_group_exists docker; then
+            log_info "Creating docker group"
+            groupadd docker
+        fi
+        
+        # Enable and start Docker service
+        log_info "Enabling Docker service..."
+        systemctl enable docker
+        systemctl start docker
+        
+        # Validate installation
+        if check_command_available docker; then
+            docker --version
+            log_success "Docker installed successfully on Pop!_OS"
+        else
+            log_error "Docker installation failed on Pop!_OS"
+            return 1
+        fi
+        
+        return 0
+    fi
+    
+    # Standard installation for other distros
     # Install docker.io
     log_info "Installing docker.io package..."
     if ! install_packages_safe docker.io; then
@@ -1573,8 +1706,42 @@ install_desktop_applications() {
         log_skip "VSCode already installed"
     else
         log_info "Installing VSCode..."
-        snap install code --classic
-        log_success "VSCode installed"
+        
+        # Pop!_OS specific handling (snap may not work well)
+        if detect_popos; then
+            log_info "Pop!_OS detected - using apt repository method for VSCode"
+            
+            # Add Microsoft GPG key
+            wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/packages.microsoft.gpg
+            install -D -o root -g root -m 644 /tmp/packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+            
+            # Add VSCode repository
+            echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list
+            
+            # Install
+            apt update
+            if apt install -y code; then
+                rm /tmp/packages.microsoft.gpg
+                log_success "VSCode installed on Pop!_OS via apt"
+            else
+                rm /tmp/packages.microsoft.gpg
+                log_error "Failed to install VSCode on Pop!_OS"
+            fi
+        else
+            # Ensure snap is available for other distros
+            if ! check_command_available snap; then
+                log_info "Installing snapd for desktop applications..."
+                apt install -y snapd
+                systemctl enable snapd 2>/dev/null || true
+                systemctl start snapd 2>/dev/null || true
+                # Wait for snap to be ready
+                sleep 2
+            fi
+            
+            # Use snap for other distros
+            snap install code --classic
+            log_success "VSCode installed"
+        fi
     fi
     
     # Install Google Chrome
@@ -1602,6 +1769,16 @@ install_desktop_applications() {
         log_skip "DBeaver already installed"
     else
         log_info "Installing DBeaver Community Edition..."
+        
+        # Ensure snap is available
+        if ! check_command_available snap; then
+            log_info "Installing snapd for DBeaver..."
+            apt install -y snapd
+            systemctl enable snapd 2>/dev/null || true
+            systemctl start snapd 2>/dev/null || true
+            sleep 2
+        fi
+        
         snap install dbeaver-ce
         log_success "DBeaver installed"
     fi

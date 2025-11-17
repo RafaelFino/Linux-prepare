@@ -3,7 +3,7 @@
 # ============================================================================
 # Test Derivative Distributions Script
 # ============================================================================
-# Tests Xubuntu and Linux Mint specifically
+# Tests Xubuntu, Linux Mint, and Pop!_OS specifically
 # Must be run from project root directory
 # ============================================================================
 
@@ -33,6 +33,13 @@ echo "--- Testing Linux Mint 22 ---"
 echo "This tests Linux Mint compatibility..."
 docker build -f tests/docker/Dockerfile.mint-22 -t linux-prepare-test-mint-22 .
 docker run --rm linux-prepare-test-mint-22 /tmp/validate.sh
+echo ""
+
+# Test Pop!_OS 22.04
+echo "--- Testing Pop!_OS 22.04 ---"
+echo "This tests Pop!_OS compatibility with EZA, Docker, and VSCode workarounds..."
+docker build -f tests/docker/Dockerfile.popos-22.04 -t linux-prepare-test-popos-22.04 .
+docker run --rm linux-prepare-test-popos-22.04 /tmp/validate.sh
 echo ""
 
 echo "============================================"

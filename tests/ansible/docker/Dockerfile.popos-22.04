@@ -1,0 +1,58 @@
+# Pop!_OS 22.04 Test Container
+# System76's Ubuntu-based distribution with GNOME Cosmic
+
+FROM ubuntu:22.04
+
+# Prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=America/Sao_Paulo
+
+# Simulate Pop!_OS by modifying os-release
+RUN echo 'NAME="Pop!_OS"' > /etc/os-release && \
+    echo 'VERSION="22.04 LTS"' >> /etc/os-release && \
+    echo 'ID=pop' >> /etc/os-release && \
+    echo 'ID_LIKE="ubuntu debian"' >> /etc/os-release && \
+    echo 'PRETTY_NAME="Pop!_OS 22.04 LTS"' >> /etc/os-release && \
+    echo 'VERSION_ID="22.04"' >> /etc/os-release && \
+    echo 'HOME_URL="https://pop.system76.com"' >> /etc/os-release && \
+    echo 'SUPPORT_URL="https://support.system76.com"' >> /etc/os-release && \
+    echo 'BUG_REPORT_URL="https://github.com/pop-os/pop/issues"' >> /etc/os-release && \
+    echo 'PRIVACY_POLICY_URL="https://system76.com/privacy"' >> /etc/os-release && \
+    echo 'UBUNTU_CODENAME=jammy' >> /etc/os-release && \
+    echo 'LOGO=distributor-logo-pop-os' >> /etc/os-release
+
+# Install systemd and basic requirements
+RUN apt-get update && \
+    apt-get install -y \
+    systemd \
+    systemd-sysv \
+    sudo \
+    python3 \
+    python3-apt \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Remove unnecessary systemd services
+RUN cd /lib/systemd/system/sysinit.target.wants/ && \
+    ls | grep -v systemd-tmpfiles-setup | xargs rm -f && \
+    rm -f /lib/systemd/system/multi-user.target.wants/* && \
+    rm -f /etc/systemd/system/*.wants/* && \
+    rm -f /lib/systemd/system/local-fs.target.wants/* && \
+    rm -f /lib/systemd/system/sockets.target.wants/*udev* && \
+    rm -f /lib/systemd/system/sockets.target.wants/*initctl* && \
+    rm -f /lib/systemd/system/basic.target.wants/* && \
+    rm -f /lib/systemd/system/anaconda.target.wants/*
+
+# Create test user
+RUN useradd -m -s /bin/bash testuser && \
+    echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# Set working directory
+WORKDIR /workspace
+
+# Set up systemd as init
+VOLUME [ "/sys/fs/cgroup" ]
+CMD ["/lib/systemd/systemd"]

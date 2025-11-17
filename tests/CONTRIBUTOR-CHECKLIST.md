@@ -48,7 +48,7 @@
 - [ ] `./tests/run-all-tests.sh` passou
 - [ ] Testado em Ubuntu 24.04 real
 - [ ] Testado em Debian 13 real (se possível)
-- [ ] Testado em Xubuntu ou Mint real (se possível)
+- [ ] Testado em Xubuntu, Mint ou Pop!_OS real (se possível)
 
 ### Documentação
 - [ ] CHANGELOG.md atualizado com versão

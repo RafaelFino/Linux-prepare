@@ -9,11 +9,21 @@ Automated scripts to prepare fresh Linux installations as complete development e
 ## 🎯 Overview
 
 This project provides comprehensive automation for setting up Linux development environments across multiple platforms:
-- **Desktop workstations** (Ubuntu, Debian, Mint)
+- **Desktop workstations** (Ubuntu, Debian, Mint, Pop!_OS)
 - **ARM devices** (Raspberry Pi, Odroid)
 - **Cloud instances** (Oracle Cloud, GitHub Codespaces, Killercoda)
 
 Choose between **Shell Scripts** (fast, standalone) or **Ansible** (scalable, declarative) implementations.
+
+## 🚀 Quick Start
+
+```bash
+git clone https://github.com/RafaelFino/Linux-prepare.git
+cd Linux-prepare
+sudo ./scripts/prepare.sh
+```
+
+**Time**: 15-30 min | **Installs**: Docker, Go, Python, Kotlin, .NET, terminal tools, desktop apps (if detected)
 
 ## ✨ Features
 
@@ -69,30 +79,23 @@ Choose between **Shell Scripts** (fast, standalone) or **Ansible** (scalable, de
 - 🎨 **Colored Logs**: Clear, timestamped output in English
 
 
-## 🚀 Quick Start
+## 📋 Common Uses
 
-### Desktop Installation (Full Setup)
 ```bash
-cd scripts
-sudo ./prepare.sh --desktop
-```
+# Full setup (auto-detects desktop)
+sudo ./scripts/prepare.sh
 
-### Server Installation (No Desktop)
-```bash
-cd scripts
-sudo ./prepare.sh
-```
+# Server (no desktop)
+sudo ./scripts/prepare.sh --skip-desktop
 
-### Custom Installation
-```bash
-# Skip specific components
-sudo ./prepare.sh --skip-docker --skip-dotnet
+# Go only
+sudo ./scripts/prepare.sh --skip-python --skip-kotlin --skip-jvm --skip-dotnet
 
-# Create additional users
-sudo ./prepare.sh -u=developer,devops --desktop
+# Python only
+sudo ./scripts/prepare.sh --skip-go --skip-kotlin --skip-jvm --skip-dotnet
 
-# Minimal setup (only terminal tools)
-sudo ./prepare.sh --skip-docker --skip-go --skip-python --skip-kotlin --skip-jvm --skip-dotnet
+# Multiple users
+sudo ./scripts/prepare.sh -u=dev1,dev2
 ```
 
 ### Optional Tools Installation
@@ -139,17 +142,15 @@ sudo ./add-opt.sh --help
 ## 📦 Supported Distributions
 
 | Distribution | Version | Status |
-|--------------|---------|--------|
-| Ubuntu | 22.04, 24.04 | ✅ Fully Supported |
-| Debian | 13 | ✅ Fully Supported |
-| Xubuntu | 24.04 | ✅ Fully Supported |
-| Linux Mint | 22+  | ✅ Fully Supported |
-| Raspberry Pi OS | Latest | ✅ Supported (ARM) |
+|-------------|---------|--------|
+| Ubuntu | 22.04, 24.04 | ✅ Tested |
+| Debian | 13 | ✅ Tested |
+| Linux Mint | 22+ | ✅ Tested |
+| Pop!_OS | 22.04 | ✅ Tested |
+| Xubuntu | 24.04 | ✅ Tested |
+| Raspberry Pi OS | Latest | ✅ ARM |
 
-**Notes:**
-- **Xubuntu**: Tested with XFCE desktop environment detection
-- **Linux Mint**: Based on Ubuntu LTS, fully compatible with all features
-- All distributions are tested in automated CI/CD pipeline
+**Pop!_OS note**: Uses special workarounds for EZA, Docker, VSCode
 
 ## 🎮 Usage
 
@@ -159,102 +160,38 @@ sudo ./add-opt.sh --help
 sudo ./prepare.sh [OPTIONS]
 ```
 
-### 🔍 Smart Desktop Detection
+## 🖥️ Desktop Components
 
-The script automatically detects if you're running a desktop environment:
+**Auto-detected**: Desktop → Installs VSCode, Chrome, fonts | Server → Skips
 
-**Desktop Detected** (GNOME, KDE, XFCE, MATE, Cinnamon, LXDE):
-- ✅ Automatically installs desktop components (VSCode, Chrome, fonts, terminal emulators)
+**Manual control**:
+```bash
+sudo ./scripts/prepare.sh --desktop        # Force install
+sudo ./scripts/prepare.sh --skip-desktop   # Skip install
+```
 
-**Server/Headless Detected** (Raspberry Pi, Cloud instances, SSH-only):
-- ❌ Skips desktop components automatically
-
-**Detection Methods:**
-- Checks for running desktop environment processes (gnome-shell, plasmashell, xfce4-session, etc.)
-- Detects X11 or Wayland display servers
-- Checks systemd graphical target
-- Examines environment variables (DISPLAY, XDG_CURRENT_DESKTOP, WAYLAND_DISPLAY)
+**Includes**: VSCode, Chrome, Terminator, Alacritty, Nerd Fonts, Flameshot, DBeaver
 
 #### Options
 
-| Option | Description |
-|--------|-------------|
-| `-u=USER1,USER2` | Create and configure specified users (comma-separated) |
-| `--skip-docker` | Skip Docker and Docker Compose installation |
-| `--skip-go` | Skip Golang installation |
-| `--skip-python` | Skip Python installation |
-| `--skip-kotlin` | Skip Kotlin installation |
-| `--skip-jvm` | Skip JVM (Java) installation |
-| `--skip-dotnet` | Skip .NET SDK installation |
-| `-h, --help` | Show detailed help message |
+| Flag | What it does |
+|------|-------------|
+| `-u=USER1,USER2` | Add users |
+| `--desktop` | Force desktop install |
+| `--skip-desktop` | Skip desktop install |
+| `--skip-docker` | Skip Docker |
+| `--skip-go` | Skip Go |
+| `--skip-python` | Skip Python |
+| `--skip-kotlin` | Skip Kotlin |
+| `--skip-jvm` | Skip Java |
+| `--skip-dotnet` | Skip .NET |
 
-**Note**: Desktop components are automatically installed if a desktop environment is detected.
-
-#### Default Behavior
-
-**Without arguments**, the script installs:
-- ✅ All development tools (Docker, Go, Python, Kotlin, JVM, .NET)
-- ✅ Terminal tools (zsh, oh-my-zsh, oh-my-bash, eza, micro, vim)
-- ✅ Base packages (git, curl, wget, htop, btop, jq, fzf, etc.)
-- 🔍 Desktop components (AUTO-DETECTED)
-  - ✅ Installed if desktop environment detected (GNOME, KDE, XFCE, etc.)
-  - ❌ Skipped on servers/headless systems
-  - Use `--desktop` to force installation
-  - Use `--no-desktop` to disable
-
-**Users configured**: root + current user (add more with `-u=`)
+**Default**: Installs everything, auto-detects desktop
 
 
-## 📚 Examples
+## 📚 More Examples
 
-### Example 1: Full Desktop Workstation
-```bash
-# Install everything (desktop auto-detected)
-sudo ./prepare.sh
-```
-**Installs**: Docker, Go, Python, Kotlin, JVM, .NET, VSCode, Chrome, fonts, terminal emulators (if desktop detected)
-
-### Example 2: Development Server (No Desktop)
-```bash
-# All dev tools (desktop auto-skipped on servers)
-sudo ./prepare.sh
-```
-**Installs**: Docker, Go, Python, Kotlin, JVM, .NET, terminal tools (no desktop on servers)
-
-### Example 3: Docker + Go Only
-```bash
-# Skip everything except Docker and Go
-sudo ./prepare.sh --skip-python --skip-kotlin --skip-jvm --skip-dotnet
-```
-**Installs**: Docker, Go, terminal tools
-
-### Example 4: Multiple Users with Desktop
-```bash
-# Create users 'developer' and 'devops' with full setup
-sudo ./prepare.sh -u=developer,devops --desktop
-```
-**Configures**: root, current user, developer, devops (all with full environment)
-
-### Example 5: Python Data Science Workstation
-```bash
-# Python-focused setup (desktop auto-detected)
-sudo ./prepare.sh --skip-go --skip-kotlin --skip-jvm --skip-dotnet
-```
-**Installs**: Docker, Python, VSCode (if desktop), Chrome (if desktop), terminal tools
-
-### Example 6: Go Microservices Server
-```bash
-# Go and Docker only
-sudo ./prepare.sh --skip-python --skip-kotlin --skip-jvm --skip-dotnet
-```
-**Installs**: Docker, Go, terminal tools
-
-### Example 7: .NET Development Environment
-```bash
-# .NET with Docker, skip other languages (desktop auto-detected)
-sudo ./prepare.sh --skip-go --skip-python --skip-kotlin --skip-jvm
-```
-**Installs**: Docker, .NET, VSCode (if desktop), Chrome (if desktop), terminal tools
+See [Common Uses](#-common-uses) section above for typical scenarios.
 
 ## 🌍 Environment-Specific Scripts
 
@@ -652,39 +589,86 @@ groups
 
 > **Quick Reference**: See [tests/QUICK-REFERENCE.md](tests/QUICK-REFERENCE.md) for all test commands
 
-### Quick Test (5-10 minutes)
+Este projeto inclui dois frameworks de teste completos:
+- **Testes de Scripts**: Validam instalação via scripts Bash
+- **Testes Ansible**: Validam instalação via playbooks Ansible
+
+Ambos testam os mesmos componentes e distribuições.
+
+### Testes de Scripts
+
+#### Quick Test (15 minutos)
 
 ```bash
 # From project root directory
 ./tests/quick-test.sh
 ```
 
-This tests basic installation with Docker, Go, Python, and terminal tools on Ubuntu 24.04.
+Testa instalação básica com Docker, Go, Python e ferramentas de terminal no Ubuntu 24.04.
 
-### Test Derivatives Only (30 minutes)
+#### Test Derivatives Only (30 minutos)
 
 ```bash
 # Test Xubuntu and Linux Mint
 ./tests/test-derivatives.sh
 ```
 
-This tests Xubuntu 24.04 (XFCE) and Linux Mint 22 specifically.
+Testa Xubuntu 24.04 (XFCE) e Linux Mint 22 especificamente.
 
-### Full Automated Testing (15-30 minutes)
+#### Full Automated Testing (80 minutos)
 
 ```bash
 # From project root directory
 ./tests/run-all-tests.sh
 ```
 
-This runs comprehensive tests on:
+Executa testes completos em:
 - Ubuntu 24.04
 - Debian 13
 - Xubuntu 24.04
 - Linux Mint 22
-- Idempotency (script runs twice)
+- Idempotência (script executa duas vezes)
 
-### Individual Distribution Test
+### Testes Ansible
+
+#### Quick Test (15 minutos)
+
+```bash
+./tests/ansible/quick-test.sh
+```
+
+Testa playbooks Ansible no Ubuntu 24.04 apenas.
+
+#### Test Derivatives Only (30 minutos)
+
+```bash
+./tests/ansible/test-derivatives.sh
+```
+
+Testa playbooks Ansible no Xubuntu e Mint.
+
+#### Full Ansible Testing (80 minutos)
+
+```bash
+./tests/ansible/run-ansible-tests.sh
+```
+
+Executa testes completos de Ansible em todas as distribuições.
+
+#### Test Specific Components
+
+```bash
+# Testar playbook específico
+./tests/ansible/run-ansible-tests.sh --playbook server.yml
+
+# Testar role específica
+./tests/ansible/run-ansible-tests.sh --role docker
+
+# Testar distribuição específica
+./tests/ansible/run-ansible-tests.sh --distro ubuntu-24.04
+```
+
+### Individual Distribution Test (Scripts)
 
 ```bash
 # Test Ubuntu 24.04
@@ -718,13 +702,17 @@ apt update && apt install -y sudo
 
 ### Validation Only
 
-If you've already run the script and want to validate:
+Se você já executou o script e quer validar:
 
 ```bash
 ./tests/scripts/validate.sh
 ```
 
-**See [tests/TESTING.md](tests/TESTING.md) for detailed testing guide.**
+### Documentação de Testes
+
+- **[tests/TESTING.md](tests/TESTING.md)** - Guia detalhado de testes de scripts
+- **[tests/ansible/README.md](tests/ansible/README.md)** - Guia completo de testes Ansible
+- **[tests/QUICK-REFERENCE.md](tests/QUICK-REFERENCE.md)** - Referência rápida de comandos
 
 ## 🤝 Contributing
 
