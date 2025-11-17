@@ -1,57 +1,57 @@
-# Desktop Detection & Pop!_OS Support
+# Detecção de Desktop & Suporte ao Pop!_OS
 
-## What Changed
+## O Que Mudou
 
-### Documentation
-- Quick Start at top of README
-- Desktop Components section (auto-detect + manual flags)
-- Usage scenarios simplified
-- Pop!_OS added to supported distributions
+### Documentação
+- Quick Start no topo do README
+- Seção Desktop Components (auto-detecção + flags manuais)
+- Cenários de uso simplificados
+- Pop!_OS adicionado às distribuições suportadas
 
-### Script Features
-- `--desktop` flag to force install
-- `--skip-desktop` flag to skip install
-- Pop!_OS auto-detection
-- Workarounds for EZA, Docker, VSCode on Pop!_OS
-- Auto-install snap and cargo when needed
+### Recursos do Script
+- Flag `--desktop` para forçar instalação
+- Flag `--skip-desktop` para pular instalação
+- Auto-detecção de Pop!_OS
+- Workarounds para EZA, Docker, VSCode no Pop!_OS
+- Auto-instalação de snap e cargo quando necessário
 
-### Tests
-- Pop!_OS Dockerfile added
-- test-derivatives.sh includes Pop!_OS
-- test-popos.sh for specific testing
+### Testes
+- Dockerfile do Pop!_OS adicionado
+- test-derivatives.sh inclui Pop!_OS
+- test-popos.sh para testes específicos
 
-## Quick Usage
+## Uso Rápido
 
 ```bash
-# Auto-detect (default)
+# Auto-detecta (padrão)
 sudo ./scripts/prepare.sh
 
-# Force desktop
+# Força instalação desktop
 sudo ./scripts/prepare.sh --desktop
 
-# Skip desktop
+# Pula instalação desktop
 sudo ./scripts/prepare.sh --skip-desktop
 ```
 
-## Pop!_OS Workarounds
+## Workarounds do Pop!_OS
 
-**EZA**: Installs cargo → cargo install to /usr/local/bin (global) → fallback exa  
-**Docker**: Uses Pop!_OS repositories  
-**VSCode**: Uses apt instead of snap  
-**Snap**: Auto-installs snapd when needed for other distros
+**EZA**: Instala cargo → cargo install em /usr/local/bin (global) → fallback exa  
+**Docker**: Usa repositórios do Pop!_OS  
+**VSCode**: Usa apt ao invés de snap  
+**Snap**: Auto-instala snapd quando necessário em outras distros
 
-**Note**: Cargo binaries installed to `/usr/local/bin` for system-wide access
+**Nota**: Binários do cargo instalados em `/usr/local/bin` para acesso de todos os usuários
 
-## Testing
+## Testes
 
 ```bash
-./tests/test-popos.sh              # Pop!_OS only (~15min)
-./tests/test-derivatives.sh        # All derivatives (~45min)
-./tests/run-all-tests.sh           # Everything (~100min)
+./tests/test-popos.sh              # Apenas Pop!_OS (~15min)
+./tests/test-derivatives.sh        # Todos os derivados (~45min)
+./tests/run-all-tests.sh           # Completo (~100min)
 ```
 
-## Files Modified
+## Arquivos Modificados
 
 **Docs**: README.md, CHANGELOG.md, tests/DISTRIBUTIONS.md  
 **Script**: scripts/prepare.sh  
-**Tests**: Dockerfiles, test scripts, test-config.yml
+**Testes**: Dockerfiles, scripts de teste, test-config.yml

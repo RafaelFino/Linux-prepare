@@ -404,96 +404,6 @@ fact_caching_timeout = 86400
 pipelining = True
 ```
 
-## 🧪 Testing
-
-### Automated Testing Framework
-
-Este projeto inclui um framework completo de testes para validar playbooks e roles Ansible em múltiplas distribuições Linux.
-
-#### Executar Todos os Testes
-
-```bash
-# Do diretório raiz do projeto
-./tests/ansible/run-ansible-tests.sh
-```
-
-#### Teste Rápido (Ubuntu apenas)
-
-```bash
-./tests/ansible/quick-test.sh
-```
-
-#### Testar Distribuições Específicas
-
-```bash
-# Ubuntu 24.04
-./tests/ansible/run-ansible-tests.sh --distro ubuntu-24.04
-
-# Debian 13
-./tests/ansible/run-ansible-tests.sh --distro debian-13
-
-# Xubuntu e Mint (derivados)
-./tests/ansible/test-derivatives.sh
-```
-
-#### Testar Playbooks ou Roles Específicos
-
-```bash
-# Testar playbook específico
-./tests/ansible/run-ansible-tests.sh --playbook server.yml
-
-# Testar role específica
-./tests/ansible/run-ansible-tests.sh --role docker
-```
-
-### O Que os Testes Validam
-
-Os testes verificam:
-
-- ✅ **Sintaxe**: YAML, Ansible syntax, ansible-lint
-- ✅ **Instalação**: Todos os componentes (50+)
-- ✅ **Idempotência**: Execução múltipla segura
-- ✅ **Compatibilidade**: 4 distribuições Linux
-- ✅ **Desktop**: Detecção de ambientes GNOME, XFCE, Cinnamon
-- ✅ **Configuração**: Shell, aliases, variáveis de ambiente
-
-### Distribuições Testadas
-
-| Distribuição | Versão | Desktop | Tempo |
-|--------------|--------|---------|-------|
-| Ubuntu | 24.04 | GNOME | ~15 min |
-| Debian | 13 | Nenhum | ~12 min |
-| Xubuntu | 24.04 | XFCE | ~16 min |
-| Linux Mint | 22 | Cinnamon | ~15 min |
-
-**Tempo total da suite completa**: ~80 minutos
-
-### Componentes Validados
-
-Os testes verificam a instalação e configuração de:
-
-- **Comandos base**: git, zsh, vim, curl, wget, htop, btop, jq, fzf, eza, micro
-- **CLI tools**: bat, httpie, yq, glances, gh, tig, screen, k9s
-- **Build tools**: cmake, gcc, make
-- **Databases**: psql, redis-cli
-- **Segurança**: openssl, ssh, netcat
-- **Linguagens**: Docker, Golang, Python3, .NET
-- **Shell**: Oh-My-Zsh, Oh-My-Bash, aliases, env vars
-- **Desktop**: VSCode, Chrome, Terminator, Alacritty (quando aplicável)
-
-### Documentação Completa de Testes
-
-Para informações detalhadas sobre o framework de testes, veja:
-
-📖 **[tests/ansible/README.md](../tests/ansible/README.md)**
-
-Inclui:
-- Guia completo de uso
-- Troubleshooting
-- Validação manual
-- Integração CI/CD
-- Desenvolvimento de testes
-
 ## 🔄 Integration with CI/CD
 
 ### GitHub Actions Example
@@ -506,22 +416,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Install Ansible
-        run: |
-          sudo apt update
-          sudo apt install -y ansible python3-pip
-          pip3 install ansible-lint
-      
-      - name: Run Ansible Tests
-        run: ./tests/ansible/run-ansible-tests.sh
-  
   deploy:
-    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

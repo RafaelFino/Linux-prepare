@@ -1,21 +1,21 @@
-# Linux Development Environment Setup
+# Configuração de Ambiente de Desenvolvimento Linux
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Shell Script](https://img.shields.io/badge/Shell-Bash-green.svg)](https://www.gnu.org/software/bash/)
 [![Ansible](https://img.shields.io/badge/Ansible-2.9+-blue.svg)](https://www.ansible.com/)
 
-Automated scripts to prepare fresh Linux installations as complete development environments with modern tools, multiple programming languages, and optimized terminal configurations.
+Scripts automatizados para preparar instalações Linux novas como ambientes de desenvolvimento completos com ferramentas modernas, múltiplas linguagens de programação e configurações de terminal otimizadas.
 
-## 🎯 Overview
+## 🎯 Visão Geral
 
-This project provides comprehensive automation for setting up Linux development environments across multiple platforms:
-- **Desktop workstations** (Ubuntu, Debian, Mint, Pop!_OS)
-- **ARM devices** (Raspberry Pi, Odroid)
-- **Cloud instances** (Oracle Cloud, GitHub Codespaces, Killercoda)
+Este projeto fornece automação abrangente para configurar ambientes de desenvolvimento Linux em múltiplas plataformas:
+- **Estações de trabalho desktop** (Ubuntu, Debian, Mint, Pop!_OS)
+- **Dispositivos ARM** (Raspberry Pi, Odroid)
+- **Instâncias na nuvem** (Oracle Cloud, GitHub Codespaces, Killercoda)
 
-Choose between **Shell Scripts** (fast, standalone) or **Ansible** (scalable, declarative) implementations.
+Escolha entre implementações com **Shell Scripts** (rápido, standalone) ou **Ansible** (escalável, declarativo).
 
-## 🚀 Quick Start
+## 🚀 Início Rápido
 
 ```bash
 git clone https://github.com/RafaelFino/Linux-prepare.git
@@ -23,180 +23,178 @@ cd Linux-prepare
 sudo ./scripts/prepare.sh
 ```
 
-**Time**: 15-30 min | **Installs**: Docker, Go, Python, Kotlin, .NET, terminal tools, desktop apps (if detected)
+**Tempo**: 15-30 min | **Instala**: Docker, Go, Python, Kotlin, .NET, ferramentas de terminal, apps desktop (se detectado)
 
-## ✨ Features
+## ✨ Funcionalidades
 
-### Development Tools
-- 🐳 **Docker & Docker Compose v2** - Containerization platform
-- 🐹 **Golang** - Latest version with automatic updates
-- 🐍 **Python 3** - With pip, virtualenv, and development tools
-- ☕ **JVM (Java)** - Via SDKMAN for easy version management
+### Ferramentas de Desenvolvimento
+- 🐳 **Docker & Docker Compose v2** - Plataforma de containerização
+- 🐹 **Golang** - Versão mais recente com atualizações automáticas
+- 🐍 **Python 3** - Com pip, virtualenv e ferramentas de desenvolvimento
+- ☕ **JVM (Java)** - Via SDKMAN para gerenciamento fácil de versões
 - 🎯 **Kotlin** - Via SDKMAN
-- 💜 **. NET SDK 8.0** - Cross-platform development
+- 💜 **.NET SDK 8.0** - Desenvolvimento multiplataforma
 - 🔨 **Build Tools** - cmake, build-essential
-- 🗄️ **Database Clients** - PostgreSQL, MySQL, Redis
+- 🗄️ **Clientes de Banco de Dados** - PostgreSQL, MySQL, Redis
 
-### Modern CLI Tools
-- 📂 **eza** - Modern ls replacement with icons and tree view
-- 🔍 **fzf** - Fuzzy finder for command history
-- 🦇 **bat** - Cat with syntax highlighting (installed as `batcat` on Ubuntu, aliased to `bat`)
-- 🌐 **httpie** - User-friendly HTTP client
-- 📋 **yq** - YAML processor (like jq for YAML)
-- 📊 **glances** - Advanced system monitor
-- 🎨 **neofetch** - System information tool (optional)
-- 💨 **dust** - Intuitive disk usage analyzer (optional)
+### Ferramentas CLI Modernas
+- 📂 **eza** - Substituto moderno do ls com ícones e visualização em árvore
+- 🔍 **fzf** - Localizador fuzzy para histórico de comandos
+- 🦇 **bat** - Cat com destaque de sintaxe (instalado como `batcat` no Ubuntu, com alias para `bat`)
+- 🌐 **httpie** - Cliente HTTP amigável
+- 📋 **yq** - Processador YAML (como jq para YAML)
+- 📊 **glances** - Monitor de sistema avançado
+- 🎨 **neofetch** - Ferramenta de informações do sistema (opcional)
+- 💨 **dust** - Analisador de uso de disco intuitivo (opcional)
 - 🐙 **gh** - GitHub CLI
-- 🌳 **tig** - Text-mode interface for Git
-- 🖥️ **screen** - Terminal multiplexer
-- ☸️ **k9s** - Kubernetes TUI
-- 📚 **tldr** - Simplified man pages (optional, installed via pip3 if not in repos)
+- 🌳 **tig** - Interface em modo texto para Git
+- 🖥️ **screen** - Multiplexador de terminal
+- ☸️ **k9s** - TUI para Kubernetes
+- 📚 **tldr** - Páginas man simplificadas (opcional, instalado via pip3 se não estiver nos repositórios)
 
-### Terminal Experience
-- 🐚 **Zsh** - Modern shell set as default
-- 🎨 **Oh-My-Zsh** - With 'frisk' theme and 30+ plugins
-- 🎨 **Oh-My-Bash** - Enhanced Bash configuration
-- 📝 **Micro Editor** - Intuitive terminal editor (default)
-- 📝 **Vim** - With awesome vimrc configuration
+### Experiência de Terminal
+- 🐚 **Zsh** - Shell moderno definido como padrão
+- 🎨 **Oh-My-Zsh** - Com tema 'frisk' e mais de 30 plugins
+- 🎨 **Oh-My-Bash** - Configuração aprimorada do Bash
+- 📝 **Micro Editor** - Editor de terminal intuitivo (padrão)
+- 📝 **Vim** - Com configuração awesome vimrc
 
-### Desktop Components (Auto-detected)
-- 💻 **VSCode** - Popular code editor
-- 🌐 **Google Chrome** - Web browser
-- 📸 **Flameshot** - Screenshot tool
-- 🗄️ **DBeaver CE** - Universal database tool
-- 🖥️ **Terminal Emulators** - Terminator & Alacritty
-- 🔤 **Fonts** - Powerline & Nerd Fonts (FiraCode, JetBrainsMono, Hack)
+### Componentes Desktop (Auto-detectados)
+- 💻 **VSCode** - Editor de código popular
+- 🌐 **Google Chrome** - Navegador web
+- 📸 **Flameshot** - Ferramenta de captura de tela
+- 🗄️ **DBeaver CE** - Ferramenta universal de banco de dados
+- 🖥️ **Emuladores de Terminal** - Terminator & Alacritty
+- 🔤 **Fontes** - Powerline & Nerd Fonts (FiraCode, JetBrainsMono, Hack)
 
-### Security & Network Tools
-- 🔐 **OpenSSL** - Cryptography toolkit
-- 🔌 **OpenSSH Server** - Remote access
-- 🌐 **netcat** - Network utility
+### Ferramentas de Segurança e Rede
+- 🔐 **OpenSSL** - Kit de ferramentas de criptografia
+- 🔌 **OpenSSH Server** - Acesso remoto
+- 🌐 **netcat** - Utilitário de rede
 
-### System Configuration
-- 🌍 **Timezone**: America/Sao_Paulo
-- 👤 **User Management**: Automatic sudo group assignment
-- 🔄 **Idempotent**: Safe to run multiple times
-- 🎨 **Colored Logs**: Clear, timestamped output in English
+### Configuração do Sistema
+- 🌍 **Fuso Horário**: America/Sao_Paulo
+- 👤 **Gerenciamento de Usuários**: Atribuição automática ao grupo sudo
+- 🔄 **Idempotente**: Seguro para executar múltiplas vezes
+- 🎨 **Logs Coloridos**: Saída clara e com timestamp em português
 
-
-## 📋 Common Uses
+## 📋 Usos Comuns
 
 ```bash
-# Full setup (auto-detects desktop)
+# Instalação completa (auto-detecta desktop)
 sudo ./scripts/prepare.sh
 
-# Server (no desktop)
+# Servidor (sem desktop)
 sudo ./scripts/prepare.sh --skip-desktop
 
-# Go only
+# Apenas Go
 sudo ./scripts/prepare.sh --skip-python --skip-kotlin --skip-jvm --skip-dotnet
 
-# Python only
+# Apenas Python
 sudo ./scripts/prepare.sh --skip-go --skip-kotlin --skip-jvm --skip-dotnet
 
-# Multiple users
+# Múltiplos usuários
 sudo ./scripts/prepare.sh -u=dev1,dev2
 ```
 
-### Optional Tools Installation
-After running the main script, you can install additional optional tools:
+### Instalação de Ferramentas Opcionais
+Após executar o script principal, você pode instalar ferramentas opcionais adicionais:
 
 ```bash
 cd scripts
 
-# Install Node.js and Rust
+# Instalar Node.js e Rust
 sudo ./add-opt.sh --nodejs --rust
 
-# Install Kubernetes tools
+# Instalar ferramentas Kubernetes
 sudo ./add-opt.sh --kubectl --helm
 
-# Install Git TUI tools
+# Instalar ferramentas Git TUI
 sudo ./add-opt.sh --lazygit --delta
 
-# Install everything optional
+# Instalar tudo opcional
 sudo ./add-opt.sh --all
 
-# See all options
+# Ver todas as opções
 sudo ./add-opt.sh --help
 ```
 
-**Available Optional Tools:**
-- **Languages**: Node.js, Rust, Ruby
-- **Infrastructure**: Terraform, kubectl, Helm
-- **Git Tools**: lazygit, delta
-- **Container Tools**: lazydocker
-- **Shell**: Starship, zoxide, tmux plugins
-- **Editors**: Neovim
-- **Desktop Apps**: Postman, Insomnia, Obsidian
-- **Database**: MongoDB tools
+**Ferramentas Opcionais Disponíveis:**
+- **Linguagens**: Node.js, Rust, Ruby
+- **Infraestrutura**: Terraform, kubectl, Helm
+- **Ferramentas Git**: lazygit, delta
+- **Ferramentas de Container**: lazydocker
+- **Shell**: Starship, zoxide, plugins tmux
+- **Editores**: Neovim
+- **Apps Desktop**: Postman, Insomnia, Obsidian
+- **Banco de Dados**: Ferramentas MongoDB
 - **Python**: Poetry, pipx
 
-## 📋 Prerequisites
+## 📋 Pré-requisitos
 
-- **Operating System**: Debian-based Linux (Ubuntu 20.04+, Debian 13+, Linux Mint, etc.)
-- **Privileges**: Root or sudo access
-- **Network**: Internet connection required
-- **Disk Space**: ~5GB for full installation (less without desktop)
-- **Time**: 10-30 minutes depending on components
+- **Sistema Operacional**: Linux baseado em Debian (Ubuntu 20.04+, Debian 13+, Linux Mint, etc.)
+- **Privilégios**: Acesso root ou sudo
+- **Rede**: Conexão com a internet necessária
+- **Espaço em Disco**: ~5GB para instalação completa (menos sem desktop)
+- **Tempo**: 10-30 minutos dependendo dos componentes
 
-## 📦 Supported Distributions
+## 📦 Distribuições Suportadas
 
-| Distribution | Version | Status |
+| Distribuição | Versão | Status |
 |-------------|---------|--------|
-| Ubuntu | 22.04, 24.04 | ✅ Tested |
-| Debian | 13 | ✅ Tested |
-| Linux Mint | 22+ | ✅ Tested |
-| Pop!_OS | 22.04 | ✅ Tested |
-| Xubuntu | 24.04 | ✅ Tested |
-| Raspberry Pi OS | Latest | ✅ ARM |
+| Ubuntu | 22.04, 24.04 | ✅ Testado |
+| Debian | 13 | ✅ Testado |
+| Linux Mint | 22+ | ✅ Testado |
+| Pop!_OS | 22.04 | ✅ Testado |
+| Xubuntu | 24.04 | ✅ Testado |
+| Raspberry Pi OS | Mais recente | ✅ ARM |
 
-**Pop!_OS note**: Uses special workarounds for EZA, Docker, VSCode
+**Nota Pop!_OS**: Usa workarounds especiais para EZA, Docker, VSCode
 
-## 🎮 Usage
+## 🎮 Uso
 
-### Main Script (scripts/prepare.sh)
+### Script Principal (scripts/prepare.sh)
 
 ```bash
-sudo ./prepare.sh [OPTIONS]
+sudo ./prepare.sh [OPÇÕES]
 ```
 
-## 🖥️ Desktop Components
+## 🖥️ Componentes Desktop
 
-**Auto-detected**: Desktop → Installs VSCode, Chrome, fonts | Server → Skips
+**Auto-detectado**: Desktop → Instala VSCode, Chrome, fontes | Servidor → Pula
 
-**Manual control**:
+**Controle manual**:
 ```bash
-sudo ./scripts/prepare.sh --desktop        # Force install
-sudo ./scripts/prepare.sh --skip-desktop   # Skip install
+sudo ./scripts/prepare.sh --desktop        # Força instalação
+sudo ./scripts/prepare.sh --skip-desktop   # Pula instalação
 ```
 
-**Includes**: VSCode, Chrome, Terminator, Alacritty, Nerd Fonts, Flameshot, DBeaver
+**Inclui**: VSCode, Chrome, Terminator, Alacritty, Nerd Fonts, Flameshot, DBeaver
 
-#### Options
+#### Opções
 
-| Flag | What it does |
-|------|-------------|
-| `-u=USER1,USER2` | Add users |
-| `--desktop` | Force desktop install |
-| `--skip-desktop` | Skip desktop install |
-| `--skip-docker` | Skip Docker |
-| `--skip-go` | Skip Go |
-| `--skip-python` | Skip Python |
-| `--skip-kotlin` | Skip Kotlin |
-| `--skip-jvm` | Skip Java |
-| `--skip-dotnet` | Skip .NET |
+| Flag | O que faz |
+|------|-----------|
+| `-u=USER1,USER2` | Adiciona usuários |
+| `--desktop` | Força instalação desktop |
+| `--skip-desktop` | Pula instalação desktop |
+| `--skip-docker` | Pula Docker |
+| `--skip-go` | Pula Go |
+| `--skip-python` | Pula Python |
+| `--skip-kotlin` | Pula Kotlin |
+| `--skip-jvm` | Pula Java |
+| `--skip-dotnet` | Pula .NET |
 
-**Default**: Installs everything, auto-detects desktop
+**Padrão**: Instala tudo, auto-detecta desktop
 
+## 📚 Mais Exemplos
 
-## 📚 More Examples
+Veja a seção [Usos Comuns](#-usos-comuns) acima para cenários típicos.
 
-See [Common Uses](#-common-uses) section above for typical scenarios.
-
-## 🌍 Environment-Specific Scripts
+## 🌍 Scripts Específicos por Ambiente
 
 ### Desktop (scripts/prepare.sh)
-Full-featured script for desktop workstations and servers.
+Script completo para estações de trabalho desktop e servidores.
 
 ```bash
 cd scripts
@@ -204,7 +202,7 @@ sudo ./prepare.sh --desktop
 ```
 
 ### Raspberry Pi (rasp/rasp4-prepare.sh)
-Optimized for Raspberry Pi 4 with Ubuntu (ARM architecture).
+Otimizado para Raspberry Pi 4 com Ubuntu (arquitetura ARM).
 
 ```bash
 cd rasp
@@ -212,7 +210,7 @@ sudo ./rasp4-prepare.sh
 ```
 
 ### Odroid (odroid/odroid-prepare.sh)
-Optimized for Odroid devices with Ubuntu (ARM architecture).
+Otimizado para dispositivos Odroid com Ubuntu (arquitetura ARM).
 
 ```bash
 cd odroid
@@ -220,17 +218,15 @@ sudo ./odroid-prepare.sh
 ```
 
 ### Oracle Cloud Infrastructure (cloud/oci-ubuntu.sh)
-Configured for OCI VMs with firewall rules.
+Configurado para VMs OCI com regras de firewall.
 
 ```bash
 cd cloud
 sudo ./oci-ubuntu.sh
 ```
 
-
-
 ### GitHub Codespaces (cloud/github-workspace.sh)
-Optimized for GitHub Codespaces environment.
+Otimizado para ambiente GitHub Codespaces.
 
 ```bash
 cd cloud
@@ -238,19 +234,19 @@ cd cloud
 ```
 
 ### Killercoda (cloud/killercoda.sh)
-Quick setup for Killercoda interactive environments.
+Configuração rápida para ambientes interativos Killercoda.
 
 ```bash
-# Run directly from URL
+# Executar diretamente da URL
 curl https://raw.githubusercontent.com/RafaelFino/Linux-prepare/main/cloud/killercoda.sh | bash
 ```
 
 
-## 📊 Component Comparison by Environment
+## 📊 Comparação de Componentes por Ambiente
 
-| Component | Desktop | Server | Raspberry Pi | Odroid | OCI | GitHub | Killercoda |
-|-----------|---------|--------|--------------|--------|-----|--------|------------|
-| Base Packages | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Componente | Desktop | Servidor | Raspberry Pi | Odroid | OCI | GitHub | Killercoda |
+|-----------|---------|----------|--------------|--------|-----|--------|------------|
+| Pacotes Base | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Docker | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Golang | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Python | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -262,92 +258,92 @@ curl https://raw.githubusercontent.com/RafaelFino/Linux-prepare/main/cloud/kille
 | eza | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | VSCode | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Chrome | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Fonts | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Terminal Emulators | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Fontes | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Emuladores de Terminal | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
-*Desktop components auto-detected
+*Componentes desktop auto-detectados
 
-## 🛠️ What Gets Installed
+## 🛠️ O Que é Instalado
 
-### Base Packages
+### Pacotes Base
 ```
 wget, git, zsh, gpg, zip, unzip, vim, jq, telnet, curl, htop, btop,
 python3, python3-pip, micro, apt-transport-https, zlib1g, sqlite3,
 fzf, sudo, ca-certificates, gnupg
 ```
 
-### Modern CLI Tools
+### Ferramentas CLI Modernas
 ```
-eza         - Modern ls replacement with icons
-bat         - Cat with syntax highlighting  
-httpie      - User-friendly HTTP client
-yq          - YAML processor (like jq)
-glances     - Advanced system monitor
-neofetch    - System information display
-dust        - Intuitive disk usage analyzer
+eza         - Substituto moderno do ls com ícones
+bat         - Cat com destaque de sintaxe
+httpie      - Cliente HTTP amigável
+yq          - Processador YAML (como jq)
+glances     - Monitor de sistema avançado
+neofetch    - Exibição de informações do sistema
+dust        - Analisador de uso de disco intuitivo
 gh          - GitHub CLI
-tig         - Text-mode Git interface
-screen      - Terminal multiplexer
-k9s         - Kubernetes TUI
-tldr        - Simplified man pages
+tig         - Interface em modo texto para Git
+screen      - Multiplexador de terminal
+k9s         - TUI para Kubernetes
+tldr        - Páginas man simplificadas
 ```
 
-### Build & Development Tools
+### Ferramentas de Build e Desenvolvimento
 ```
-cmake               - Cross-platform build system
-build-essential     - Compilation tools (gcc, g++, make)
-```
-
-### Database Clients
-```
-postgresql-client   - PostgreSQL client tools
-redis-tools         - Redis CLI and tools
+cmake               - Sistema de build multiplataforma
+build-essential     - Ferramentas de compilação (gcc, g++, make)
 ```
 
-### Security & Network
+### Clientes de Banco de Dados
 ```
-openssl            - Cryptography toolkit
-openssh-server     - SSH server
-netcat-openbsd     - Network utility
+postgresql-client   - Ferramentas cliente PostgreSQL
+redis-tools         - CLI e ferramentas Redis
 ```
 
-### Programming Languages
+### Segurança e Rede
+```
+openssl            - Kit de ferramentas de criptografia
+openssh-server     - Servidor SSH
+netcat-openbsd     - Utilitário de rede
+```
+
+### Linguagens de Programação
 
 #### Python
-- Python 3.x (latest from repository)
-- pip3 (package manager)
-- virtualenv (virtual environments)
-- python3-dev (development headers)
+- Python 3.x (versão mais recente do repositório)
+- pip3 (gerenciador de pacotes)
+- virtualenv (ambientes virtuais)
+- python3-dev (headers de desenvolvimento)
 - Aliases: `python` → `python3`, `pip` → `pip3`
 
 #### Golang
-- Latest stable version from official Go website
-- Installed to `/usr/local/go`
-- Added to system PATH
-- `$HOME/go/bin` added to user PATH
+- Versão estável mais recente do site oficial do Go
+- Instalado em `/usr/local/go`
+- Adicionado ao PATH do sistema
+- `$HOME/go/bin` adicionado ao PATH do usuário
 
 #### Kotlin
-- Installed via SDKMAN
-- Latest stable version
-- Includes Kotlin compiler and REPL
+- Instalado via SDKMAN
+- Versão estável mais recente
+- Inclui compilador Kotlin e REPL
 
 #### JVM (Java)
-- Installed via SDKMAN
-- Latest LTS version
-- Managed per-user
+- Instalado via SDKMAN
+- Versão LTS mais recente
+- Gerenciado por usuário
 
 #### .NET
 - .NET SDK 8.0
-- From official Microsoft repository
-- Includes runtime and development tools
+- Do repositório oficial da Microsoft
+- Inclui runtime e ferramentas de desenvolvimento
 
-### Terminal Configuration
+### Configuração de Terminal
 
 #### Zsh
-- Set as default shell for all users
-- Oh-My-Zsh framework installed
-- Theme: `frisk`
-- 30+ plugins enabled:
+- Definido como shell padrão para todos os usuários
+- Framework Oh-My-Zsh instalado
+- Tema: `frisk`
+- Mais de 30 plugins habilitados:
   ```
   git, colorize, command-not-found, compleat, composer, cp, debian,
   dircycle, docker, docker-compose, dotnet, eza, fzf, gh, golang,
@@ -357,210 +353,208 @@ netcat-openbsd     - Network utility
   ```
 
 #### Bash
-- Oh-My-Bash framework installed
-- Enhanced configuration
-- Same aliases as Zsh
+- Framework Oh-My-Bash instalado
+- Configuração aprimorada
+- Mesmos aliases do Zsh
 
 #### Aliases
 ```bash
-ls="eza -hHbmgalT -L 1 --time-style=long-iso --icons"  # Enhanced ls
-lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"  # Tree view (4 levels)
-python=python3                                          # Python alias
-pip=pip3                                                # Pip alias
+ls="eza -hHbmgalT -L 1 --time-style=long-iso --icons"  # ls aprimorado
+lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"  # Visualização em árvore (4 níveis)
+python=python3                                          # Alias Python
+pip=pip3                                                # Alias Pip
 ```
 
-#### Environment Variables
+#### Variáveis de Ambiente
 ```bash
-EDITOR=micro    # Default editor
-VISUAL=micro    # Visual editor
+EDITOR=micro    # Editor padrão
+VISUAL=micro    # Editor visual
 ```
 
 #### Vim
-- Awesome vimrc configuration
-- Line numbers enabled
-- Enhanced syntax highlighting
-- Multiple plugins
+- Configuração awesome vimrc
+- Números de linha habilitados
+- Destaque de sintaxe aprimorado
+- Múltiplos plugins
 
-### Desktop Components (Auto-detected)
+### Componentes Desktop (Auto-detectados)
 
-#### Applications
-- **VSCode**: Installed via snap
-- **Google Chrome**: Latest stable version
-- **Flameshot**: Screenshot tool with annotation
-- **DBeaver CE**: Universal database GUI tool
+#### Aplicações
+- **VSCode**: Instalado via snap
+- **Google Chrome**: Versão estável mais recente
+- **Flameshot**: Ferramenta de captura de tela com anotação
+- **DBeaver CE**: Ferramenta GUI universal de banco de dados
 
-#### Terminal Emulators
-- **Terminator**: Configured with transparency and Nerd Font
-- **Alacritty**: Configured with transparency and Nerd Font
+#### Emuladores de Terminal
+- **Terminator**: Configurado com transparência e Nerd Font
+- **Alacritty**: Configurado com transparência e Nerd Font
 
-#### Fonts
-- **Powerline Fonts**: For enhanced terminal symbols
+#### Fontes
+- **Powerline Fonts**: Para símbolos aprimorados de terminal
 - **Nerd Fonts**: FiraCode, JetBrainsMono, Hack
 - **MS Core Fonts**: Arial, Times New Roman, etc.
 
-
 ## 🔄 Shell Scripts vs Ansible
 
-### When to Use Shell Scripts
+### Quando Usar Shell Scripts
 
-**Advantages:**
-- ✅ No dependencies (just bash)
-- ✅ Fast execution
-- ✅ Simple to understand
-- ✅ Perfect for single machines
-- ✅ Easy to customize on-the-fly
+**Vantagens:**
+- ✅ Sem dependências (apenas bash)
+- ✅ Execução rápida
+- ✅ Simples de entender
+- ✅ Perfeito para máquinas únicas
+- ✅ Fácil de customizar em tempo real
 
-**Best For:**
-- Personal workstations
-- One-time setups
-- Quick prototyping
-- Learning environments
-- Single server deployments
+**Melhor Para:**
+- Estações de trabalho pessoais
+- Configurações únicas
+- Prototipagem rápida
+- Ambientes de aprendizado
+- Implantações de servidor único
 
-**Usage:**
+**Uso:**
 ```bash
 sudo ./scripts/prepare.sh --desktop
 ```
 
-### When to Use Ansible
+### Quando Usar Ansible
 
-**Advantages:**
-- ✅ Declarative configuration
-- ✅ Idempotent by design
-- ✅ Scalable to hundreds of hosts
-- ✅ Role-based organization
-- ✅ Easy to version control
-- ✅ Dry-run capability
-- ✅ Parallel execution
+**Vantagens:**
+- ✅ Configuração declarativa
+- ✅ Idempotente por design
+- ✅ Escalável para centenas de hosts
+- ✅ Organização baseada em roles
+- ✅ Fácil de versionar
+- ✅ Capacidade de dry-run
+- ✅ Execução paralela
 
-**Best For:**
-- Multiple servers
-- Infrastructure as Code
-- Team environments
-- Repeatable deployments
-- CI/CD pipelines
-- Configuration management
+**Melhor Para:**
+- Múltiplos servidores
+- Infraestrutura como Código
+- Ambientes de equipe
+- Implantações repetíveis
+- Pipelines CI/CD
+- Gerenciamento de configuração
 
-**Usage:**
+**Uso:**
 ```bash
 ansible-playbook -i inventory ansible/site.yml
 ```
 
-### Comparison Table
+### Tabela de Comparação
 
-| Feature | Shell Scripts | Ansible |
-|---------|---------------|---------|
-| Setup Time | Instant | Requires Ansible installation |
-| Learning Curve | Low | Medium |
-| Scalability | Single host | Multiple hosts |
-| Execution Speed | Fast | Moderate |
-| Idempotency | Manual implementation | Built-in |
-| Dry Run | Not available | `--check` flag |
-| Parallel Execution | Limited | Built-in |
-| Configuration Management | Script-based | Declarative YAML |
-| Best Use Case | Personal machines | Infrastructure fleets |
+| Funcionalidade | Shell Scripts | Ansible |
+|----------------|---------------|---------|
+| Tempo de Configuração | Instantâneo | Requer instalação do Ansible |
+| Curva de Aprendizado | Baixa | Média |
+| Escalabilidade | Host único | Múltiplos hosts |
+| Velocidade de Execução | Rápida | Moderada |
+| Idempotência | Implementação manual | Integrada |
+| Dry Run | Não disponível | Flag `--check` |
+| Execução Paralela | Limitada | Integrada |
+| Gerenciamento de Configuração | Baseado em script | YAML declarativo |
+| Melhor Caso de Uso | Máquinas pessoais | Frotas de infraestrutura |
 
-## 📁 Project Structure
+## 📁 Estrutura do Projeto
 
 ```
 linux-prepare/
 ├── scripts/
-│   ├── prepare.sh              # Main script for desktops/servers
-│   └── add-opt.sh              # Optional tools installation
+│   ├── prepare.sh              # Script principal para desktops/servidores
+│   └── add-opt.sh              # Instalação de ferramentas opcionais
 ├── rasp/
-│   └── rasp4-prepare.sh        # Raspberry Pi 4 optimized
+│   └── rasp4-prepare.sh        # Otimizado para Raspberry Pi 4
 ├── odroid/
-│   └── odroid-prepare.sh       # Odroid optimized
+│   └── odroid-prepare.sh       # Otimizado para Odroid
 ├── cloud/
 │   ├── oci-ubuntu.sh           # Oracle Cloud Infrastructure
 │   ├── github-workspace.sh     # GitHub Codespaces
-│   └── killercoda.sh           # Killercoda environments
+│   └── killercoda.sh           # Ambientes Killercoda
 ├── ansible/
-│   ├── README.md               # Ansible documentation
-│   ├── site.yml                # Main playbook
-│   ├── inventory/              # Host inventories
-│   ├── group_vars/             # Global variables
-│   ├── roles/                  # Ansible roles
-│   │   ├── base/               # Base packages and timezone
-│   │   ├── docker/             # Docker installation
-│   │   ├── golang/             # Golang installation
-│   │   ├── python/             # Python installation
-│   │   ├── kotlin/             # Kotlin installation
-│   │   ├── dotnet/             # .NET installation
+│   ├── README.md               # Documentação Ansible
+│   ├── site.yml                # Playbook principal
+│   ├── inventory/              # Inventários de hosts
+│   ├── group_vars/             # Variáveis globais
+│   ├── roles/                  # Roles Ansible
+│   │   ├── base/               # Pacotes base e fuso horário
+│   │   ├── docker/             # Instalação Docker
+│   │   ├── golang/             # Instalação Golang
+│   │   ├── python/             # Instalação Python
+│   │   ├── kotlin/             # Instalação Kotlin
+│   │   ├── dotnet/             # Instalação .NET
 │   │   ├── terminal-tools/     # eza, micro, vim
-│   │   ├── shell-config/       # Zsh, Bash configuration
-│   │   ├── desktop/            # Desktop components
-│   │   └── users/              # User management
-│   └── playbooks/              # Environment-specific playbooks
+│   │   ├── shell-config/       # Configuração Zsh, Bash
+│   │   ├── desktop/            # Componentes desktop
+│   │   └── users/              # Gerenciamento de usuários
+│   └── playbooks/              # Playbooks específicos por ambiente
 ├── tests/
-│   ├── docker/                 # Dockerfiles for testing
-│   └── scripts/                # Validation scripts
-└── README.md                   # This file
+│   ├── docker/                 # Dockerfiles para testes
+│   └── scripts/                # Scripts de validação
+└── README.md                   # Este arquivo
 ```
 
+## 🐛 Solução de Problemas
 
-## 🐛 Troubleshooting
+### Problemas Comuns
 
-### Common Issues
+#### Problema: "apt: command not found"
+**Causa**: Não é uma distribuição baseada em Debian  
+**Solução**: Este script suporta apenas distribuições baseadas em Debian (Ubuntu, Debian, Mint)
 
-#### Issue: "apt: command not found"
-**Cause**: Not a Debian-based distribution  
-**Solution**: This script only supports Debian-based distributions (Ubuntu, Debian, Mint)
+#### Problema: "Permission denied"
+**Causa**: Script não executado com sudo  
+**Solução**: Execute com `sudo ./prepare.sh`
 
-#### Issue: "Permission denied"
-**Cause**: Script not run with sudo  
-**Solution**: Run with `sudo ./prepare.sh`
+#### Problema: "Docker command not found after installation"
+**Causa**: Necessário fazer logout e login novamente para associação ao grupo  
+**Solução**: Faça logout e login novamente, ou execute `newgrp docker`
 
-#### Issue: "Docker command not found after installation"
-**Cause**: Need to log out and back in for group membership  
-**Solution**: Log out and log back in, or run `newgrp docker`
+#### Problema: "SDKMAN installation fails"
+**Causa**: Problemas de rede ou dependências faltando  
+**Solução**: Verifique a conexão com a internet, garanta que curl e zip estão instalados
 
-#### Issue: "SDKMAN installation fails"
-**Cause**: Network issues or missing dependencies  
-**Solution**: Check internet connection, ensure curl and zip are installed
+#### Problema: "Snap not available for VSCode"
+**Causa**: Snap não instalado ou não suportado  
+**Solução**: Instale snapd: `sudo apt install snapd`
 
-#### Issue: "Snap not available for VSCode"
-**Cause**: Snap not installed or not supported  
-**Solution**: Install snapd: `sudo apt install snapd`
+#### Problema: "Fonts not showing in terminal"
+**Causa**: Terminal não configurado para usar Nerd Fonts  
+**Solução**: Configure o terminal para usar "FiraCode Nerd Font" ou similar
 
-#### Issue: "Fonts not showing in terminal"
-**Cause**: Terminal not configured to use Nerd Fonts  
-**Solution**: Configure terminal to use "FiraCode Nerd Font" or similar
+#### Problema: "Oh-My-Zsh plugins not working"
+**Causa**: Dependências de plugin faltando  
+**Solução**: O script instala dependências automaticamente, mas alguns plugins podem precisar de pacotes adicionais
 
-#### Issue: "Oh-My-Zsh plugins not working"
-**Cause**: Missing plugin dependencies  
-**Solution**: Script installs dependencies automatically, but some plugins may need additional packages
+#### Problema: "Script hangs during user creation"
+**Causa**: Aguardando entrada de senha  
+**Solução**: Digite a senha quando solicitado, ou use apenas usuários existentes
 
-#### Issue: "Script hangs during user creation"
-**Cause**: Waiting for password input  
-**Solution**: Enter password when prompted, or use existing users only
-
-### Environment-Specific Issues
+### Problemas Específicos por Ambiente
 
 #### Raspberry Pi / Odroid
-- **Issue**: Some packages not available for ARM
-- **Solution**: Script automatically detects architecture and uses ARM-compatible packages
+- **Problema**: Alguns pacotes não disponíveis para ARM
+- **Solução**: O script detecta automaticamente a arquitetura e usa pacotes compatíveis com ARM
 
 #### GitHub Codespaces
-- **Issue**: Some configurations conflict with Codespaces defaults
-- **Solution**: Script preserves existing Codespaces configurations
+- **Problema**: Algumas configurações conflitam com padrões do Codespaces
+- **Solução**: O script preserva configurações existentes do Codespaces
 
-#### Cloud Instances (OCI)
-- **Issue**: Firewall blocking connections
-- **Solution**: Configure firewall rules in cloud console
+#### Instâncias na Nuvem (OCI)
+- **Problema**: Firewall bloqueando conexões
+- **Solução**: Configure regras de firewall no console da nuvem
 
-### Getting Help
+### Obtendo Ajuda
 
-1. **Check the logs**: Script provides detailed colored output
-2. **Run with verbose mode**: Add `set -x` to script for debugging
-3. **Check system logs**: `journalctl -xe` for systemd services
-4. **Verify installation**: Run validation commands manually
-5. **Open an issue**: [GitHub Issues](https://github.com/RafaelFino/Linux-prepare/issues)
+1. **Verifique os logs**: O script fornece saída colorida detalhada
+2. **Execute com modo verbose**: Adicione `set -x` ao script para debugging
+3. **Verifique logs do sistema**: `journalctl -xe` para serviços systemd
+4. **Verifique a instalação**: Execute comandos de validação manualmente
+5. **Abra uma issue**: [GitHub Issues](https://github.com/RafaelFino/Linux-prepare/issues)
 
-### Validation Commands
+### Comandos de Validação
 
 ```bash
-# Check installed versions
+# Verificar versões instaladas
 docker --version
 docker compose version
 go version
@@ -569,25 +563,25 @@ dotnet --version
 kotlin -version
 java -version
 
-# Check shell
+# Verificar shell
 echo $SHELL
 zsh --version
 
-# Check aliases
+# Verificar aliases
 alias ls
 alias lt
 
-# Check environment variables
+# Verificar variáveis de ambiente
 echo $EDITOR
 echo $VISUAL
 
-# Check user groups
+# Verificar grupos de usuário
 groups
 ```
 
-## 🧪 Testing
+## 🧪 Testes
 
-> **Quick Reference**: See [tests/QUICK-REFERENCE.md](tests/QUICK-REFERENCE.md) for all test commands
+> **Referência Rápida**: Veja [tests/QUICK-REFERENCE.md](tests/QUICK-REFERENCE.md) para todos os comandos de teste
 
 Este projeto inclui dois frameworks de teste completos:
 - **Testes de Scripts**: Validam instalação via scripts Bash
@@ -597,28 +591,28 @@ Ambos testam os mesmos componentes e distribuições.
 
 ### Testes de Scripts
 
-#### Quick Test (15 minutos)
+#### Teste Rápido (15 minutos)
 
 ```bash
-# From project root directory
+# Do diretório raiz do projeto
 ./tests/quick-test.sh
 ```
 
 Testa instalação básica com Docker, Go, Python e ferramentas de terminal no Ubuntu 24.04.
 
-#### Test Derivatives Only (30 minutos)
+#### Testar Apenas Derivados (30 minutos)
 
 ```bash
-# Test Xubuntu and Linux Mint
+# Testar Xubuntu e Linux Mint
 ./tests/test-derivatives.sh
 ```
 
 Testa Xubuntu 24.04 (XFCE) e Linux Mint 22 especificamente.
 
-#### Full Automated Testing (80 minutos)
+#### Testes Automatizados Completos (80 minutos)
 
 ```bash
-# From project root directory
+# Do diretório raiz do projeto
 ./tests/run-all-tests.sh
 ```
 
@@ -631,7 +625,7 @@ Executa testes completos em:
 
 ### Testes Ansible
 
-#### Quick Test (15 minutos)
+#### Teste Rápido (15 minutos)
 
 ```bash
 ./tests/ansible/quick-test.sh
@@ -639,7 +633,7 @@ Executa testes completos em:
 
 Testa playbooks Ansible no Ubuntu 24.04 apenas.
 
-#### Test Derivatives Only (30 minutos)
+#### Testar Apenas Derivados (30 minutos)
 
 ```bash
 ./tests/ansible/test-derivatives.sh
@@ -647,7 +641,7 @@ Testa playbooks Ansible no Ubuntu 24.04 apenas.
 
 Testa playbooks Ansible no Xubuntu e Mint.
 
-#### Full Ansible Testing (80 minutos)
+#### Testes Ansible Completos (80 minutos)
 
 ```bash
 ./tests/ansible/run-ansible-tests.sh
@@ -655,7 +649,7 @@ Testa playbooks Ansible no Xubuntu e Mint.
 
 Executa testes completos de Ansible em todas as distribuições.
 
-#### Test Specific Components
+#### Testar Componentes Específicos
 
 ```bash
 # Testar playbook específico
@@ -668,39 +662,39 @@ Executa testes completos de Ansible em todas as distribuições.
 ./tests/ansible/run-ansible-tests.sh --distro ubuntu-24.04
 ```
 
-### Individual Distribution Test (Scripts)
+### Teste Individual de Distribuição (Scripts)
 
 ```bash
-# Test Ubuntu 24.04
+# Testar Ubuntu 24.04
 docker build -f tests/docker/Dockerfile.ubuntu-24.04 -t test-ubuntu .
 docker run --rm test-ubuntu /tmp/validate.sh
 
-# Test Debian 13
+# Testar Debian 13
 docker build -f tests/docker/Dockerfile.debian-13 -t test-debian .
 docker run --rm test-debian /tmp/validate.sh
 
-# Test Xubuntu 24.04
+# Testar Xubuntu 24.04
 docker build -f tests/docker/Dockerfile.xubuntu-24.04 -t test-xubuntu .
 docker run --rm test-xubuntu /tmp/validate.sh
 
-# Test Linux Mint 22
+# Testar Linux Mint 22
 docker build -f tests/docker/Dockerfile.mint-22 -t test-mint .
 docker run --rm test-mint /tmp/validate.sh
 ```
 
-### Manual Testing in Container
+### Testes Manuais em Container
 
 ```bash
-# Interactive test
+# Teste interativo
 docker run -it --rm -v $(pwd):/workspace -w /workspace ubuntu:24.04 bash
 
-# Inside container:
+# Dentro do container:
 apt update && apt install -y sudo
 ./scripts/prepare.sh --skip-desktop
 ./tests/scripts/validate.sh
 ```
 
-### Validation Only
+### Apenas Validação
 
 Se você já executou o script e quer validar:
 
@@ -714,65 +708,65 @@ Se você já executou o script e quer validar:
 - **[tests/ansible/README.md](tests/ansible/README.md)** - Guia completo de testes Ansible
 - **[tests/QUICK-REFERENCE.md](tests/QUICK-REFERENCE.md)** - Referência rápida de comandos
 
-## 🤝 Contributing
+## 🤝 Contribuindo
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contribuições são bem-vindas! Sinta-se à vontade para enviar um Pull Request.
 
-### How to Contribute
+### Como Contribuir
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Faça um fork do repositório
+2. Crie sua branch de funcionalidade (`git checkout -b feature/FuncionalidadeIncrivel`)
+3. Faça commit das suas mudanças (`git commit -m 'Add: alguma funcionalidade incrível'`)
+4. Faça push para a branch (`git push origin feature/FuncionalidadeIncrivel`)
+5. Abra um Pull Request
 
-### Guidelines
+### Diretrizes
 
-- Follow existing code style
-- Test on multiple distributions
-- Update documentation
-- Add examples for new features
-- Ensure idempotency
+- Siga o estilo de código existente
+- Teste em múltiplas distribuições
+- Atualize a documentação
+- Adicione exemplos para novas funcionalidades
+- Garanta idempotência
 
-## 📝 License
+## 📝 Licença
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
-## 👤 Author
+## 👤 Autor
 
 **Rafael Fino**
 - GitHub: [@RafaelFino](https://github.com/RafaelFino)
 
-## 🙏 Acknowledgments
+## 🙏 Agradecimentos
 
-- [Oh-My-Zsh](https://ohmyz.sh/) - Zsh framework
-- [Oh-My-Bash](https://ohmybash.nntoan.com/) - Bash framework
-- [awesome-vimrc](https://github.com/amix/vimrc) - Vim configuration
-- [eza](https://github.com/eza-community/eza) - Modern ls replacement
-- [micro](https://micro-editor.github.io/) - Terminal editor
-- [SDKMAN](https://sdkman.io/) - SDK manager
+- [Oh-My-Zsh](https://ohmyz.sh/) - Framework Zsh
+- [Oh-My-Bash](https://ohmybash.nntoan.com/) - Framework Bash
+- [awesome-vimrc](https://github.com/amix/vimrc) - Configuração Vim
+- [eza](https://github.com/eza-community/eza) - Substituto moderno do ls
+- [micro](https://micro-editor.github.io/) - Editor de terminal
+- [SDKMAN](https://sdkman.io/) - Gerenciador de SDK
 
-## 📚 Additional Resources
+## 📚 Recursos Adicionais
 
-### Project Documentation
-- **[📚 Documentation Index](DOCS-INDEX.md)** - Complete guide to all documentation
-- [🆕 Optional Tools Guide](OPTIONAL-TOOLS.md) - Guide to 43 new tools added
-- [Distribution Testing Guide](tests/DISTRIBUTIONS.md) - Detailed info about tested distributions
-- [Testing Guide](tests/TESTING.md) - How to run tests
-- [Which Test to Run?](tests/WHICH-TEST.md) - Decision guide for testing
+### Documentação do Projeto
+- **[📚 Índice de Documentação](DOCS-INDEX.md)** - Guia completo de toda a documentação
+- [🆕 Guia de Ferramentas Opcionais](OPTIONAL-TOOLS.md) - Guia para 43 novas ferramentas adicionadas
+- [Guia de Testes de Distribuição](tests/DISTRIBUTIONS.md) - Informações detalhadas sobre distribuições testadas
+- [Guia de Testes](tests/TESTING.md) - Como executar testes
+- [Qual Teste Executar?](tests/WHICH-TEST.md) - Guia de decisão para testes
 
-### External Documentation
-- [Ansible Documentation](https://docs.ansible.com/)
-- [Docker Documentation](https://docs.docker.com/)
-- [Golang Documentation](https://golang.org/doc/)
-- [Python Documentation](https://docs.python.org/)
-- [.NET Documentation](https://docs.microsoft.com/dotnet/)
-- [Kotlin Documentation](https://kotlinlang.org/docs/)
+### Documentação Externa
+- [Documentação Ansible](https://docs.ansible.com/)
+- [Documentação Docker](https://docs.docker.com/)
+- [Documentação Golang](https://golang.org/doc/)
+- [Documentação Python](https://docs.python.org/)
+- [Documentação .NET](https://docs.microsoft.com/dotnet/)
+- [Documentação Kotlin](https://kotlinlang.org/docs/)
 
 ---
 
-**Note**: This script modifies system configuration. Always review scripts before running with sudo privileges. Test in a VM or container first if unsure.
+**Nota**: Este script modifica a configuração do sistema. Sempre revise os scripts antes de executar com privilégios sudo. Teste em uma VM ou container primeiro se não tiver certeza.
 
-**Execution Time**: Approximately 10-30 minutes depending on components and internet speed.
+**Tempo de Execução**: Aproximadamente 10-30 minutos dependendo dos componentes e velocidade da internet.
 
-**Disk Space**: ~5GB for full installation (less without desktop components).
+**Espaço em Disco**: ~5GB para instalação completa (menos sem componentes desktop).

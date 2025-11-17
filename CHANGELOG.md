@@ -1,148 +1,148 @@
-# Changelog
+# Registro de Alterações
 
-All notable changes to this project will be documented in this file.
+Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+O formato é baseado em [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Não Lançado]
 
-### Added
-- **Pop!_OS Support**: Full compatibility with Pop!_OS 22.04 including specific workarounds for EZA, Docker, and VSCode
-- **Desktop Control Flags**: `--desktop` to force installation and `--skip-desktop` to skip installation
-- **Quick Start Guide**: Beginner-friendly guide from git clone to execution in README
-- **Usage Scenarios**: 5 practical examples showing common use cases
-- **Modern CLI Tools**: bat, httpie, yq, glances, neofetch, dust, gh, tig, screen, k9s, tldr
-- **Build Tools**: cmake, build-essential
-- **Database Clients**: postgresql-client, redis-tools
-- **Security Tools**: openssl, openssh-server, netcat-openbsd
-- **Desktop Tools**: Flameshot (screenshots), DBeaver CE (database GUI)
-- **Optional Tools Script** (`add-opt.sh`): Install Node.js, Rust, Ruby, Terraform, kubectl, Helm, lazygit, lazydocker, Starship, zoxide, Neovim, Postman, Insomnia, Obsidian, MongoDB tools, Poetry, pipx
-- Xubuntu 24.04 support with XFCE desktop environment detection testing
-- Linux Mint 22 support with full compatibility testing
-- Pop!_OS 22.04 test container and validation
-- Comprehensive distribution testing (Ubuntu, Debian, Xubuntu, Mint, Pop!_OS)
-- `test-derivatives.sh` script for quick Xubuntu/Mint testing
-- Distribution testing guide (tests/DISTRIBUTIONS.md)
-- Automated CI/CD testing for all supported distributions
+### Adicionado
+- **Suporte ao Pop!_OS**: Compatibilidade completa com Pop!_OS 22.04 incluindo workarounds específicos para EZA, Docker e VSCode
+- **Flags de Controle Desktop**: `--desktop` para forçar instalação e `--skip-desktop` para pular instalação
+- **Guia de Início Rápido**: Guia amigável para iniciantes do git clone até execução no README
+- **Cenários de Uso**: 5 exemplos práticos mostrando casos de uso comuns
+- **Ferramentas CLI Modernas**: bat, httpie, yq, glances, neofetch, dust, gh, tig, screen, k9s, tldr
+- **Ferramentas de Build**: cmake, build-essential
+- **Clientes de Banco de Dados**: postgresql-client, redis-tools
+- **Ferramentas de Segurança**: openssl, openssh-server, netcat-openbsd
+- **Ferramentas Desktop**: Flameshot (capturas de tela), DBeaver CE (GUI de banco de dados)
+- **Script de Ferramentas Opcionais** (`add-opt.sh`): Instala Node.js, Rust, Ruby, Terraform, kubectl, Helm, lazygit, lazydocker, Starship, zoxide, Neovim, Postman, Insomnia, Obsidian, ferramentas MongoDB, Poetry, pipx
+- Suporte ao Xubuntu 24.04 com testes de detecção de ambiente desktop XFCE
+- Suporte ao Linux Mint 22 com testes completos de compatibilidade
+- Container de teste e validação para Pop!_OS 22.04
+- Testes abrangentes de distribuições (Ubuntu, Debian, Xubuntu, Mint, Pop!_OS)
+- Script `test-derivatives.sh` para testes rápidos de Xubuntu/Mint
+- Guia de testes de distribuição (tests/DISTRIBUTIONS.md)
+- Testes automatizados CI/CD para todas as distribuições suportadas
 
-### Changed
-- **Desktop Detection**: Now clearly documented with automatic detection and manual override options
-- **Documentation Structure**: Reorganized README with Quick Start at the top and dedicated Desktop Components section
-- **Documentation Simplification**: All docs reduced by 60-90% for clarity (student-friendly)
-- **Distribution Table**: Updated to include Pop!_OS with desktop support indicator
-- **VSCode Installation**: Uses apt repository method on Pop!_OS instead of snap
-- **Docker Installation**: Uses Pop!_OS repositories with specific workarounds
-- **EZA Installation**: Falls back to cargo or exa on Pop!_OS when repository fails
-- **Cargo Binaries**: Now installed to `/usr/local/bin` for system-wide access (all users)
-- **Snap/Cargo Dependencies**: Auto-installed when needed
-- Updated all Debian references from version 11/12 to version 13
-- Enhanced testing documentation with distribution-specific notes
-- Improved distribution support matrix in README
-- Expanded base packages with modern CLI tools
-- Desktop components now include productivity tools
-- **Oh-My-Bash** and **Oh-My-Zsh** are now mandatory installations for all users
-- Validation tests now check for Oh-My-Bash installation
+### Alterado
+- **Detecção de Desktop**: Agora claramente documentada com detecção automática e opções de override manual
+- **Estrutura da Documentação**: README reorganizado com Início Rápido no topo e seção dedicada de Componentes Desktop
+- **Simplificação da Documentação**: Todos os docs reduzidos em 60-90% para clareza (amigável para estudantes)
+- **Tabela de Distribuições**: Atualizada para incluir Pop!_OS com indicador de suporte desktop
+- **Instalação do VSCode**: Usa método de repositório apt no Pop!_OS ao invés de snap
+- **Instalação do Docker**: Usa repositórios do Pop!_OS com workarounds específicos
+- **Instalação do EZA**: Fallback para cargo ou exa no Pop!_OS quando repositório falha
+- **Binários do Cargo**: Agora instalados em `/usr/local/bin` para acesso de todos os usuários
+- **Dependências Snap/Cargo**: Auto-instaladas quando necessário
+- Atualizadas todas as referências do Debian da versão 11/12 para versão 13
+- Documentação de testes aprimorada com notas específicas de distribuição
+- Matriz de suporte de distribuições melhorada no README
+- Pacotes base expandidos com ferramentas CLI modernas
+- Componentes desktop agora incluem ferramentas de produtividade
+- **Oh-My-Bash** e **Oh-My-Zsh** agora são instalações obrigatórias para todos os usuários
+- Testes de validação agora verificam instalação do Oh-My-Bash
 
-### Removed
-- **Amazon Linux support**: Removed AWS EC2/Amazon Linux support to focus on Debian-based distributions
-- Removed `cloud/aws-ec2-prepare.sh` script
-- Removed Amazon Linux from documentation and comparison tables
+### Removido
+- **Suporte ao Amazon Linux**: Removido suporte AWS EC2/Amazon Linux para focar em distribuições baseadas em Debian
+- Removido script `cloud/aws-ec2-prepare.sh`
+- Removido Amazon Linux da documentação e tabelas de comparação
 
 ## [2.0.0] - 2024-11-15
 
-### Added
-- Complete refactor of main script with modern architecture
-- Colored logging system in English with timestamps and symbols
-- Full idempotency support (safe to run multiple times)
-- `--skip-*` arguments for selective component installation
-- `--desktop` flag for opt-in desktop components
-- Comprehensive help system with detailed examples
-- Support for multiple users via `-u=user1,user2`
-- Automatic timezone configuration (America/Sao_Paulo)
-- Complete Ansible implementation with roles
-- Environment-specific scripts (Raspberry Pi, Odroid, OCI, GitHub, Killercoda)
-- Automated testing infrastructure with Docker
-- Validation scripts for installation verification
-- Comprehensive documentation (README.md, ansible/README.md, CONTRIBUTING.md)
+### Adicionado
+- Refatoração completa do script principal com arquitetura moderna
+- Sistema de logging colorido em português com timestamps e símbolos
+- Suporte completo a idempotência (seguro executar múltiplas vezes)
+- Argumentos `--skip-*` para instalação seletiva de componentes
+- Flag `--desktop` para componentes desktop opcionais
+- Sistema de ajuda abrangente com exemplos detalhados
+- Suporte para múltiplos usuários via `-u=user1,user2`
+- Configuração automática de fuso horário (America/Sao_Paulo)
+- Implementação completa do Ansible com roles
+- Scripts específicos por ambiente (Raspberry Pi, Odroid, OCI, GitHub, Killercoda)
+- Infraestrutura de testes automatizados com Docker
+- Scripts de validação para verificação de instalação
+- Documentação abrangente (README.md, ansible/README.md, CONTRIBUTING.md)
 
-### Changed
-- **BREAKING**: Default behavior now installs ALL components (except desktop)
-- **BREAKING**: Removed positive installation flags (-docker, -go, etc.)
-- **BREAKING**: Desktop components now require explicit `--desktop` flag
-- Improved error handling and logging
-- Better user management with sudo group assignment
-- Enhanced shell configuration with more plugins
-- Updated to .NET SDK 8.0
-- Modernized aliases using eza instead of exa
+### Alterado
+- **BREAKING**: Comportamento padrão agora instala TODOS os componentes (exceto desktop)
+- **BREAKING**: Removidas flags positivas de instalação (-docker, -go, etc.)
+- **BREAKING**: Componentes desktop agora requerem flag explícita `--desktop`
+- Tratamento de erros e logging melhorados
+- Melhor gerenciamento de usuários com atribuição ao grupo sudo
+- Configuração de shell aprimorada com mais plugins
+- Atualizado para .NET SDK 8.0
+- Aliases modernizados usando eza ao invés de exa
 
-### Fixed
-- Idempotency issues with multiple script runs
-- User creation and group assignment
-- Docker group membership
-- Shell configuration conflicts
-- Font installation on various distributions
+### Corrigido
+- Problemas de idempotência com múltiplas execuções do script
+- Criação de usuários e atribuição de grupos
+- Associação ao grupo docker
+- Conflitos de configuração de shell
+- Instalação de fontes em várias distribuições
 
-### Security
-- All downloads use HTTPS
-- Proper permission handling
-- Secure sudo configuration
+### Segurança
+- Todos os downloads usam HTTPS
+- Tratamento adequado de permissões
+- Configuração segura de sudo
 
 ## [1.0.0] - 2023-XX-XX
 
-### Added
-- Initial release
-- Basic installation scripts
-- Support for Ubuntu and Debian
-- Docker installation
-- Golang installation
-- Python installation
-- JVM installation via SDKMAN
-- .NET installation
-- Oh-My-Zsh configuration
-- Vim configuration
-- Desktop components (VSCode, Chrome, fonts)
+### Adicionado
+- Lançamento inicial
+- Scripts básicos de instalação
+- Suporte para Ubuntu e Debian
+- Instalação do Docker
+- Instalação do Golang
+- Instalação do Python
+- Instalação do JVM via SDKMAN
+- Instalação do .NET
+- Configuração do Oh-My-Zsh
+- Configuração do Vim
+- Componentes desktop (VSCode, Chrome, fontes)
 
-### Known Issues
-- Limited idempotency
-- Manual user configuration required
-- No automated testing
+### Problemas Conhecidos
+- Idempotência limitada
+- Configuração manual de usuário necessária
+- Sem testes automatizados
 
 ---
 
-## Version History
+## Histórico de Versões
 
-- **2.0.0** - Major refactor with modern architecture and full automation
-- **1.0.0** - Initial release with basic functionality
+- **2.0.0** - Refatoração maior com arquitetura moderna e automação completa
+- **1.0.0** - Lançamento inicial com funcionalidade básica
 
-## Upgrade Guide
+## Guia de Atualização
 
-### From 1.x to 2.x
+### De 1.x para 2.x
 
-**Breaking Changes:**
-1. Command-line arguments changed:
-   - Old: `./prepare.sh -docker -go -python`
-   - New: `./prepare.sh` (installs everything by default)
-   - New: `./prepare.sh --skip-docker --skip-go` (to skip components)
+**Mudanças que Quebram Compatibilidade:**
+1. Argumentos de linha de comando mudaram:
+   - Antigo: `./prepare.sh -docker -go -python`
+   - Novo: `./prepare.sh` (instala tudo por padrão)
+   - Novo: `./prepare.sh --skip-docker --skip-go` (para pular componentes)
 
-2. Desktop components:
-   - Old: Included by default with `-all`
-   - New: Requires explicit `--desktop` flag
+2. Componentes desktop:
+   - Antigo: Incluídos por padrão com `-all`
+   - Novo: Requer flag explícita `--desktop`
 
-3. User configuration:
-   - Old: Manual configuration
-   - New: Automatic with `-u=username`
+3. Configuração de usuário:
+   - Antigo: Configuração manual
+   - Novo: Automática com `-u=nomedousuario`
 
-**Migration Steps:**
-1. Review your current usage
-2. Update command-line arguments
-3. Test in a VM or container first
-4. Run new script with appropriate flags
+**Passos de Migração:**
+1. Revise seu uso atual
+2. Atualize argumentos de linha de comando
+3. Teste em uma VM ou container primeiro
+4. Execute o novo script com as flags apropriadas
 
-**Benefits of Upgrading:**
-- Full idempotency
-- Better error handling
-- Comprehensive logging
-- Ansible support
-- Automated testing
-- Better documentation
+**Benefícios da Atualização:**
+- Idempotência completa
+- Melhor tratamento de erros
+- Logging abrangente
+- Suporte ao Ansible
+- Testes automatizados
+- Melhor documentação

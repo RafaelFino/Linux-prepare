@@ -1,45 +1,45 @@
-# Test Pop!_OS - Quick Guide
+# Testar Pop!_OS - Guia Rápido
 
-## Run Tests
+## Executar Testes
 
 ```bash
-# Pop!_OS only
+# Apenas Pop!_OS
 ./tests/test-popos.sh
 
-# All derivatives
+# Todos os derivados
 ./tests/test-derivatives.sh
 
-# Everything
+# Tudo
 ./tests/run-all-tests.sh
 ```
 
-## Manual Test
+## Teste Manual
 
 ```bash
-# Build container
+# Construir container
 docker build -f tests/docker/Dockerfile.popos-22.04 -t test-popos .
 
-# Run validation
+# Executar validação
 docker run --rm test-popos /tmp/validate.sh
 
-# Check specific components
+# Verificar componentes específicos
 docker run --rm test-popos bash -c "which eza || which exa"
 docker run --rm test-popos bash -c "docker --version"
 docker run --rm test-popos bash -c "dpkg -l | grep code"
 ```
 
-## What to Check
+## O Que Verificar
 
-- ✅ Pop!_OS detected (`ID=pop` in /etc/os-release)
-- ✅ EZA or exa installed
-- ✅ Docker working
-- ✅ VSCode via apt (not snap)
-- ✅ All base tools present
+- ✅ Pop!_OS detectado (`ID=pop` em /etc/os-release)
+- ✅ EZA ou exa instalado
+- ✅ Docker funcionando
+- ✅ VSCode via apt (não snap)
+- ✅ Todas as ferramentas base presentes
 
-## Report Issues
+## Reportar Problemas
 
-Include:
-- Command run
-- Error message
-- Last 20 lines of output
-- Which workaround failed (EZA/Docker/VSCode)
+Incluir:
+- Comando executado
+- Mensagem de erro
+- Últimas 20 linhas da saída
+- Qual workaround falhou (EZA/Docker/VSCode)

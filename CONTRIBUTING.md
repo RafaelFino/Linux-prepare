@@ -1,215 +1,215 @@
-# Contributing to Linux Development Environment Setup
+# Contribuindo para Configuração de Ambiente de Desenvolvimento Linux
 
-Thank you for your interest in contributing! This document provides guidelines for contributing to this project.
+Obrigado pelo seu interesse em contribuir! Este documento fornece diretrizes para contribuir com este projeto.
 
-## 🤝 How to Contribute
+## 🤝 Como Contribuir
 
-### Reporting Issues
+### Reportando Problemas
 
-- Use GitHub Issues to report bugs or suggest features
-- Search existing issues before creating a new one
-- Provide detailed information:
-  - Distribution and version
-  - Steps to reproduce
-  - Expected vs actual behavior
-  - Error messages or logs
+- Use GitHub Issues para reportar bugs ou sugerir funcionalidades
+- Pesquise issues existentes antes de criar uma nova
+- Forneça informações detalhadas:
+  - Distribuição e versão
+  - Passos para reproduzir
+  - Comportamento esperado vs comportamento real
+  - Mensagens de erro ou logs
 
-### Submitting Changes
+### Enviando Mudanças
 
-1. **Fork the repository**
-2. **Create a feature branch**
+1. **Faça um fork do repositório**
+2. **Crie uma branch de funcionalidade**
    ```bash
-   git checkout -b feature/your-feature-name
+   git checkout -b feature/nome-da-sua-funcionalidade
    ```
-3. **Make your changes**
-4. **Test your changes**
-   - Test on multiple distributions if possible
-   - Ensure idempotency (script can run multiple times)
-   - Run validation tests
-5. **Commit your changes**
+3. **Faça suas mudanças**
+4. **Teste suas mudanças**
+   - Teste em múltiplas distribuições se possível
+   - Garanta idempotência (script pode executar múltiplas vezes)
+   - Execute testes de validação
+5. **Faça commit das suas mudanças**
    ```bash
-   git commit -m "Add: description of your changes"
+   git commit -m "Add: descrição das suas mudanças"
    ```
-6. **Push to your fork**
+6. **Faça push para seu fork**
    ```bash
-   git push origin feature/your-feature-name
+   git push origin feature/nome-da-sua-funcionalidade
    ```
-7. **Open a Pull Request**
+7. **Abra um Pull Request**
 
-## 📝 Coding Guidelines
+## 📝 Diretrizes de Código
 
 ### Shell Scripts
 
-- Use `#!/usr/bin/env bash` shebang
-- Enable strict mode: `set -euo pipefail`
-- Use meaningful variable names
-- Add comments for complex logic
-- Follow existing code style
-- Use functions for reusable code
-- Implement idempotency checks
+- Use shebang `#!/usr/bin/env bash`
+- Habilite modo estrito: `set -euo pipefail`
+- Use nomes de variáveis significativos
+- Adicione comentários para lógica complexa
+- Siga o estilo de código existente
+- Use funções para código reutilizável
+- Implemente verificações de idempotência
 
 ### Ansible
 
-- Follow Ansible best practices
-- Use YAML syntax correctly (2 spaces indentation)
-- Make roles idempotent
-- Document variables in defaults/main.yml
-- Use tags appropriately
-- Test playbooks before submitting
+- Siga as melhores práticas do Ansible
+- Use sintaxe YAML corretamente (indentação de 2 espaços)
+- Torne roles idempotentes
+- Documente variáveis em defaults/main.yml
+- Use tags apropriadamente
+- Teste playbooks antes de enviar
 
-### Documentation
+### Documentação
 
-- Update README.md for new features
-- Add examples for new functionality
-- Keep documentation clear and concise
-- Use proper markdown formatting
+- Atualize README.md para novas funcionalidades
+- Adicione exemplos para novas funcionalidades
+- Mantenha a documentação clara e concisa
+- Use formatação markdown apropriada
 
-## 🧪 Testing
+## 🧪 Testes
 
-### Manual Testing
+### Testes Manuais
 
-Test your changes on:
-- Ubuntu 24.04 (recommended)
-- Debian 13 (recommended)
-- Xubuntu 24.04 (for desktop detection)
-- Linux Mint 22 (for derivative compatibility)
-- Other distributions if applicable
+Teste suas mudanças em:
+- Ubuntu 24.04 (recomendado)
+- Debian 13 (recomendado)
+- Xubuntu 24.04 (para detecção de desktop)
+- Linux Mint 22 (para compatibilidade com derivados)
+- Outras distribuições se aplicável
 
-### Automated Testing
+### Testes Automatizados
 
-#### Script Tests
+#### Testes de Scripts
 
 ```bash
-# Run all script tests
+# Executar todos os testes de scripts
 ./tests/run-all-tests.sh
 
-# Quick test (Ubuntu only)
+# Teste rápido (apenas Ubuntu)
 ./tests/quick-test.sh
 
-# Test derivatives only
+# Testar apenas derivados
 ./tests/test-derivatives.sh
 
-# Test specific distribution
+# Testar distribuição específica
 docker build -f tests/docker/Dockerfile.ubuntu-24.04 -t test .
 docker run --rm test /tmp/validate.sh
 ```
 
-#### Ansible Tests
+#### Testes Ansible
 
 ```bash
-# Run all Ansible tests
+# Executar todos os testes Ansible
 ./tests/ansible/run-ansible-tests.sh
 
-# Quick test (Ubuntu only)
+# Teste rápido (apenas Ubuntu)
 ./tests/ansible/quick-test.sh
 
-# Test derivatives only
+# Testar apenas derivados
 ./tests/ansible/test-derivatives.sh
 
-# Test specific playbook
+# Testar playbook específico
 ./tests/ansible/run-ansible-tests.sh --playbook server.yml
 
-# Test specific role
+# Testar role específica
 ./tests/ansible/run-ansible-tests.sh --role docker
 ```
 
 📖 **Para documentação completa de testes Ansible**, veja [tests/ansible/README.md](tests/ansible/README.md)
 
-### Validation Checklist
+### Checklist de Validação
 
 #### Para Mudanças em Scripts
 
-- [ ] Script runs without errors
-- [ ] All components install correctly
-- [ ] Script is idempotent (can run multiple times)
-- [ ] Logging is clear and informative
-- [ ] Documentation is updated
-- [ ] Script tests pass (`./tests/run-all-tests.sh`)
+- [ ] Script executa sem erros
+- [ ] Todos os componentes instalam corretamente
+- [ ] Script é idempotente (pode executar múltiplas vezes)
+- [ ] Logging é claro e informativo
+- [ ] Documentação está atualizada
+- [ ] Testes de script passam (`./tests/run-all-tests.sh`)
 
 #### Para Mudanças em Ansible
 
-- [ ] Playbook/role runs without errors
-- [ ] All components install correctly
-- [ ] Playbook/role is idempotent
-- [ ] YAML syntax is correct
-- [ ] ansible-lint passes
-- [ ] Variables are documented
-- [ ] Documentation is updated
-- [ ] Ansible tests pass (`./tests/ansible/run-ansible-tests.sh`)
+- [ ] Playbook/role executa sem erros
+- [ ] Todos os componentes instalam corretamente
+- [ ] Playbook/role é idempotente
+- [ ] Sintaxe YAML está correta
+- [ ] ansible-lint passa
+- [ ] Variáveis estão documentadas
+- [ ] Documentação está atualizada
+- [ ] Testes Ansible passam (`./tests/ansible/run-ansible-tests.sh`)
 
 #### Para Ambos
 
-- [ ] Tested on multiple distributions
-- [ ] Desktop detection works correctly (if applicable)
-- [ ] No breaking changes to existing functionality
-- [ ] Commit messages are clear and descriptive
+- [ ] Testado em múltiplas distribuições
+- [ ] Detecção de desktop funciona corretamente (se aplicável)
+- [ ] Sem mudanças que quebram funcionalidade existente
+- [ ] Mensagens de commit são claras e descritivas
 
-## 🎯 Areas for Contribution
+## 🎯 Áreas para Contribuição
 
-### High Priority
+### Alta Prioridade
 
-- Support for additional distributions (Fedora, Arch, etc.)
-- Additional programming languages
-- Performance optimizations
-- Better error handling
-- More comprehensive tests
+- Suporte para distribuições adicionais (Fedora, Arch, etc.)
+- Linguagens de programação adicionais
+- Otimizações de performance
+- Melhor tratamento de erros
+- Testes mais abrangentes
 
-### Medium Priority
+### Média Prioridade
 
-- Additional terminal emulators
-- More shell themes and plugins
-- Cloud provider specific optimizations
-- CI/CD integration examples
+- Emuladores de terminal adicionais
+- Mais temas e plugins de shell
+- Otimizações específicas para provedores de nuvem
+- Exemplos de integração CI/CD
 
-### Low Priority
+### Baixa Prioridade
 
-- Additional desktop applications
-- Custom configurations
-- Alternative package managers
+- Aplicações desktop adicionais
+- Configurações customizadas
+- Gerenciadores de pacotes alternativos
 
-## 📋 Pull Request Template
+## 📋 Template de Pull Request
 
 ```markdown
-## Description
-Brief description of changes
+## Descrição
+Breve descrição das mudanças
 
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Documentation update
-- [ ] Performance improvement
-- [ ] Code refactoring
+## Tipo de Mudança
+- [ ] Correção de bug
+- [ ] Nova funcionalidade
+- [ ] Atualização de documentação
+- [ ] Melhoria de performance
+- [ ] Refatoração de código
 
-## Testing
-- [ ] Tested on Ubuntu 24.04
-- [ ] Tested on Debian 13
-- [ ] Tested on Xubuntu 24.04 (if desktop changes)
-- [ ] Tested on Linux Mint 22 (if derivative changes)
-- [ ] Tested idempotency
-- [ ] Automated tests pass
+## Testes
+- [ ] Testado no Ubuntu 24.04
+- [ ] Testado no Debian 13
+- [ ] Testado no Xubuntu 24.04 (se mudanças de desktop)
+- [ ] Testado no Linux Mint 22 (se mudanças de derivados)
+- [ ] Testado idempotência
+- [ ] Testes automatizados passam
 
 ## Checklist
-- [ ] Code follows project style
-- [ ] Documentation updated
-- [ ] Tests added/updated
-- [ ] Commits are clear and descriptive
+- [ ] Código segue o estilo do projeto
+- [ ] Documentação atualizada
+- [ ] Testes adicionados/atualizados
+- [ ] Commits são claros e descritivos
 ```
 
-## 🔍 Code Review Process
+## 🔍 Processo de Revisão de Código
 
-1. Maintainer reviews PR
-2. Feedback provided if needed
-3. Changes requested or approved
-4. PR merged after approval
+1. Mantenedor revisa o PR
+2. Feedback fornecido se necessário
+3. Mudanças solicitadas ou aprovadas
+4. PR mesclado após aprovação
 
-## 📜 License
+## 📜 Licença
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+Ao contribuir, você concorda que suas contribuições serão licenciadas sob a Licença MIT.
 
-## 💬 Questions?
+## 💬 Dúvidas?
 
-- Open an issue for questions
-- Tag maintainers for urgent matters
-- Be respectful and patient
+- Abra uma issue para perguntas
+- Marque mantenedores para assuntos urgentes
+- Seja respeitoso e paciente
 
-Thank you for contributing! 🎉
+Obrigado por contribuir! 🎉
