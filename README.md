@@ -146,10 +146,11 @@ sudo ./add-opt.sh --help
 | Debian | 13 | ✅ Testado |
 | Linux Mint | 22+ | ✅ Testado |
 | Pop!_OS | 22.04 | ✅ Testado |
-| Xubuntu | 24.04 | ✅ Testado |
+| Xubuntu | 24.04, 25.10 | ✅ Testado |
 | Raspberry Pi OS | Mais recente | ✅ ARM |
 
-**Nota Pop!_OS**: Usa workarounds especiais para EZA, Docker, VSCode
+**Nota Pop!_OS**: Usa workarounds especiais para EZA, Docker, VSCode  
+**Nota Xubuntu 25.10**: Suporte completo com detecção automática de versão para pacotes eza/exa
 
 ## 🎮 Uso
 
@@ -255,13 +256,14 @@ curl https://raw.githubusercontent.com/RafaelFino/Linux-prepare/main/cloud/kille
 | .NET | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ |
 | Zsh/Oh-My-Zsh | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Vim/Micro | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| eza | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| eza/exa** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | VSCode | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Chrome | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Fontes | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Emuladores de Terminal | ✅* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
-*Componentes desktop auto-detectados
+*Componentes desktop auto-detectados  
+**Seleção automática: "exa" para Ubuntu 22.04, "eza" para Ubuntu 24.04+/Xubuntu 25.10
 
 ## 🛠️ O Que é Instalado
 
@@ -460,8 +462,22 @@ ansible-playbook -i inventory ansible/site.yml
 ```
 linux-prepare/
 ├── scripts/
-│   ├── prepare.sh              # Script principal para desktops/servidores
-│   └── add-opt.sh              # Instalação de ferramentas opcionais
+│   ├── prepare.sh              # Script principal (orquestrador modular)
+│   ├── add-opt.sh              # Instalação de ferramentas opcionais
+│   ├── modules/                # Módulos independentes (Nova Arquitetura)
+│   │   ├── system-detection.sh       # Detecção de OS/Desktop
+│   │   ├── docker-install.sh         # Instalação Docker
+│   │   ├── desktop-components.sh     # Componentes desktop
+│   │   ├── terminal-config.sh        # Configuração de terminal
+│   │   └── languages/                # Linguagens de programação
+│   │       ├── golang-install.sh     # Instalação Golang
+│   │       ├── python-install.sh     # Instalação Python
+│   │       ├── dotnet-install.sh     # Instalação .NET
+│   │       └── jvm-kotlin-install.sh # Instalação JVM/Kotlin
+│   └── lib/                    # Utilitários compartilhados (Nova Arquitetura)
+│       ├── logging.sh                 # Funções de logging
+│       ├── package-utils.sh           # Utilitários de pacotes
+│       └── version-detection.sh       # Lógica específica por versão
 ├── rasp/
 │   └── rasp4-prepare.sh        # Otimizado para Raspberry Pi 4
 ├── odroid/
@@ -492,6 +508,70 @@ linux-prepare/
 │   └── scripts/                # Scripts de validação
 └── README.md                   # Este arquivo
 ```
+
+## 🏗️ Arquitetura Modular (Nova)
+
+O projeto foi refatorado para usar uma **arquitetura modular** que oferece melhor manutenibilidade, testabilidade e flexibilidade:
+
+### Benefícios da Nova Arquitetura
+
+- **🔧 Modularidade**: Cada componente é um módulo independente
+- **🧪 Testabilidade**: Módulos podem ser testados isoladamente
+- **🔄 Reutilização**: Módulos podem ser executados independentemente
+- **📝 Manutenibilidade**: Código organizado por responsabilidade
+- **🎯 Flexibilidade**: Fácil adição de novos módulos
+- **⚡ Performance**: Execução otimizada com detecção de versão
+
+### Módulos Principais
+
+| Módulo | Responsabilidade | Localização |
+|--------|------------------|-------------|
+| **system-detection** | Detecta OS, versão, desktop | `scripts/modules/system-detection.sh` |
+| **docker-install** | Instalação Docker com repositórios específicos por versão | `scripts/modules/docker-install.sh` |
+| **desktop-components** | VSCode, Chrome, fontes, emuladores de terminal | `scripts/modules/desktop-components.sh` |
+| **terminal-config** | Zsh, Oh-My-Zsh, eza/exa baseado na versão | `scripts/modules/terminal-config.sh` |
+| **golang-install** | Instalação e configuração Golang | `scripts/modules/languages/golang-install.sh` |
+| **python-install** | Instalação Python com pip e virtualenv | `scripts/modules/languages/python-install.sh` |
+| **dotnet-install** | Instalação .NET SDK | `scripts/modules/languages/dotnet-install.sh` |
+| **jvm-kotlin-install** | SDKMAN, Java e Kotlin | `scripts/modules/languages/jvm-kotlin-install.sh` |
+
+### Utilitários Compartilhados
+
+| Utilitário | Função | Localização |
+|------------|--------|-------------|
+| **logging.sh** | Funções de log padronizadas | `scripts/lib/logging.sh` |
+| **package-utils.sh** | Instalação segura de pacotes com fallbacks | `scripts/lib/package-utils.sh` |
+| **version-detection.sh** | Detecção de versão e seleção de pacotes | `scripts/lib/version-detection.sh` |
+
+### Detecção Inteligente de Versão
+
+A nova arquitetura inclui **detecção automática de versão** para selecionar pacotes apropriados:
+
+```bash
+# Exemplo: Seleção automática eza/exa baseada na versão Ubuntu
+Ubuntu 22.04 e derivados → usa "exa"
+Ubuntu 24.04+ e derivados → usa "eza"
+Xubuntu 25.10 → usa "eza" (detecção automática)
+```
+
+### Execução Modular
+
+O script principal (`prepare.sh`) agora atua como **orquestrador**:
+
+```bash
+# Execução tradicional (compatibilidade total)
+sudo ./scripts/prepare.sh
+
+# Os módulos são executados automaticamente na ordem correta:
+# 1. system-detection → 2. docker-install → 3. languages/* → 4. terminal-config → 5. desktop-components
+```
+
+### Compatibilidade
+
+- ✅ **100% compatível** com versões anteriores
+- ✅ Mesmas flags e opções de linha de comando
+- ✅ Mesmo comportamento e saída
+- ✅ Nenhuma mudança para usuários finais
 
 ## 🐛 Solução de Problemas
 

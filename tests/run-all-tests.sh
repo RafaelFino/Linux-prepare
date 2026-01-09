@@ -39,6 +39,12 @@ docker build -f tests/docker/Dockerfile.xubuntu-24.04 -t linux-prepare-test-xubu
 docker run --rm linux-prepare-test-xubuntu-24.04 /tmp/validate.sh
 echo ""
 
+# Test Xubuntu 25.10
+echo "--- Testing Xubuntu 25.10 ---"
+docker build -f tests/docker/Dockerfile.xubuntu-25.10 -t linux-prepare-test-xubuntu-25.10 .
+docker run --rm linux-prepare-test-xubuntu-25.10 /tmp/validate.sh
+echo ""
+
 # Test Linux Mint 22
 echo "--- Testing Linux Mint 22 ---"
 docker build -f tests/docker/Dockerfile.mint-22 -t linux-prepare-test-mint-22 .

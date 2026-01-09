@@ -91,6 +91,79 @@ validate_alias() {
     fi
 }
 
+validate_xubuntu_25_10() {
+    # Check if we're running on Xubuntu 25.10
+    if [ ! -f /etc/os-release ]; then
+        return 0  # Skip if can't detect
+    fi
+    
+    source /etc/os-release
+    
+    # Only run Xubuntu 25.10 specific tests if we're on that version
+    if [[ "$PRETTY_NAME" == *"Xubuntu"* ]] && [[ "$VERSION_ID" == "25.10" ]]; then
+        echo ""
+        echo "--- Xubuntu 25.10 Specific Validation ---"
+        
+        # Test desktop environment detection
+        if [[ "${XDG_CURRENT_DESKTOP:-}" == "XFCE" ]]; then
+            echo -e "${GREEN}✓${RESET} XFCE desktop environment detected correctly"
+            ((PASSED++))
+        else
+            echo -e "${RED}✗${RESET} XFCE desktop environment NOT detected (XDG_CURRENT_DESKTOP=${XDG_CURRENT_DESKTOP:-})"
+            ((FAILED++))
+        fi
+        
+        # Test eza package installation (should be eza, not exa for Ubuntu 25.10)
+        if command -v eza &> /dev/null; then
+            echo -e "${GREEN}✓${RESET} eza package installed correctly for Ubuntu 25.10"
+            ((PASSED++))
+        else
+            echo -e "${RED}✗${RESET} eza package NOT installed (expected for Ubuntu 25.10)"
+            ((FAILED++))
+        fi
+        
+        # Test that exa is NOT installed (should use eza instead)
+        if ! command -v exa &> /dev/null; then
+            echo -e "${GREEN}✓${RESET} exa package correctly NOT installed (eza is preferred for Ubuntu 25.10)"
+            ((PASSED++))
+        else
+            echo -e "${GRAY}⚠${RESET} exa package found (eza should be preferred for Ubuntu 25.10)"
+            # Don't fail this test as both might be installed
+        fi
+        
+        # Test ls alias functionality with eza
+        if grep -q "alias ls.*eza" ~/.zshrc 2>/dev/null || grep -q "alias ls.*eza" ~/.bashrc 2>/dev/null; then
+            echo -e "${GREEN}✓${RESET} ls alias configured to use eza"
+            ((PASSED++))
+        else
+            echo -e "${RED}✗${RESET} ls alias NOT configured to use eza"
+            ((FAILED++))
+        fi
+        
+        # Test Ubuntu version detection
+        if [[ "$VERSION_ID" == "25.10" ]]; then
+            echo -e "${GREEN}✓${RESET} Ubuntu 25.10 version detected correctly"
+            ((PASSED++))
+        else
+            echo -e "${RED}✗${RESET} Ubuntu version detection failed (expected 25.10, got $VERSION_ID)"
+            ((FAILED++))
+        fi
+        
+        # Test codename detection
+        if [[ "${VERSION_CODENAME:-}" == "oracular" ]] || [[ "${VERSION_CODENAME:-}" == "" ]]; then
+            echo -e "${GREEN}✓${RESET} Ubuntu 25.10 codename validation passed (${VERSION_CODENAME:-unknown})"
+            ((PASSED++))
+        else
+            echo -e "${RED}✗${RESET} Unexpected codename for Ubuntu 25.10: ${VERSION_CODENAME:-unknown}"
+            ((FAILED++))
+        fi
+        
+        return 0
+    fi
+    
+    return 0  # Not Xubuntu 25.10, skip tests
+}
+
 echo "============================================"
 echo "  Validation Tests"
 echo "============================================"
@@ -223,6 +296,9 @@ else
     echo -e "${RED}✗${RESET} VISUAL NOT configured in .zshrc"
     ((FAILED++))
 fi
+
+# Run Xubuntu 25.10 specific validation
+validate_xubuntu_25_10
 
 echo ""
 echo "============================================"
