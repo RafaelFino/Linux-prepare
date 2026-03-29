@@ -46,10 +46,14 @@ The Env Prepare system is a collection of shell scripts designed to transform a 
 
 #### Acceptance Criteria
 
-1. WHEN the -u parameter is provided with comma-separated usernames, THE System SHALL create each specified user account
+1. WHEN the -u parameter is provided with comma-separated usernames, THE System SHALL create each specified user account with zsh as the default shell
 2. FOR ALL created users, THE System SHALL configure the development environment with all installed packages
-3. FOR ALL users (existing and created), THE System SHALL configure shell aliases and PATH variables in .profile
+3. FOR ALL users (existing and created, including root and the invoking user), THE System SHALL configure shell aliases and PATH variables in .profile
 4. WHEN configuring per-user settings, THE System SHALL ensure each user receives identical development tool configurations
+5. WHEN the script is invoked by a non-root user, THE System SHALL apply configurations to that user's environment
+6. THE System SHALL apply configurations to the root user's environment
+7. FOR ALL created users, THE System SHALL add them to the sudoers group to enable sudo access without password
+8. FOR ALL created users, THE System SHALL add them to the docker group to enable Docker access without sudo
 
 ### Requirement 4: Configuration Management
 

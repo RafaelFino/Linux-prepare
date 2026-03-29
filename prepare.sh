@@ -170,7 +170,8 @@ create_users() {
         else
             log_info "$SCRIPT_NAME" "Creating user: $username"
             
-            if useradd -m -s /bin/bash "$username"; then
+            # Create user with zsh as default shell
+            if useradd -m -s /bin/zsh "$username"; then
                 log_info "$SCRIPT_NAME" "Successfully created user: $username"
                 
                 # Set up basic home directory structure
@@ -180,6 +181,24 @@ create_users() {
                     chown -R "$username:$username" "$home_dir"
                     log_debug "$SCRIPT_NAME" "Set ownership for $home_dir"
                 fi
+                
+                # Add user to sudoers group for sudo access without password
+                if usermod -aG sudo "$username"; then
+                    log_info "$SCRIPT_NAME" "Added $username to sudoers group"
+                else
+                    log_warn "$SCRIPT_NAME" "Failed to add $username to sudoers group"
+                fi
+                
+                # Add user to docker group for docker access without sudo
+                if getent group docker &>/dev/null; then
+                    if usermod -aG docker "$username"; then
+                        log_info "$SCRIPT_NAME" "Added $username to docker group"
+                    else
+                        log_warn "$SCRIPT_NAME" "Failed to add $username to docker group"
+                    fi
+                else
+                    log_debug "$SCRIPT_NAME" "Docker group not found, will be created during docker installation"
+                fi
             else
                 log_error "$SCRIPT_NAME" "Failed to create user: $username"
             fi
@@ -187,20 +206,34 @@ create_users() {
     done
 }
 
-# Get all users that should receive configuration (existing + created)
+# Get all users that should receive configuration (existing + created + invoking user + root)
 get_all_target_users() {
     local all_users=()
+    local seen_users=()
     
     # Add created/specified users
     for user in "${TARGET_USERS[@]}"; do
         if id "$user" &>/dev/null; then
             all_users+=("$user")
+            seen_users+=("$user")
         fi
     done
     
-    # If no users specified, configure for current user (if not root)
-    if [[ ${#all_users[@]} -eq 0 && "$EUID" -ne 0 ]]; then
-        all_users+=("$(whoami)")
+    # Add the invoking user (if not root and not already in list)
+    if [[ "$EUID" -ne 0 ]]; then
+        local invoking_user
+        invoking_user=$(whoami)
+        if [[ ! " ${seen_users[@]} " =~ " ${invoking_user} " ]]; then
+            all_users+=("$invoking_user")
+            seen_users+=("$invoking_user")
+            log_debug "$SCRIPT_NAME" "Added invoking user to configuration list: $invoking_user"
+        fi
+    fi
+    
+    # Add root user (if not already in list)
+    if [[ ! " ${seen_users[@]} " =~ " root " ]]; then
+        all_users+=("root")
+        log_debug "$SCRIPT_NAME" "Added root user to configuration list"
     fi
     
     printf '%s\n' "${all_users[@]}"
@@ -271,8 +304,17 @@ configure_user_environments() {
 # Configure individual user profile
 configure_user_profile() {
     local username="$1"
-    local home_dir="/home/$username"
-    local profile_file="$home_dir/.profile"
+    local home_dir
+    local profile_file
+    
+    # Determine home directory based on username
+    if [[ "$username" == "root" ]]; then
+        home_dir="/root"
+    else
+        home_dir="/home/$username"
+    fi
+    
+    profile_file="$home_dir/.profile"
     
     if [[ ! -d "$home_dir" ]]; then
         log_warn "$SCRIPT_NAME" "Home directory not found for user: $username"
@@ -282,7 +324,9 @@ configure_user_profile() {
     # Create .profile if it doesn't exist
     if [[ ! -f "$profile_file" ]]; then
         touch "$profile_file"
-        chown "$username:$username" "$profile_file"
+        if [[ "$username" != "root" ]]; then
+            chown "$username:$username" "$profile_file"
+        fi
     fi
     
     # Add basic environment configuration
@@ -295,26 +339,36 @@ main() {
     log_info "$SCRIPT_NAME" "Starting Env Prepare System"
     
     # Check if running as root (required for user creation and package installation)
+    # Note: Some operations require root, but configuration can be done for current user
     if [[ "$EUID" -ne 0 ]]; then
-        log_error "$SCRIPT_NAME" "This script must be run as root (use sudo)"
-        exit 1
+        log_warn "$SCRIPT_NAME" "Some operations require root privileges (user creation, package installation)"
+        log_info "$SCRIPT_NAME" "Proceeding with configuration for current user only"
     fi
     
     # Parse command-line parameters
     parse_parameters "$@"
     
-    # Create users if specified
-    create_users
+    # Create users if specified (requires root)
+    if [[ "$EUID" -eq 0 ]]; then
+        create_users
+    else
+        if [[ ${#TARGET_USERS[@]} -gt 0 ]]; then
+            log_error "$SCRIPT_NAME" "User creation requires root privileges"
+            exit 1
+        fi
+    fi
     
-    # Execute base packages installation
-    if [[ "$INSTALL_BASE_PACKAGES" == true ]]; then
+    # Execute base packages installation (requires root)
+    if [[ "$EUID" -eq 0 && "$INSTALL_BASE_PACKAGES" == true ]]; then
         execute_base_installation
     fi
     
-    # Execute optional modules
-    execute_optional_modules
+    # Execute optional modules (requires root)
+    if [[ "$EUID" -eq 0 ]]; then
+        execute_optional_modules
+    fi
     
-    # Configure user environments
+    # Configure user environments (can be done for current user)
     configure_user_environments
     
     log_info "$SCRIPT_NAME" "System setup complete"

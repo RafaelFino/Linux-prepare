@@ -1,6 +1,0 @@
-#!/bin/bash
-# Mock useradd command for testing
-# Always succeeds and logs the action
-
-echo "Mock useradd called with: $*" >&2
-exit 0

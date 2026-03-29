@@ -1,5 +1,0 @@
-#!/bin/bash
-# Mock id command for testing
-# Returns success for any username to simulate user existence
-
-exit 0

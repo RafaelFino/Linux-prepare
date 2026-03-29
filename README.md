@@ -7,15 +7,19 @@ A modular shell script collection that transforms fresh Ubuntu-based Linux insta
 - **Base Package Installation**: Essential development tools and utilities pre-configured
 - **Modular Architecture**: Install only the tools you need
 - **Multi-User Support**: Configure multiple users simultaneously
+- **Automatic Shell Configuration**: zsh as default shell with oh-my-zsh framework
+- **Sudo and Docker Access**: Created users automatically configured for sudo and docker
 - **Comprehensive Logging**: Timestamped, color-coded logs with module identification
 - **Idempotent Operations**: Safe to run multiple times without side effects
 - **Error Resilience**: Continues installation even if individual packages fail
+- **User Environment Configuration**: Automatically configures invoking user and root
 
 ## Prerequisites
 
 - Ubuntu-based Linux distribution (20.04 LTS or later recommended)
-- Root or sudo access
+- Root or sudo access (for package installation and user creation)
 - Internet connection for package downloads
+- Note: Configuration can be applied to current user without root privileges
 
 ## Installation
 

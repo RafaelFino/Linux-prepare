@@ -13,7 +13,7 @@ This implementation plan breaks down the Env Prepare system into discrete, manag
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 6.1, 6.3_
 
 - [ ] 1.1 Write property test for logging format compliance
-  - **Property 8: Logging Format Compliance**
+  - **Property 10: Logging Format Compliance**
   - **Validates: Requirements 5.1, 5.2, 5.3**
 
 - [x] 2. Implement parameter parsing and main orchestrator
@@ -21,7 +21,9 @@ This implementation plan breaks down the Env Prepare system into discrete, manag
   - Implement user creation functionality with -u parameter
   - Add validation for comma-separated user lists
   - Set up module execution framework
-  - _Requirements: 3.1, 6.1_
+  - Configure zsh as default shell for created users
+  - Add created users to sudoers and docker groups
+  - _Requirements: 3.1, 3.7, 3.8, 6.1_
 q
 - [x] 2.1 Write property test for user creation from parameters
   - **Property 4: User Creation from Parameters**
@@ -30,6 +32,14 @@ q
 - [x] 2.2 Write unit tests for parameter parsing edge cases
   - Test invalid parameters, empty user lists, malformed input
   - _Requirements: 3.1_
+
+- [ ] 2.3 Write property test for sudo access configuration
+  - **Property 5: Sudo Access Configuration**
+  - **Validates: Requirements 3.7**
+
+- [ ] 2.4 Write property test for docker access configuration
+  - **Property 6: Docker Access Configuration**
+  - **Validates: Requirements 3.8**
 
 - [x] 3. Implement base packages installation module
   - Create modules/base.sh with all essential packages
@@ -43,11 +53,11 @@ q
   - **Validates: Requirements 1.2**
 
 - [x] 3.2 Write property test for error handling continuity
-  - **Property 11: Error Handling Continuity**
+  - **Property 13: Error Handling Continuity**
   - **Validates: Requirements 1.3**
 
 - [x] 3.3 Write property test for shell framework configuration
-  - **Property 5: Shell Framework Configuration**
+  - **Property 7: Shell Framework Configuration**
   - **Validates: Requirements 1.4, 1.5, 4.3**
 
 - [x] 4. Implement user configuration management
@@ -55,18 +65,19 @@ q
   - Implement eza aliases configuration
   - Set up vim with awesome vim configuration
   - Ensure consistent configuration across all users
-  - _Requirements: 3.2, 3.3, 3.4, 4.1, 4.2, 4.4_
+  - Configure invoking user and root user environments
+  - _Requirements: 3.2, 3.3, 3.4, 3.5, 3.6, 4.1, 4.2, 4.4_
 
 - [x] 4.1 Write property test for user environment consistency
   - **Property 3: User Environment Consistency**
-  - **Validates: Requirements 3.2, 3.3, 3.4**
+  - **Validates: Requirements 3.2, 3.3, 3.4, 3.5, 3.6**
 
 - [x] 4.2 Write property test for eza alias configuration
-  - **Property 6: Eza Alias Configuration**
+  - **Property 8: Eza Alias Configuration**
   - **Validates: Requirements 4.1**
 
 - [x] 4.3 Write property test for vim configuration consistency
-  - **Property 7: Vim Configuration Consistency**
+  - **Property 9: Vim Configuration Consistency**
   - **Validates: Requirements 4.2**
 
 - [ ] 5. Checkpoint - Ensure core functionality works
@@ -124,7 +135,7 @@ q
   - _Requirements: 5.4, 5.5, 5.6_
 
 - [ ] 13.1 Write property test for module execution timing
-  - **Property 9: Module Execution Timing**
+  - **Property 11: Module Execution Timing**
   - **Validates: Requirements 5.4, 5.5, 5.6**
 
 - [ ] 14. Implement idempotency across all modules
@@ -134,11 +145,11 @@ q
   - _Requirements: 6.2, 6.4_
 
 - [ ] 14.1 Write property test for installation idempotency
-  - **Property 10: Installation Idempotency**
+  - **Property 12: Installation Idempotency**
   - **Validates: Requirements 6.2, 6.4**
 
 - [ ] 14.2 Write property test for common logging utility usage
-  - **Property 12: Common Logging Utility Usage**
+  - **Property 14: Common Logging Utility Usage**
   - **Validates: Requirements 6.3**
 
 - [x] 15. Create comprehensive documentation

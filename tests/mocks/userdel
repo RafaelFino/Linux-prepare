@@ -1,6 +1,0 @@
-#!/bin/bash
-# Mock userdel command for testing
-# Always succeeds
-
-echo "Mock userdel called with: $*" >&2
-exit 0
