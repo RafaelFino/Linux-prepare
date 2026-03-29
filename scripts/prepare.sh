@@ -20,7 +20,7 @@ SKIPPED_COMPONENTS=()     # Components already present (skipped)
 FAILED_COMPONENTS=()      # Components that failed to install
 
 # Component group flags (0 = disabled, 1 = enabled)
-INSTALL_BASE=0
+INSTALL_BASE=1
 INSTALL_DESKTOP=0
 INSTALL_DOCKER=0
 INSTALL_GOLANG=0
@@ -400,7 +400,7 @@ install_unzip() {
         SKIPPED_COMPONENTS+=("unzip")
         return 0
     fi
-    if DEBIAN_FRONTEND=noninteractive apt-get install -y unzip; then
+    if DEBIAN_FRONTEND=noninteractive apt-get install -y unzip zip; then
         log_ok "unzip installed successfully."
         INSTALLED_COMPONENTS+=("unzip")
     else
@@ -862,6 +862,7 @@ install_golang_group() {
 
 install_sdkman() {
     log "Installing SDKMAN..."
+    sudo apt install -y zip unzip curl
     if [[ -d "${HOME}/.sdkman" ]]; then
         log_ok "SDKMAN already installed. Skipping."
         SKIPPED_COMPONENTS+=("sdkman")
@@ -879,10 +880,19 @@ install_sdkman() {
 
 install_java_latest() {
     log "Installing latest Java via SDKMAN..."
-    # Source SDKMAN
+
     export SDKMAN_DIR="${HOME}/.sdkman"
-    # shellcheck source=/dev/null
-    [[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"
+
+    if [[ ! -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]]; then
+        log_err "SDKMAN init script not found."
+        FAILED_COMPONENTS+=("java")
+        return 1
+    fi
+
+    # 🔥 FIX: disable nounset temporarily
+    set +u
+    source "${SDKMAN_DIR}/bin/sdkman-init.sh"
+
     if command -v sdk &>/dev/null; then
         if sdk install java; then
             log_ok "Java (latest) installed successfully."
@@ -890,13 +900,18 @@ install_java_latest() {
         else
             log_err "Failed to install Java via SDKMAN."
             FAILED_COMPONENTS+=("java")
+            set -u
             return 1
         fi
     else
         log_err "SDKMAN not available. Cannot install Java."
         FAILED_COMPONENTS+=("java")
+        set -u
         return 1
     fi
+
+    # 🔥 restore safety
+    set -u
 }
 
 install_java_group() {

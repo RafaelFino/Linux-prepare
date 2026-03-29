@@ -1,407 +1,339 @@
-# Env Prepare System
+Perfeito — agora corrigido, com o nome correto do script (`prepare.sh`) e **formatado corretamente em Markdown puro**, sem artefatos de renderização.
 
-A modular shell script collection that transforms fresh Ubuntu-based Linux installations into fully functional development environments. The system provides comprehensive logging, user management, and selective installation of development tools.
+---
 
-## Features
+````markdown
+# Ubuntu Development Environment Setup Script
 
-- **Base Package Installation**: Essential development tools and utilities pre-configured
-- **Modular Architecture**: Install only the tools you need
-- **Multi-User Support**: Configure multiple users simultaneously
-- **Automatic Shell Configuration**: zsh as default shell with oh-my-zsh framework
-- **Sudo and Docker Access**: Created users automatically configured for sudo and docker
-- **Comprehensive Logging**: Timestamped, color-coded logs with module identification
-- **Idempotent Operations**: Safe to run multiple times without side effects
-- **Error Resilience**: Continues installation even if individual packages fail
-- **User Environment Configuration**: Automatically configures invoking user and root
+## Overview
 
-## Prerequisites
+This repository provides a shell script (`prepare.sh`) to provision a development environment on Ubuntu systems in a consistent and repeatable way.
 
-- Ubuntu-based Linux distribution (20.04 LTS or later recommended)
-- Root or sudo access (for package installation and user creation)
-- Internet connection for package downloads
-- Note: Configuration can be applied to current user without root privileges
+The script is designed to be:
 
-## Installation
+- Idempotent (safe to run multiple times)
+- Non-interactive
+- Modular (components are grouped and optional)
+- Fully logged
+- Suitable for local machines or ephemeral environments
 
-Clone the repository and navigate to the directory:
+It installs a set of base tools by default and allows optional installation of additional development stacks.
+
+---
+
+## Supported Environment
+
+- Ubuntu 25.x or newer
+- Minimum 4 GB RAM
+- Root privileges (`sudo`)
+- Internet access
+
+---
+
+## Execution
+
+Run the script with:
 
 ```bash
-git clone <repository-url>
-cd env-prepare
-```
+sudo ./prepare.sh [options]
+````
 
-## Usage
+If no options are provided, only the base components are installed.
 
-### Basic Syntax
+---
 
-```bash
-sudo ./prepare.sh [OPTIONS]
-```
+## Component Groups
 
-### Command-Line Parameters
+### Base (always installed)
 
-#### User Creation
+Includes essential tools and shell configuration:
 
-**`-u=user1,user2,userN`**
+* zsh
+* vim
+* micro editor
+* eza
+* unzip / zip
+* curl / wget
+* python3 and pip3
+* oh-my-bash
+* oh-my-zsh
+* vim configuration (Vundle-based setup)
+* global shell aliases
+* shell configuration applied to all users
 
-Create specified user accounts with development environment configuration. Users are specified as a comma-separated list.
+---
 
-- **Format**: `-u=username1,username2,username3`
-- **Valid Characters**: Lowercase letters, digits, hyphens, underscores
-- **Username Rules**: Must start with a letter or underscore, maximum 32 characters
-- **Example**: `-u=dev,admin,testuser`
+### Desktop
 
-When users are created:
-- Home directories are automatically created
-- Shell is set to `/bin/bash`
-- Development environment is configured in `.profile`
-- All installed packages and tools are configured for the user
+Installs tools typically used in a graphical environment:
 
-#### Optional Modules
+* Visual Studio Code
+* Nerd Fonts (FiraCode)
+* Powerline fonts
+* Terminator terminal
+* Google Chrome
 
-**`-docker`**
+---
 
-Install Docker and configure for non-root access.
+### Docker
 
-- Installs official Docker from Docker's repository
-- Adds all target users to the `docker` group
-- Enables running Docker commands without `sudo`
+Installs Docker Engine from the official repository, including:
 
-**`-golang`**
+* docker-ce
+* docker CLI
+* containerd
+* buildx plugin
+* compose plugin
 
-Install Go programming language.
+---
 
-- Downloads latest stable Go release
-- Installs to `/usr/local/go`
-- Configures PATH for all users
-- Enables `go` command globally
+### Golang
 
-**`-jvm`**
+Installs the latest version of Go from the official distribution.
 
-Install Java Virtual Machine using SDKMAN.
+---
 
-- Installs SDKMAN for Java version management
-- Installs latest LTS Java version
-- Configures `JAVA_HOME` and PATH
-- Supports multiple Java versions through SDKMAN
+### Java
 
-**`-vscode`**
+Installs:
 
-Install Visual Studio Code.
+* SDKMAN
+* Latest available Java version via SDKMAN
 
-- Adds Microsoft repository and GPG key
-- Installs via apt package manager
-- Available for all users
+---
 
-**`-fonts`**
+### Dotnet
 
-Install Nerd Fonts and Powerline Fonts.
+Installs the latest stable .NET SDK from Microsoft repositories.
 
-- Clones and installs Powerline Fonts
-- Clones and installs Nerd Fonts
-- Updates system font cache
-- Fonts available system-wide
+---
 
-**`-terminator`**
+## Command Line Options
 
-Install Terminator terminal emulator.
+| Option      | Description                       |
+| ----------- | --------------------------------- |
+| `--base`    | Install base components (default) |
+| `--desktop` | Install desktop tools             |
+| `--docker`  | Install Docker                    |
+| `--golang`  | Install Golang                    |
+| `--java`    | Install Java via SDKMAN           |
+| `--dotnet`  | Install .NET SDK                  |
+| `--full`    | Install all component groups      |
+| `--users`   | Create additional users           |
+| `--help`    | Display usage information         |
 
-- Installs via apt package manager
-- Provides advanced terminal features
-- Includes basic configuration template
+---
 
-**`-dotnet`**
+## Usage Examples
 
-Install .NET runtime and SDK.
-
-- Adds Microsoft .NET repository
-- Installs .NET SDK and runtime
-- Configures PATH and environment variables
-- Enables `dotnet` command globally
-
-#### Help
-
-**`-h, --help`**
-
-Display usage information and exit.
-
-### Usage Examples
-
-#### Install Base Packages Only
+### 1. Base installation only
 
 ```bash
 sudo ./prepare.sh
 ```
 
-Installs essential development packages on the current system.
+Installs only the base toolchain and shell configuration.
 
-#### Create Users with Base Packages
+---
 
-```bash
-sudo ./prepare.sh -u=dev,admin
-```
-
-Creates users `dev` and `admin`, configures their environments with base packages.
-
-#### Install Base Packages and Docker
+### 2. Full environment setup
 
 ```bash
-sudo ./prepare.sh -docker
+sudo ./prepare.sh --full
 ```
 
-Installs base packages and Docker on the current system.
+Installs all available component groups.
 
-#### Create User and Install Multiple Tools
+---
+
+### 3. Selective installation
 
 ```bash
-sudo ./prepare.sh -u=developer -docker -golang -vscode
+sudo ./prepare.sh --docker --golang
 ```
 
-Creates user `developer` and installs Docker, Go, and VS Code for all users.
+Installs base tools plus Docker and Golang.
 
-#### Full Development Environment
+---
+
+### 4. Creating additional users
 
 ```bash
-sudo ./prepare.sh -u=dev,admin -docker -golang -jvm -vscode -fonts -dotnet
+sudo ./prepare.sh --users alice bob
 ```
 
-Creates users `dev` and `admin`, installs all available development tools.
+Creates users `alice` and `bob` in addition to the default user.
 
-#### Install Only Optional Modules
+---
 
-```bash
-sudo ./prepare.sh -golang -dotnet
-```
+## User Management
 
-Installs Go and .NET on the current system without creating new users.
+The script always creates a default user:
 
-## Base Packages
+* Username: `dev`
+* Password: `dev123`
 
-The system installs the following essential packages by default:
+Additional users created via `--users` receive:
 
-### System Tools
-- `zsh` - Advanced shell
-- `git` - Version control
-- `curl` - Data transfer tool
-- `wget` - File downloader
-- `jq` - JSON processor
-- `zip`, `unzip` - Archive utilities
+* Password: `changeme123`
 
-### Development Tools
-- `cmake` - Build system
-- `build-essential` - Compilation tools
-- `python3`, `pip` - Python environment
-- `nodejs` - JavaScript runtime (via base installation)
+It is strongly recommended to change all default passwords after execution.
 
-### Editors
-- `vim` - Text editor with awesome-vim configuration
-- `micro` - Modern terminal editor
-
-### Monitoring & Utilities
-- `htop` - Interactive process viewer
-- `btop` - Modern resource monitor
-- `telnet` - Network utility
-- `netcat-openbsd` - Network tool
-- `openssh-server` - SSH server
-
-### Security & Certificates
-- `gpg` - GNU Privacy Guard
-- `ca-certificates` - SSL/TLS certificates
-- `gnupg` - GPG utilities
-- `openssl` - SSL/TLS toolkit
-
-### Modern Alternatives
-- `batcat` - Cat clone with syntax highlighting
-- `eza` - Modern ls replacement
-- `httpie` - HTTP client
-- `gh` - GitHub CLI
-
-### Additional
-- `sqlite3` - Database
-- `apt-transport-https` - HTTPS support for apt
-- `zlib1g` - Compression library
-
-## Configuration
-
-### Shell Configuration
-
-All users receive the following shell configurations:
-
-#### Oh-My-Zsh
-- **Theme**: agnoster
-- **Framework**: Oh-My-Zsh for advanced shell features
-- **Default Shell**: zsh (set during user creation)
-
-#### Oh-My-Bash
-- **Alternative Framework**: Available as alternative to zsh
-- **Configuration**: Automatically configured for all users
-
-### User Profile Configuration
-
-All users receive the following configurations in their `.profile`:
-
-#### Eza Aliases
-
-Modern replacements for traditional `ls` command:
-
-```bash
-alias ls='eza -hHbmgalT -L 1 --time-style=long-iso --icons'
-alias lt='eza -hHbmgalT -L 4 --time-style=long-iso --icons'
-```
-
-- `ls` - List files with detailed information, one level deep
-- `lt` - List files with tree view, up to 4 levels deep
-
-#### Vim Configuration
-
-- **Awesome Vim**: Custom vim configuration with enhanced features
-- **Line Numbers**: Enabled by default
-- **Syntax Highlighting**: Automatic for supported file types
+---
 
 ## Logging
 
-The system provides comprehensive logging of all installation activities.
-
-### Log Format
-
-All log entries follow this standardized format:
+Each execution generates a log file:
 
 ```
-[YYYY-MM-DD HH:MM:SS] [module_name] [LEVEL] message
+/var/log/dev-setup-<timestamp>.log
 ```
 
-**Components:**
-- `[YYYY-MM-DD HH:MM:SS]` - ISO 8601 timestamp
-- `[module_name]` - Name of the script/module generating the log
-- `[LEVEL]` - Severity level (see below)
-- `message` - Log message content
+The log includes:
 
-### Log Levels and Colors
+* Execution steps
+* Success and failure messages
+* Installed, skipped, and failed components
+* Start and end timestamps
 
-The system uses color-coded severity levels for easy identification:
+---
 
-| Level | Color  | Usage |
-|-------|--------|-------|
-| INFO  | Green  | Informational messages, successful operations |
-| WARN  | Yellow | Warnings, non-critical issues |
-| DEBUG | Blue   | Debugging information, detailed operation details |
-| ERROR | Red    | Error messages, failed operations |
+## Idempotency Model
 
-### Example Log Output
+Before performing any installation, the script checks whether the component is already present.
 
-```
-[2024-01-15 10:30:45] [prepare] [INFO] Starting Env Prepare System
-[2024-01-15 10:30:45] [prepare] [INFO] Parsing command-line parameters
-[2024-01-15 10:30:46] [prepare] [INFO] Creating user accounts
-[2024-01-15 10:30:47] [prepare] [INFO] Creating user: developer
-[2024-01-15 10:30:48] [prepare] [INFO] Successfully created user: developer
-[2024-01-15 10:30:48] [base] [INFO] Installing...
-[2024-01-15 10:31:15] [base] [INFO] Successful in 27 seconds!
-[2024-01-15 10:31:15] [docker] [INFO] Installing...
-[2024-01-15 10:31:45] [docker] [INFO] Successful in 30 seconds!
-[2024-01-15 10:31:45] [prepare] [INFO] System setup complete
-```
+Examples:
 
-### Module Execution Timing
+* Binary existence (`command -v`)
+* Installed packages (`dpkg`)
+* Existing directories or configuration files
 
-Each module logs its execution time:
+This allows the script to:
 
-- **Start**: `[module_name] [INFO] Installing...`
-- **End**: `[module_name] [INFO] Successful in X seconds!`
+* Be safely re-executed
+* Resume partially completed setups
+* Avoid unnecessary operations
 
-This allows monitoring of installation progress and identifying slow operations.
+---
 
-## Troubleshooting
+## System Update Behavior
 
-### Permission Denied
+At the beginning of execution, the script performs:
 
-**Error**: `Permission denied` or `This script must be run as root`
-
-**Solution**: Run the script with `sudo`:
 ```bash
-sudo ./prepare.sh [OPTIONS]
+apt-get update
+apt-get upgrade -y
 ```
 
-### Invalid Username
+This is done non-interactively and does not require user confirmation.
 
-**Error**: `Invalid username skipped: [username]`
+Failures during system update are logged but do not stop execution.
 
-**Cause**: Username doesn't follow Linux naming conventions
+---
 
-**Solution**: Use valid usernames:
-- Start with lowercase letter or underscore
-- Use only lowercase letters, digits, hyphens, underscores
-- Maximum 32 characters
+## Shell Configuration
 
-### Module Installation Failed
+The script configures all users with:
 
-**Error**: `Module failed: [module_name]`
+* Zsh as default shell
+* Oh My Zsh installed per user
+* A predefined theme (`frisk`)
+* Global aliases replacing `ls` with `eza`
 
-**Cause**: Network issues, missing dependencies, or system configuration
+Configuration is applied idempotently.
 
-**Solution**:
-1. Check internet connection
-2. Verify system has required dependencies
-3. Review error messages in log output
-4. Run the script again (most operations are idempotent)
+---
 
-### Package Not Found
+## Java Installation Notes
 
-**Error**: `Unable to locate package [package_name]`
+Java is installed via SDKMAN.
 
-**Cause**: Package repository not available or outdated package list
+Because the script uses strict Bash settings (`set -euo pipefail`), SDKMAN execution requires temporarily disabling `nounset`:
 
-**Solution**:
 ```bash
-sudo apt update
-sudo ./prepare.sh [OPTIONS]
+set +u
+source "$SDKMAN_DIR/bin/sdkman-init.sh"
+set -u
 ```
 
-## Architecture
+This behavior is handled internally in the script.
 
-The system is organized into modular components:
+---
 
+## Failure Handling
+
+The script tracks three categories:
+
+* Installed components
+* Skipped components (already present)
+* Failed components
+
+At the end of execution, a summary is printed.
+
+If any component fails, the script exits with a non-zero status.
+
+---
+
+## Extending the Script
+
+To add a new component:
+
+1. Implement an installation function:
+
+   ```bash
+   install_example() { ... }
+   ```
+
+2. Add it to a group function:
+
+   ```bash
+   install_example_group() { ... }
+   ```
+
+3. Register the group in the CLI argument parser
+
+---
+
+## Common Issues
+
+### Script stops during Java installation
+
+Cause: SDKMAN incompatibility with `set -u`
+
+Resolution: already handled in the script by temporarily disabling `nounset`.
+
+---
+
+### Permission errors
+
+Ensure the script is executable:
+
+```bash
+chmod +x prepare.sh
 ```
-env-prepare/
-├── prepare.sh              # Main orchestrator script
-├── util/
-│   └── log.sh              # Centralized logging utility
-├── modules/
-│   ├── base.sh             # Base packages installer
-│   ├── docker.sh           # Docker installer
-│   ├── golang.sh           # Go language installer
-│   ├── dotnet.sh           # .NET installer
-│   ├── jvm.sh              # JVM installer
-│   ├── fonts.sh            # Font installer
-│   ├── terminator.sh       # Terminator installer
-│   └── vscode.sh           # VS Code installer
-└── README.md               # This file
-```
 
-The system uses util/log.sh as the centralized logging utility that provides consistent formatting and color coding across all modules.
+---
 
-### Design Principles
+### Partial installation
 
-- **Modularity**: Each tool is installed by an independent script
-- **Idempotency**: Scripts can be run multiple times safely
-- **Logging**: All operations are logged with timestamps and severity levels
-- **Error Resilience**: Failures in one module don't prevent others from running
-- **User Configuration**: All users receive identical configurations
+Re-run the script. Previously installed components will be skipped.
 
-## Contributing
+---
 
-To add a new optional module:
+## Security Considerations
 
-1. Create a new script in `modules/` directory
-2. Implement the standard module interface with logging
-3. Add the module to `AVAILABLE_MODULES` in `prepare.sh`
-4. Update this README with module documentation
-5. Add property-based tests for the new module
+* The script must be executed as root
+* Default passwords are weak and must be changed
+* External installation scripts are executed (SDKMAN, Oh My Zsh, etc.)
 
-## License
+---
 
-See LICENSE file for details.
+## Final Notes
 
-## Support
+This script provides a lightweight alternative to configuration management tools for local or disposable environments, while maintaining structure and predictability.
 
-For issues, questions, or contributions, please refer to the project repository.
+It is particularly useful for:
+
+* Developer workstation provisioning
+* Reproducible environments
+* VM or container bootstrap scenarios

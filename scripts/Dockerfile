@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-COPY setup.sh /setup.sh
-RUN chmod +x /setup.sh
+COPY prepare.sh /prepare.sh
+RUN chmod +x /prepare.sh
 
-ENTRYPOINT ["/setup.sh"]
+ENTRYPOINT ["/prepare.sh"]
