@@ -1,8 +1,3 @@
-Perfeito — agora corrigido, com o nome correto do script (`prepare.sh`) e **formatado corretamente em Markdown puro**, sem artefatos de renderização.
-
----
-
-````markdown
 # Ubuntu Development Environment Setup Script
 
 ## Overview
