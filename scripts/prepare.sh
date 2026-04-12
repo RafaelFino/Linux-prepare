@@ -1,25 +1,32 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Ubuntu Development Environment Setup Script
+# Script de Configuração de Ambiente de Desenvolvimento — Ubuntu 25+
 # =============================================================================
-# Description : Automates installation and configuration of a complete
-#               development environment on Ubuntu 25.x or later.
-# Usage       : sudo ./setup.sh [OPTIONS]
-# Run --help for full usage information.
+#
+# Uso       : sudo ./prepare.sh [OPÇÕES]
+#             Execute --help para informações completas de uso.
+#
+# Grupos    : --base, --desktop, --docker, --golang, --java, --dotnet, --full
+# Usuários  : --users user1 user2 ...
+#
+# Log       : /var/log/dev-setup-*.log
+#
+# Notas     : - Executar como root (via sudo)
+#             - Senhas solicitadas interativamente (nada hardcoded)
+#             - Idempotente: pode ser executado múltiplas vezes
+#
 # =============================================================================
 
 set -euo pipefail
 
 # =============================================================================
-# GLOBAL STATE VARIABLES
+# VARIÁVEIS GLOBAIS
 # =============================================================================
 
-# Tracking arrays — populated during installation
-INSTALLED_COMPONENTS=()   # Components successfully installed this run
-SKIPPED_COMPONENTS=()     # Components already present (skipped)
-FAILED_COMPONENTS=()      # Components that failed to install
+INSTALLED_COMPONENTS=()
+SKIPPED_COMPONENTS=()
+FAILED_COMPONENTS=()
 
-# Component group flags (0 = disabled, 1 = enabled)
 INSTALL_BASE=1
 INSTALL_DESKTOP=0
 INSTALL_DOCKER=0
@@ -27,1010 +34,1225 @@ INSTALL_GOLANG=0
 INSTALL_JAVA=0
 INSTALL_DOTNET=0
 
-# Additional users to create beyond the default "dev" user
-EXTRA_USERS=()
+FLAG_USERS=()
+TARGET_USERS=()
+CURRENT_USER="${SUDO_USER:-$(whoami)}"
 
-# Timing and logging
-SCRIPT_START_TIME=$(date +%s)
 LOG_FILE=""
+SCRIPT_START_TIME=$(date +%s)
 
 # =============================================================================
-# LOGGING SYSTEM
+# LOGGING
 # =============================================================================
 
-# log() — Write an [INFO] level message to stdout and the log file.
-# Usage: log "message"
 log() {
-    local message="$1"
     local timestamp
     timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    local line="[${timestamp}] [INFO]  ${message}"
+    local line="[${timestamp}] [INFO]  $1"
     echo "${line}"
-    if [[ -n "${LOG_FILE}" ]]; then
-        echo "${line}" >> "${LOG_FILE}"
-    fi
+    [[ -n "${LOG_FILE}" ]] && echo "${line}" >> "${LOG_FILE}"
 }
 
-# log_ok() — Write an [OK] level message to stdout and the log file.
-# Usage: log_ok "message"
 log_ok() {
-    local message="$1"
     local timestamp
     timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    local line="[${timestamp}] [OK]    ${message}"
+    local line="[${timestamp}] [OK]    $1"
     echo "${line}"
-    if [[ -n "${LOG_FILE}" ]]; then
-        echo "${line}" >> "${LOG_FILE}"
-    fi
+    [[ -n "${LOG_FILE}" ]] && echo "${line}" >> "${LOG_FILE}"
 }
 
-# log_err() — Write an [ERROR] level message to stdout and the log file.
-# Usage: log_err "message"
 log_err() {
-    local message="$1"
     local timestamp
     timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    local line="[${timestamp}] [ERROR] ${message}"
+    local line="[${timestamp}] [ERROR] $1"
     echo "${line}" >&2
-    if [[ -n "${LOG_FILE}" ]]; then
-        echo "${line}" >> "${LOG_FILE}"
-    fi
+    [[ -n "${LOG_FILE}" ]] && echo "${line}" >> "${LOG_FILE}"
 }
 
-# =============================================================================
-# LOGGING INITIALISATION
-# =============================================================================
-
-# init_logging() — Create the timestamped log file and record the start time.
-# Must be called after prerequisite checks pass (requires write access to /var/log).
 init_logging() {
     LOG_FILE="/var/log/dev-setup-$(date +%Y-%m-%d-%H-%M-%S).log"
     touch "${LOG_FILE}"
-    log "Logging initialised. Log file: ${LOG_FILE}"
-    log "Script started at: $(date '+%Y-%m-%d %H:%M:%S')"
+    log "Logging inicializado. Arquivo de log: ${LOG_FILE}"
 }
 
 # =============================================================================
-# PREREQUISITE VALIDATION
+# FUNÇÕES AUXILIARES
 # =============================================================================
 
-# validate_root() — Ensure the script is running as root (EUID == 0).
-# Must be the FIRST check called in main(). Uses plain echo to stderr
-# because the log system is not yet initialised at this point.
-validate_root() {
-    if [[ "${EUID}" -ne 0 ]]; then
-        echo "ERROR: This script must be run as root. Use: sudo ./setup.sh" >&2
+# Se check_command não for passado, usa package_name como fallback
+install_apt_package() {
+    local package_name="$1"
+    local check_command="${2:-$1}"
+
+    if command -v "$check_command" &>/dev/null || dpkg -s "$package_name" &>/dev/null 2>&1; then
+        log "  $package_name já instalado. Pulando."
+        SKIPPED_COMPONENTS+=("$package_name")
+        return 0
+    fi
+
+    if DEBIAN_FRONTEND=noninteractive apt-get install -y "$package_name"; then
+        log_ok "  $package_name instalado com sucesso."
+        INSTALLED_COMPONENTS+=("$package_name")
+    else
+        log_err "  Falha ao instalar $package_name."
+        FAILED_COMPONENTS+=("$package_name")
+    fi
+}
+
+# Verifica cada pacote individualmente, instala apenas os faltantes de uma vez
+install_apt_packages() {
+    local packages=("$@")
+    local to_install=()
+
+    for pkg in "${packages[@]}"; do
+        if dpkg -s "$pkg" &>/dev/null 2>&1; then
+            log "  $pkg já instalado. Pulando."
+            SKIPPED_COMPONENTS+=("$pkg")
+        else
+            to_install+=("$pkg")
+        fi
+    done
+
+    [[ ${#to_install[@]} -eq 0 ]] && return 0
+
+    if DEBIAN_FRONTEND=noninteractive apt-get install -y "${to_install[@]}"; then
+        for pkg in "${to_install[@]}"; do
+            log_ok "  $pkg instalado com sucesso."
+            INSTALLED_COMPONENTS+=("$pkg")
+        done
+    else
+        for pkg in "${to_install[@]}"; do
+            FAILED_COMPONENTS+=("$pkg")
+        done
+        log_err "  Falha ao instalar: ${to_install[*]}"
+    fi
+}
+
+# Se check_command não for passado, usa component_name como fallback
+install_deb_from_url() {
+    local component_name="$1"
+    local deb_url="$2"
+    local check_command="${3:-$1}"
+
+    if command -v "$check_command" &>/dev/null || dpkg -s "$component_name" &>/dev/null 2>&1; then
+        log "  $component_name já instalado. Pulando."
+        SKIPPED_COMPONENTS+=("$component_name")
+        return 0
+    fi
+
+    local temp_deb="/tmp/${component_name}.deb"
+
+    if wget -q "$deb_url" -O "$temp_deb" && \
+       dpkg -i "$temp_deb" || DEBIAN_FRONTEND=noninteractive apt-get install -f -y; then
+        log_ok "  $component_name instalado com sucesso via .deb."
+        INSTALLED_COMPONENTS+=("$component_name")
+    else
+        log_err "  Falha ao instalar $component_name via .deb."
+        FAILED_COMPONENTS+=("$component_name")
+    fi
+
+    rm -f "$temp_deb"
+}
+
+# Se apt-get update falhar após adicionar a chave, reverte automaticamente
+# removendo o .gpg e o .list adicionados
+add_apt_key_with_validation() {
+    local repo_name="$1"
+    local key_url="$2"
+    local key_path="$3"
+    local list_content="$4"
+    local list_path="$5"
+
+    if [[ -f "$key_path" ]] && [[ -f "$list_path" ]]; then
+        log "  Repositório $repo_name já configurado. Pulando."
+        return 0
+    fi
+
+    log "  Adicionando repositório $repo_name..."
+
+    mkdir -p "$(dirname "$key_path")"
+    if ! curl -fsSL "$key_url" | gpg --dearmor -o "$key_path"; then
+        log_err "  Falha ao baixar chave GPG para $repo_name."
+        return 1
+    fi
+
+    echo "$list_content" > "$list_path"
+
+    if ! DEBIAN_FRONTEND=noninteractive apt-get update -y; then
+        log_err "  apt-get update falhou após adicionar $repo_name. Revertendo..."
+        rm -f "$key_path" "$list_path"
+        DEBIAN_FRONTEND=noninteractive apt-get update -y || true
+        log_err "  Repositório $repo_name revertido: chave e lista removidos."
+        return 1
+    fi
+
+    log_ok "  Repositório $repo_name adicionado e validado com sucesso."
+}
+
+# =============================================================================
+# VALIDAÇÕES DE PRÉ-REQUISITO
+# =============================================================================
+
+check_running_as_root() {
+    if [[ "$(id -u)" -ne 0 ]]; then
+        echo "ERRO: Este script deve ser executado como root (use sudo)." >&2
         exit 1
     fi
 }
 
-# validate_ubuntu() — Ensure the OS is Ubuntu 25 or later.
-# Sources /etc/os-release and checks ID and VERSION_ID.
-validate_ubuntu() {
+check_ubuntu_version() {
     if [[ ! -f /etc/os-release ]]; then
-        echo "ERROR: /etc/os-release not found. Cannot determine OS." >&2
+        echo "ERRO: /etc/os-release não encontrado. Sistema não suportado." >&2
         exit 1
     fi
 
-    # shellcheck source=/dev/null
-    source /etc/os-release
+    local os_id os_version
+    os_id=$(. /etc/os-release && echo "${ID:-}")
+    os_version=$(. /etc/os-release && echo "${VERSION_ID:-}")
 
-    if [[ "${ID}" != "ubuntu" ]]; then
-        echo "ERROR: This script requires Ubuntu. Detected OS: ${ID}" >&2
+    if [[ "$os_id" != "ubuntu" ]]; then
+        echo "ERRO: Sistema não suportado: '$os_id'. Apenas Ubuntu." >&2
         exit 1
     fi
 
     local major_version
-    major_version=$(echo "${VERSION_ID}" | cut -d'.' -f1)
+    major_version=$(echo "$os_version" | cut -d'.' -f1)
 
-    if [[ "${major_version}" -lt 25 ]]; then
-        echo "ERROR: Ubuntu 25 or later is required. Detected: ${VERSION_ID}" >&2
+    if [[ -z "$major_version" ]] || [[ "$major_version" -lt 25 ]]; then
+        echo "ERRO: Ubuntu $os_version detectado. Mínimo: 25." >&2
         exit 1
     fi
 }
 
-# validate_ram() — Ensure the system has at least 4096 MB of total RAM.
-# Reads MemTotal from /proc/meminfo (in kB) and converts to MB.
-validate_ram() {
-    local mem_kb
-    mem_kb=$(grep -m1 '^MemTotal:' /proc/meminfo | awk '{print $2}')
+check_minimum_ram() {
+    local min_ram_kb=2097152  # 2 GB
 
-    local ram_mb
-    ram_mb=$(( mem_kb / 1024 ))
+    local total_ram_kb
+    total_ram_kb=$(grep MemTotal /proc/meminfo | awk '{print $2}')
 
-    if [[ "${ram_mb}" -lt 4096 ]]; then
-        echo "ERROR: Minimum 4096 MB RAM required. Detected: ${ram_mb} MB" >&2
+    if [[ -z "$total_ram_kb" ]]; then
+        echo "ERRO: Não foi possível determinar a RAM do sistema." >&2
+        exit 1
+    fi
+
+    if [[ "$total_ram_kb" -lt "$min_ram_kb" ]]; then
+        local total_ram_gb
+        total_ram_gb=$(awk "BEGIN {printf \"%.1f\", $total_ram_kb / 1048576}")
+        echo "ERRO: RAM insuficiente: ${total_ram_gb} GB. Mínimo: 2 GB." >&2
         exit 1
     fi
 }
 
 # =============================================================================
-# CLI ARGUMENT PARSING
+# PARSE DE ARGUMENTOS CLI
 # =============================================================================
 
-# show_help() — Print usage information to stdout.
 show_help() {
     cat <<'EOF'
-Usage: sudo ./setup.sh [OPTIONS]
+Uso: sudo ./prepare.sh [OPÇÕES]
 
-Component Groups:
-  --base          Install BASE group (default): zsh, vim, micro, eza, unzip, curl, wget,
-                  awesome-vim, oh-my-bash, oh-my-zsh, python3+pip3
-  --desktop       Install DESKTOP group: VS Code, nerd-fonts, powerline-fonts, Terminator, Chrome
-  --docker        Install DOCKER group: Docker Engine (open source)
-  --golang        Install GOLANG group: Golang Builder
-  --java          Install JAVA group: SDKMAN + latest JDK
-  --dotnet        Install DOTNET group: dotnet core SDK (latest)
-  --full          Install ALL component groups
+Automatiza a instalação e configuração de um ambiente completo de
+desenvolvimento em Ubuntu 25 ou superior.
 
-User Management:
-  --users USER1 [USER2 ...]   Create additional users (default user 'dev' always created)
+GRUPOS DE COMPONENTES:
+  --base       Ferramentas de terminal (tmux, htop, jq, bat, ripgrep, fzf...),
+               ferramentas de build (build-essential, git, protobuf-compiler),
+               Python (python3-venv, pipx), shells (zsh, oh-my-bash, oh-my-zsh),
+               editores de terminal (vim, micro) e utilitários (yq, eza, httpie)
+  --desktop    Fontes (Nerd Fonts, FiraCode, Cascadia Code, JetBrains Mono),
+               VS Code, Ghostty, Terminator, Google Chrome
+  --docker     Docker Engine e K3S (Kubernetes leve para desenvolvimento)
+  --golang     Go (via tarball oficial) e golangci-lint
+  --java       SDKMAN, JDK, Kotlin e Gradle
+  --dotnet     .NET SDK
+  --full       Habilita todos os grupos acima
 
-Other:
-  --help, -h      Display this help message
+USUÁRIOS:
+  --users user1 user2 ...
+               Cria os usuários especificados e os adiciona ao grupo sudo.
+               A senha de cada usuário é solicitada interativamente durante
+               a execução. Configurações de shell, aliases e ferramentas
+               são aplicadas a todos os usuários criados, ao usuário corrente
+               e ao root.
 
-Examples:
-  sudo ./setup.sh                        # Install BASE group only
-  sudo ./setup.sh --full                 # Install all groups
-  sudo ./setup.sh --base --docker        # Install BASE + Docker
-  sudo ./setup.sh --java --golang        # Install BASE + Java + Golang
-  sudo ./setup.sh --users alice bob      # Install BASE + create users alice and bob
-  ./run-in-docker.sh --full              # Run full install inside Docker
+OUTRAS OPÇÕES:
+  --help       Exibe esta mensagem de ajuda
+
+COMPORTAMENTO PADRÃO:
+  - Se nenhuma flag de grupo for passada, apenas --base é instalado
+  - Se qualquer flag de grupo for passada explicitamente, apenas os grupos
+    especificados são instalados
+  - Se --users não for passado, configurações são aplicadas apenas ao
+    usuário corrente (quem executou sudo) e ao root
+
+EXEMPLOS:
+  sudo ./prepare.sh                          # Instala apenas o grupo BASE
+  sudo ./prepare.sh --full                   # Instala todos os grupos
+  sudo ./prepare.sh --base --docker          # Instala BASE e DOCKER
+  sudo ./prepare.sh --full --users ana bob   # Instala tudo, cria usuários
+                                             # ana e bob com senha interativa
+  sudo ./prepare.sh --help                   # Exibe esta ajuda
+
+LOG:
+  Todas as operações são registradas em /var/log/dev-setup-YYYY-MM-DD-HH-MM-SS.log
 EOF
 }
 
-# parse_args() — Parse command-line arguments and set group flags / EXTRA_USERS.
-# Usage: parse_args "$@"
-parse_args() {
-    local collecting_users=0
+# Se qualquer flag de grupo for passada, desabilita o padrão (apenas --base).
+# --users consome argumentos seguintes até encontrar outra flag (--*).
+parse_arguments() {
+    [[ $# -eq 0 ]] && return 0
 
+    local has_group_flag=false
     for arg in "$@"; do
-        # If we're collecting usernames and hit a new flag, stop collecting
-        if [[ "${collecting_users}" -eq 1 && "${arg}" == --* ]]; then
-            collecting_users=0
-        fi
-
-        if [[ "${collecting_users}" -eq 1 ]]; then
-            EXTRA_USERS+=("${arg}")
-            continue
-        fi
-
-        case "${arg}" in
-            --base)
-                INSTALL_BASE=1
-                ;;
-            --desktop)
-                INSTALL_DESKTOP=1
-                ;;
-            --docker)
-                INSTALL_DOCKER=1
-                ;;
-            --golang)
-                INSTALL_GOLANG=1
-                ;;
-            --java)
-                INSTALL_JAVA=1
-                ;;
-            --dotnet)
-                INSTALL_DOTNET=1
-                ;;
-            --full)
-                INSTALL_BASE=1
-                INSTALL_DESKTOP=1
-                INSTALL_DOCKER=1
-                INSTALL_GOLANG=1
-                INSTALL_JAVA=1
-                INSTALL_DOTNET=1
-                ;;
-            --users)
-                collecting_users=1
-                ;;
-            --help|-h)
-                show_help
-                exit 0
-                ;;
-            *)
-                echo "ERROR: Unknown parameter: ${arg}" >&2
-                show_help
-                exit 1
+        case "$arg" in
+            --base|--desktop|--docker|--golang|--java|--dotnet|--full)
+                has_group_flag=true
+                break
                 ;;
         esac
     done
 
-    # Default to BASE group when no group flag was set
-    if [[ "${INSTALL_BASE}" -eq 0 && \
-          "${INSTALL_DESKTOP}" -eq 0 && \
-          "${INSTALL_DOCKER}" -eq 0 && \
-          "${INSTALL_GOLANG}" -eq 0 && \
-          "${INSTALL_JAVA}" -eq 0 && \
-          "${INSTALL_DOTNET}" -eq 0 ]]; then
-        INSTALL_BASE=1
+    if [[ "$has_group_flag" == true ]]; then
+        INSTALL_BASE=0
+        INSTALL_DESKTOP=0
+        INSTALL_DOCKER=0
+        INSTALL_GOLANG=0
+        INSTALL_JAVA=0
+        INSTALL_DOTNET=0
     fi
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --base)    INSTALL_BASE=1;    shift ;;
+            --desktop) INSTALL_DESKTOP=1; shift ;;
+            --docker)  INSTALL_DOCKER=1;  shift ;;
+            --golang)  INSTALL_GOLANG=1;  shift ;;
+            --java)    INSTALL_JAVA=1;    shift ;;
+            --dotnet)  INSTALL_DOTNET=1;  shift ;;
+            --full)
+                INSTALL_BASE=1; INSTALL_DESKTOP=1; INSTALL_DOCKER=1
+                INSTALL_GOLANG=1; INSTALL_JAVA=1; INSTALL_DOTNET=1
+                shift
+                ;;
+            --users)
+                shift
+                while [[ $# -gt 0 ]] && [[ "$1" != --* ]]; do
+                    FLAG_USERS+=("$1")
+                    shift
+                done
+                ;;
+            --help) show_help; exit 0 ;;
+            *)
+                echo "ERRO: Flag desconhecida: '$1'" >&2
+                echo "Execute './prepare.sh --help' para ver as opções." >&2
+                exit 1
+                ;;
+        esac
+    done
 }
 
 # =============================================================================
-# SYSTEM UPDATE
+# ATUALIZAÇÃO DO SISTEMA
 # =============================================================================
 
-# update_system() — Run apt-get update and apt-get upgrade non-interactively.
-# Logs progress and errors. Non-fatal: failures are logged but do not exit.
 update_system() {
-    log "Updating system package list..."
-    if ! DEBIAN_FRONTEND=noninteractive apt-get update -y; then
-        log_err "System update failed."
-        return 0
-    fi
+    log "Atualizando índices de pacotes..."
+    DEBIAN_FRONTEND=noninteractive apt-get update -y \
+        && log_ok "Índices atualizados." \
+        || log_err "Falha ao atualizar índices."
 
-    log "Upgrading installed packages..."
-    if ! DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; then
-        log_err "System update failed."
-        return 0
-    fi
-
-    log_ok "System update completed successfully."
+    log "Aplicando atualizações do sistema..."
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y \
+        && log_ok "Sistema atualizado." \
+        || log_err "Falha ao atualizar o sistema."
 }
 
 # =============================================================================
-# USER MANAGEMENT
+# GERENCIAMENTO DE USUÁRIOS
 # =============================================================================
 
-# create_user() — Create a system user with the given username and password.
-# Usage: create_user "username" "password"
-create_user() {
-    local username="$1"
-    local password="$2"
+# Constrói TARGET_USERS = current_user + root + flag_users, sem duplicatas
+build_target_users() {
+    TARGET_USERS=("$CURRENT_USER")
 
-    log "Checking if user '${username}' exists..."
+    [[ "$CURRENT_USER" != "root" ]] && TARGET_USERS+=("root")
 
-    if id "${username}" &>/dev/null; then
-        log_ok "User '${username}' already exists. Skipping."
-        return 0
-    fi
-
-    if useradd -m -s /bin/bash "${username}"; then
-        echo "${username}:${password}" | chpasswd
-        log_ok "User '${username}' created successfully."
-    else
-        log_err "Failed to create user '${username}'."
-    fi
-}
-
-# create_default_user() — Create the default development user 'dev'.
-create_default_user() {
-    log "Creating default development user 'dev'..."
-    create_user "dev" "dev123"
-}
-
-# create_extra_users() — Create any additional users specified via --users flag.
-create_extra_users() {
-    if [[ "${#EXTRA_USERS[@]}" -eq 0 ]]; then
-        return
-    fi
-
-    log "Creating additional users: ${EXTRA_USERS[*]}"
-
-    for user in "${EXTRA_USERS[@]}"; do
-        create_user "${user}" "changeme123"
+    for user in "${FLAG_USERS[@]}"; do
+        local already_present=false
+        for existing in "${TARGET_USERS[@]}"; do
+            [[ "$existing" == "$user" ]] && already_present=true && break
+        done
+        [[ "$already_present" == false ]] && TARGET_USERS+=("$user")
     done
 
-    log "Note: Additional users created with default password 'changeme123'. Please change it."
+    log "TARGET_USERS: ${TARGET_USERS[*]}"
+}
+
+ensure_user_in_sudo_group() {
+    local username="$1"
+
+    if groups "$username" 2>/dev/null | grep -q '\bsudo\b'; then
+        log "  '$username' já pertence ao grupo sudo."
+        return 0
+    fi
+
+    usermod -aG sudo "$username" \
+        && log_ok "  '$username' adicionado ao grupo sudo." \
+        || log_err "  Falha ao adicionar '$username' ao grupo sudo."
+}
+
+# Solicita senha interativamente para cada usuário de FLAG_USERS
+create_users_from_flag() {
+    [[ ${#FLAG_USERS[@]} -eq 0 ]] && return 0
+
+    log "Criando usuários via --users..."
+
+    for username in "${FLAG_USERS[@]}"; do
+        if id "$username" &>/dev/null; then
+            log "  '$username' já existe. Pulando criação."
+        else
+            local password=""
+            read -s -p "Digite a senha para '$username': " password
+            echo
+
+            if useradd -m -s /bin/bash "$username"; then
+                echo "$username:$password" | chpasswd
+                log_ok "  '$username' criado."
+            else
+                log_err "  Falha ao criar '$username'."
+                continue
+            fi
+        fi
+
+        ensure_user_in_sudo_group "$username"
+    done
 }
 
 # =============================================================================
-# BASE GROUP - INSTALL FUNCTIONS
+# GRUPO BASE
 # =============================================================================
 
-# install_zsh() — Install the Z shell via apt.
-install_zsh() {
-    log "Installing zsh..."
-    if command -v zsh &>/dev/null; then
-        log_ok "zsh already installed. Skipping."
-        SKIPPED_COMPONENTS+=("zsh")
+install_base_terminal_tools() {
+    log "Instalando ferramentas de terminal..."
+    install_apt_packages tmux htop jq tree bat ripgrep fd-find fzf \
+                         httpie net-tools dnsutils sqlite3
+}
+
+# yq não está disponível via apt — binário oficial do GitHub
+install_yq() {
+    log "Instalando yq..."
+
+    if command -v yq &>/dev/null; then
+        log "  yq já instalado. Pulando."
+        SKIPPED_COMPONENTS+=("yq")
         return 0
     fi
-    if DEBIAN_FRONTEND=noninteractive apt-get install -y zsh; then
-        log_ok "zsh installed successfully."
-        INSTALLED_COMPONENTS+=("zsh")
+
+    local yq_url="https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64"
+
+    if wget -q "$yq_url" -O /usr/local/bin/yq && chmod +x /usr/local/bin/yq; then
+        log_ok "  yq instalado."
+        INSTALLED_COMPONENTS+=("yq")
     else
-        log_err "Failed to install zsh."
-        FAILED_COMPONENTS+=("zsh")
-        return 1
+        log_err "  Falha ao instalar yq."
+        FAILED_COMPONENTS+=("yq")
     fi
 }
 
-# install_vim() — Install Vim via apt.
-install_vim() {
-    log "Installing vim..."
-    if command -v vim &>/dev/null; then
-        log_ok "vim already installed. Skipping."
-        SKIPPED_COMPONENTS+=("vim")
-        return 0
-    fi
-    if DEBIAN_FRONTEND=noninteractive apt-get install -y vim; then
-        log_ok "vim installed successfully."
-        INSTALLED_COMPONENTS+=("vim")
-    else
-        log_err "Failed to install vim."
-        FAILED_COMPONENTS+=("vim")
-        return 1
-    fi
+install_base_build_tools() {
+    log "Instalando ferramentas de build..."
+    install_apt_packages build-essential git protobuf-compiler
 }
 
-# install_micro() — Install the Micro editor via the official install script.
+install_base_python_tools() {
+    log "Instalando ferramentas Python..."
+    install_apt_packages python3-venv pipx
+}
+
+# micro não está no apt — instalador oficial via getmic.ro
 install_micro() {
-    log "Installing micro..."
+    log "Instalando micro..."
+
     if command -v micro &>/dev/null; then
-        log_ok "micro already installed. Skipping."
+        log "  micro já instalado. Pulando."
         SKIPPED_COMPONENTS+=("micro")
         return 0
     fi
-    if curl https://getmic.ro | bash && mv micro /usr/local/bin/micro; then
-        log_ok "micro installed successfully."
+
+    local install_dir="/tmp/micro-install"
+    mkdir -p "$install_dir"
+
+    if curl -fsSL https://getmic.ro | bash -s -- --dest "$install_dir"; then
+        mv "$install_dir/micro" /usr/local/bin/micro
+        chmod +x /usr/local/bin/micro
+        log_ok "  micro instalado."
         INSTALLED_COMPONENTS+=("micro")
     else
-        log_err "Failed to install micro."
+        log_err "  Falha ao instalar micro."
         FAILED_COMPONENTS+=("micro")
-        return 1
     fi
+
+    rm -rf "$install_dir"
 }
 
-# install_eza() — Install eza (modern ls replacement) via apt.
-install_eza() {
-    log "Installing eza..."
-    if command -v eza &>/dev/null; then
-        log_ok "eza already installed. Skipping."
-        SKIPPED_COMPONENTS+=("eza")
+install_oh_my_bash() {
+    log "Instalando Oh My Bash..."
+
+    if [[ -d "${HOME}/.oh-my-bash" ]]; then
+        log "  Oh My Bash já instalado. Pulando."
+        SKIPPED_COMPONENTS+=("oh-my-bash")
         return 0
     fi
-    if DEBIAN_FRONTEND=noninteractive apt-get install -y eza; then
-        log_ok "eza installed successfully."
-        INSTALLED_COMPONENTS+=("eza")
+
+    if bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" --unattended; then
+        log_ok "  Oh My Bash instalado."
+        INSTALLED_COMPONENTS+=("oh-my-bash")
     else
-        log_err "Failed to install eza."
-        FAILED_COMPONENTS+=("eza")
-        return 1
+        log_err "  Falha ao instalar Oh My Bash."
+        FAILED_COMPONENTS+=("oh-my-bash")
     fi
 }
 
-# install_unzip() — Install unzip via apt.
-install_unzip() {
-    log "Installing unzip..."
-    if command -v unzip &>/dev/null; then
-        log_ok "unzip already installed. Skipping."
-        SKIPPED_COMPONENTS+=("unzip")
+# RUNZSH=no evita iniciar zsh após instalação; CHSH=no evita trocar shell
+install_oh_my_zsh() {
+    log "Instalando Oh My Zsh..."
+
+    if [[ -d "${HOME}/.oh-my-zsh" ]]; then
+        log "  Oh My Zsh já instalado. Pulando."
+        SKIPPED_COMPONENTS+=("oh-my-zsh")
         return 0
     fi
-    if DEBIAN_FRONTEND=noninteractive apt-get install -y unzip zip; then
-        log_ok "unzip installed successfully."
-        INSTALLED_COMPONENTS+=("unzip")
+
+    if RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; then
+        log_ok "  Oh My Zsh instalado."
+        INSTALLED_COMPONENTS+=("oh-my-zsh")
     else
-        log_err "Failed to install unzip."
-        FAILED_COMPONENTS+=("unzip")
-        return 1
+        log_err "  Falha ao instalar Oh My Zsh."
+        FAILED_COMPONENTS+=("oh-my-zsh")
     fi
 }
 
-# install_curl() — Install curl via apt.
-install_curl() {
-    log "Installing curl..."
-    if command -v curl &>/dev/null; then
-        log_ok "curl already installed. Skipping."
-        SKIPPED_COMPONENTS+=("curl")
-        return 0
-    fi
-    if DEBIAN_FRONTEND=noninteractive apt-get install -y curl; then
-        log_ok "curl installed successfully."
-        INSTALLED_COMPONENTS+=("curl")
-    else
-        log_err "Failed to install curl."
-        FAILED_COMPONENTS+=("curl")
-        return 1
-    fi
-}
-
-# install_wget() — Install wget via apt.
-install_wget() {
-    log "Installing wget..."
-    if command -v wget &>/dev/null; then
-        log_ok "wget already installed. Skipping."
-        SKIPPED_COMPONENTS+=("wget")
-        return 0
-    fi
-    if DEBIAN_FRONTEND=noninteractive apt-get install -y wget; then
-        log_ok "wget installed successfully."
-        INSTALLED_COMPONENTS+=("wget")
-    else
-        log_err "Failed to install wget."
-        FAILED_COMPONENTS+=("wget")
-        return 1
-    fi
-}
-
-# install_awesome_vim() — Install Vundle and the vim-awesome plugin set.
+# Awesome vimrc: https://github.com/amix/vimrc
 install_awesome_vim() {
-    log "Installing awesome-vim..."
-    if [[ -d "${HOME}/.vim/bundle/Vundle.vim" ]]; then
-        log_ok "awesome-vim already installed. Skipping."
+    log "Instalando awesome vimrc (amix/vimrc)..."
+
+    local vimrc_dir="${HOME}/.vim_runtime"
+
+    if [[ -d "$vimrc_dir" ]]; then
+        log "  awesome-vim já instalado. Pulando."
         SKIPPED_COMPONENTS+=("awesome-vim")
         return 0
     fi
 
-    # Ensure git is available
-    if ! command -v git &>/dev/null; then
-        if ! DEBIAN_FRONTEND=noninteractive apt-get install -y git; then
-            log_err "Failed to install awesome-vim (git dependency failed)."
+    if git clone --depth=1 https://github.com/amix/vimrc.git "$vimrc_dir"; then
+        if bash "$vimrc_dir/install_awesome_vimrc.sh"; then
+            log_ok "  awesome-vim instalado."
+            INSTALLED_COMPONENTS+=("awesome-vim")
+        else
+            log_err "  Falha ao executar install_awesome_vimrc.sh."
             FAILED_COMPONENTS+=("awesome-vim")
-            return 1
         fi
-    fi
-
-    # Clone Vundle
-    if ! git clone https://github.com/VundleVim/Vundle.vim.git "${HOME}/.vim/bundle/Vundle.vim"; then
-        log_err "Failed to install awesome-vim (Vundle clone failed)."
+    else
+        log_err "  Falha ao clonar amix/vimrc."
         FAILED_COMPONENTS+=("awesome-vim")
-        return 1
-    fi
-
-    # Write a minimal ~/.vimrc with Vundle config and vim-awesome plugin
-    cat > "${HOME}/.vimrc" <<'VIMRC'
-set nocompatible
-filetype off
-
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'vim-awesome/vim-awesome'
-
-call vundle#end()
-filetype plugin indent on
-VIMRC
-
-    # Install plugins non-interactively
-    if vim +PluginInstall +qall; then
-        log_ok "awesome-vim installed successfully."
-        INSTALLED_COMPONENTS+=("awesome-vim")
-    else
-        log_err "Failed to install awesome-vim (PluginInstall failed)."
-        FAILED_COMPONENTS+=("awesome-vim")
-        return 1
     fi
 }
 
-# install_oh_my_bash() — Install Oh My Bash framework.
-install_oh_my_bash() {
-    log "Installing oh-my-bash..."
-    if [[ -d "${HOME}/.oh-my-bash" ]]; then
-        log_ok "oh-my-bash already installed. Skipping."
-        SKIPPED_COMPONENTS+=("oh-my-bash")
-        return 0
-    fi
-    if bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" "" --unattended; then
-        log_ok "oh-my-bash installed successfully."
-        INSTALLED_COMPONENTS+=("oh-my-bash")
-    else
-        log_err "Failed to install oh-my-bash."
-        FAILED_COMPONENTS+=("oh-my-bash")
-        return 1
-    fi
-}
+install_group_base() {
+    log "=============================================="
+    log "Instalando Grupo BASE..."
+    log "=============================================="
 
-# install_oh_my_zsh() — Install Oh My Zsh framework.
-install_oh_my_zsh() {
-    log "Installing oh-my-zsh..."
-    if [[ -d "${HOME}/.oh-my-zsh" ]]; then
-        log_ok "oh-my-zsh already installed. Skipping."
-        SKIPPED_COMPONENTS+=("oh-my-zsh")
-        return 0
-    fi
-    if sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended; then
-        log_ok "oh-my-zsh installed successfully."
-        INSTALLED_COMPONENTS+=("oh-my-zsh")
-    else
-        log_err "Failed to install oh-my-zsh."
-        FAILED_COMPONENTS+=("oh-my-zsh")
-        return 1
-    fi
-}
+    install_apt_package curl
+    install_apt_package wget
+    install_apt_package unzip
+    install_apt_package zip
 
-# install_python3() — Install Python 3 and pip3 via apt.
-install_python3() {
-    log "Installing python3..."
-    if command -v python3 &>/dev/null; then
-        log_ok "python3 already installed. Skipping."
-        SKIPPED_COMPONENTS+=("python3")
-        return 0
-    fi
-    if DEBIAN_FRONTEND=noninteractive apt-get install -y python3 python3-pip; then
-        log_ok "python3 installed successfully."
-        INSTALLED_COMPONENTS+=("python3")
-    else
-        log_err "Failed to install python3."
-        FAILED_COMPONENTS+=("python3")
-        return 1
-    fi
-}
+    install_base_build_tools
 
-# =============================================================================
-# SHELL AND ALIAS CONFIGURATION
-# =============================================================================
+    install_apt_package zsh
+    install_apt_package vim
+    install_apt_package eza
 
-# configure_shell_for_user() — Set zsh as default shell, install oh-my-zsh,
-# and set the frisk theme for a single user. All steps are idempotent.
-# Usage: configure_shell_for_user "username" "homedir"
-configure_shell_for_user() {
-    local username="$1"
-    local homedir="$2"
-    local zsh_path
-    zsh_path=$(which zsh)
-
-    # Step 1: Set zsh as default shell (idempotent)
-    local current_shell
-    current_shell=$(getent passwd "$username" | cut -d: -f7)
-    if [[ "$current_shell" == "$zsh_path" ]]; then
-        log "Default shell already zsh for $username. Skipping."
-    else
-        if chsh -s "$zsh_path" "$username"; then
-            log_ok "Default shell set to zsh for $username."
-        else
-            log_err "Failed to set default shell for $username."
-        fi
-    fi
-
-    # Step 2: Install oh-my-zsh for this user (idempotent)
-    if [[ -d "$homedir/.oh-my-zsh" ]]; then
-        log "oh-my-zsh already installed for $username. Skipping."
-    else
-        if sudo -u "$username" env HOME="$homedir" \
-            sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \
-            "" --unattended; then
-            log_ok "oh-my-zsh installed for $username."
-        else
-            log_err "Failed to install oh-my-zsh for $username."
-        fi
-    fi
-
-    # Step 3: Set frisk theme in ~/.zshrc (idempotent)
-    local zshrc="$homedir/.zshrc"
-    if [[ -f "$zshrc" ]] && grep -q 'ZSH_THEME="frisk"' "$zshrc"; then
-        log "oh-my-zsh theme already set to frisk for $username. Skipping."
-    else
-        if [[ -f "$zshrc" ]]; then
-            sed -i 's/^ZSH_THEME=.*/ZSH_THEME="frisk"/' "$zshrc"
-            log_ok "oh-my-zsh theme set to frisk for $username."
-        else
-            log_err "~/.zshrc not found for $username. Cannot set theme."
-        fi
-    fi
-}
-
-# configure_shell_for_all_users() — Iterate /etc/passwd and apply
-# configure_shell_for_user() for every user with a home under /root or /home/*.
-configure_shell_for_all_users() {
-    log "Configuring zsh + oh-my-zsh for all system users..."
-    while IFS=: read -r username _ _ _ _ homedir _; do
-        [[ "$homedir" == /root || "$homedir" == /home/* ]] || continue
-        [[ -d "$homedir" ]] || continue
-        log "Configuring shell for user: $username (home: $homedir)"
-        configure_shell_for_user "$username" "$homedir"
-    done < /etc/passwd
-    log_ok "Shell configuration completed for all users."
-}
-
-# configure_global_aliases() — Append eza ls/lt aliases to /etc/bash.bashrc
-# and /etc/zsh/zshenv if not already present. Idempotent.
-configure_global_aliases() {
-    log "Configuring global eza aliases..."
-    local alias_ls='alias ls="eza -hHbmgalT -L 1 --time-style=long-iso --icons"'
-    local alias_lt='alias lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"'
-    local targets=("/etc/bash.bashrc" "/etc/zsh/zshenv")
-
-    for target in "${targets[@]}"; do
-        # Ensure target file exists
-        [[ -f "$target" ]] || touch "$target"
-
-        if grep -qF "$alias_ls" "$target" && grep -qF "$alias_lt" "$target"; then
-            log "Global aliases already present in $target. Skipping."
-        else
-            {
-                echo ""
-                echo "# eza aliases (added by dev-setup)"
-                echo "$alias_ls"
-                echo "$alias_lt"
-            } >> "$target" && log_ok "Global aliases added to $target." \
-                || log_err "Failed to write global aliases to $target."
-        fi
-    done
-}
-
-# =============================================================================
-# GROUP ORCHESTRATORS
-# =============================================================================
-
-# install_base_group() — Run all BASE group installers in dependency order.
-# curl and wget are installed first since other installers depend on them.
-install_base_group() {
-    log "=== Installing BASE group ==="
-    install_curl
-    install_wget
-    install_unzip
-    install_zsh
-    install_vim
     install_micro
-    install_eza
-    install_python3
+    install_base_terminal_tools
+    install_yq
+    install_base_python_tools
     install_oh_my_bash
     install_oh_my_zsh
     install_awesome_vim
-    configure_shell_for_all_users
-    configure_global_aliases
-    log_ok "=== BASE group installation complete ==="
+
+    log "=============================================="
+    log "Grupo BASE concluído."
+    log "=============================================="
 }
 
 # =============================================================================
-# DESKTOP GROUP - INSTALL FUNCTIONS
+# GRUPO DESKTOP
 # =============================================================================
 
-# install_vscode() — Install Visual Studio Code via Microsoft apt repository.
-install_vscode() {
-    log "Installing VS Code..."
-    if command -v code &>/dev/null; then
-        log_ok "VS Code already installed. Skipping."
-        SKIPPED_COMPONENTS+=("vscode")
-        return 0
-    fi
-    if wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /usr/share/keyrings/microsoft.gpg && \
-       echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list && \
-       DEBIAN_FRONTEND=noninteractive apt-get update -y && \
-       DEBIAN_FRONTEND=noninteractive apt-get install -y code; then
-        log_ok "VS Code installed successfully."
-        INSTALLED_COMPONENTS+=("vscode")
-    else
-        log_err "Failed to install VS Code."
-        FAILED_COMPONENTS+=("vscode")
-        return 1
-    fi
-}
-
-# install_nerd_fonts() — Download and install FiraCode Nerd Font to /usr/local/share/fonts/NerdFonts/.
+# Clone com --depth=1 para evitar baixar o histórico completo (~2 GB)
 install_nerd_fonts() {
-    log "Installing Nerd Fonts (FiraCode)..."
-    if [[ -d "/usr/local/share/fonts/NerdFonts" ]]; then
-        log_ok "Nerd Fonts already installed. Skipping."
+    log "Instalando Nerd Fonts..."
+
+    if fc-list | grep -qi "Nerd"; then
+        log "  Nerd Fonts já instaladas. Pulando."
         SKIPPED_COMPONENTS+=("nerd-fonts")
         return 0
     fi
-    if mkdir -p /usr/local/share/fonts/NerdFonts && \
-       wget -q "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraCode.zip" -O /tmp/FiraCode.zip && \
-       unzip -q /tmp/FiraCode.zip -d /usr/local/share/fonts/NerdFonts/ && \
-       fc-cache -fv && \
-       rm /tmp/FiraCode.zip; then
-        log_ok "Nerd Fonts installed successfully."
-        INSTALLED_COMPONENTS+=("nerd-fonts")
-    else
-        log_err "Failed to install Nerd Fonts."
+
+    local temp_dir="/tmp/nerd-fonts-clone"
+    rm -rf "$temp_dir"
+
+    if ! git clone --depth=1 https://github.com/ryanoasis/nerd-fonts "$temp_dir"; then
+        log_err "  Falha ao clonar nerd-fonts."
         FAILED_COMPONENTS+=("nerd-fonts")
         return 1
     fi
+
+    if "$temp_dir/install.sh"; then
+        log_ok "  Nerd Fonts instaladas."
+        INSTALLED_COMPONENTS+=("nerd-fonts")
+    else
+        log_err "  Falha ao executar install.sh das Nerd Fonts."
+        FAILED_COMPONENTS+=("nerd-fonts")
+    fi
+
+    rm -rf "$temp_dir"
 }
 
-# install_powerline_fonts() — Clone and install Powerline fonts.
+install_desktop_fonts() {
+    log "Instalando fontes de programação..."
+    install_apt_packages fonts-firacode fonts-cascadia-code fonts-jetbrains-mono
+}
+
 install_powerline_fonts() {
-    log "Installing Powerline fonts..."
-    if fc-list | grep -qi "powerline"; then
-        log_ok "Powerline fonts already installed. Skipping."
+    log "Instalando Powerline Fonts..."
+
+    if fc-list | grep -qi "Powerline"; then
+        log "  Powerline Fonts já instaladas. Pulando."
         SKIPPED_COMPONENTS+=("powerline-fonts")
         return 0
     fi
-    if git clone https://github.com/powerline/fonts.git /tmp/powerline-fonts --depth=1 && \
-       /tmp/powerline-fonts/install.sh && \
-       rm -rf /tmp/powerline-fonts; then
-        log_ok "Powerline fonts installed successfully."
-        INSTALLED_COMPONENTS+=("powerline-fonts")
-    else
-        log_err "Failed to install Powerline fonts."
+
+    local temp_dir="/tmp/powerline-fonts-clone"
+    rm -rf "$temp_dir"
+
+    if ! git clone --depth=1 https://github.com/powerline/fonts.git "$temp_dir"; then
+        log_err "  Falha ao clonar powerline-fonts."
         FAILED_COMPONENTS+=("powerline-fonts")
         return 1
     fi
+
+    if "$temp_dir/install.sh"; then
+        log_ok "  Powerline Fonts instaladas."
+        INSTALLED_COMPONENTS+=("powerline-fonts")
+    else
+        log_err "  Falha ao executar install.sh das Powerline Fonts."
+        FAILED_COMPONENTS+=("powerline-fonts")
+    fi
+
+    rm -rf "$temp_dir"
 }
 
-# install_terminator() — Install Terminator terminal emulator via apt.
+# .deb do GitHub — evita adicionar PPA/chave APT
+install_ghostty() {
+    log "Instalando Ghostty..."
+    install_deb_from_url "ghostty" \
+        "https://github.com/mkasberg/ghostty-ubuntu/releases/latest/download/ghostty_latest_amd64_ubuntu24.04.deb" \
+        "ghostty"
+}
+
+# .deb oficial — evita adicionar repositório APT do Google
+install_chrome() {
+    log "Instalando Google Chrome..."
+    install_deb_from_url "google-chrome-stable" \
+        "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" \
+        "google-chrome-stable"
+}
+
+# VS Code requer chave APT — usa add_apt_key_with_validation para rollback automático
+install_vscode() {
+    log "Instalando Visual Studio Code..."
+
+    if command -v code &>/dev/null; then
+        log "  VS Code já instalado. Pulando."
+        SKIPPED_COMPONENTS+=("code")
+        return 0
+    fi
+
+    if ! add_apt_key_with_validation \
+        "vscode" \
+        "https://packages.microsoft.com/keys/microsoft.asc" \
+        "/etc/apt/keyrings/microsoft.gpg" \
+        "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main" \
+        "/etc/apt/sources.list.d/vscode.list"; then
+        log_err "  Falha ao configurar repositório do VS Code."
+        FAILED_COMPONENTS+=("code")
+        return 1
+    fi
+
+    install_apt_package code
+}
+
 install_terminator() {
-    log "Installing Terminator..."
-    if command -v terminator &>/dev/null; then
-        log_ok "Terminator already installed. Skipping."
-        SKIPPED_COMPONENTS+=("terminator")
-        return 0
-    fi
-    if DEBIAN_FRONTEND=noninteractive apt-get install -y terminator; then
-        log_ok "Terminator installed successfully."
-        INSTALLED_COMPONENTS+=("terminator")
-    else
-        log_err "Failed to install Terminator."
-        FAILED_COMPONENTS+=("terminator")
-        return 1
-    fi
+    log "Instalando Terminator..."
+    install_apt_package terminator
 }
 
-# install_google_chrome() — Download and install Google Chrome stable .deb package.
-install_google_chrome() {
-    log "Installing Google Chrome..."
-    if dpkg -s google-chrome-stable &>/dev/null 2>&1; then
-        log_ok "Google Chrome already installed. Skipping."
-        SKIPPED_COMPONENTS+=("google-chrome")
-        return 0
-    fi
-    if wget -q "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" -O /tmp/chrome.deb && \
-       (dpkg -i /tmp/chrome.deb || DEBIAN_FRONTEND=noninteractive apt-get install -f -y) && \
-       rm /tmp/chrome.deb; then
-        log_ok "Google Chrome installed successfully."
-        INSTALLED_COMPONENTS+=("google-chrome")
-    else
-        log_err "Failed to install Google Chrome."
-        FAILED_COMPONENTS+=("google-chrome")
-        return 1
-    fi
-}
+install_group_desktop() {
+    log "=============================================="
+    log "Instalando Grupo DESKTOP..."
+    log "=============================================="
 
-# install_desktop_group() — Run all DESKTOP group installers.
-install_desktop_group() {
-    log "=== Installing DESKTOP group ==="
     install_vscode
     install_nerd_fonts
+    install_desktop_fonts
     install_powerline_fonts
+    install_ghostty
     install_terminator
-    install_google_chrome
-    log_ok "=== DESKTOP group installation complete ==="
+    install_chrome
+
+    log "=============================================="
+    log "Grupo DESKTOP concluído."
+    log "=============================================="
 }
 
 # =============================================================================
-# DOCKER GROUP - INSTALL FUNCTIONS
+# GRUPO DOCKER
 # =============================================================================
 
+# Docker requer chave APT — usa add_apt_key_with_validation para rollback automático
 install_docker() {
-    log "Installing Docker Engine..."
+    log "Instalando Docker Engine..."
+
     if command -v docker &>/dev/null; then
-        log_ok "Docker already installed. Skipping."
+        log "  Docker já instalado. Pulando."
         SKIPPED_COMPONENTS+=("docker")
         return 0
     fi
-    # Install prerequisites
-    DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates gnupg lsb-release
-    # Add Docker GPG key and repo
-    mkdir -p /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
-    DEBIAN_FRONTEND=noninteractive apt-get update -y
-    if DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin; then
-        log_ok "Docker installed successfully."
-        INSTALLED_COMPONENTS+=("docker")
-    else
-        log_err "Failed to install Docker."
+
+    local arch codename
+    arch=$(dpkg --print-architecture)
+    codename=$(. /etc/os-release && echo "$VERSION_CODENAME")
+
+    if ! add_apt_key_with_validation \
+        "docker" \
+        "https://download.docker.com/linux/ubuntu/gpg" \
+        "/etc/apt/keyrings/docker.gpg" \
+        "deb [arch=${arch} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu ${codename} stable" \
+        "/etc/apt/sources.list.d/docker.list"; then
+        log_err "  Falha ao configurar repositório do Docker."
         FAILED_COMPONENTS+=("docker")
         return 1
     fi
+
+    install_apt_packages docker-ce docker-ce-cli containerd.io \
+                         docker-buildx-plugin docker-compose-plugin
 }
 
-install_docker_group() {
-    log "=== Installing DOCKER group ==="
+# K3S inclui kubectl integrado (acessível via 'k3s kubectl')
+install_k3s() {
+    log "Instalando K3S..."
+
+    if command -v k3s &>/dev/null; then
+        log "  K3S já instalado. Pulando."
+        SKIPPED_COMPONENTS+=("k3s")
+        return 0
+    fi
+
+    if curl -sfL https://get.k3s.io | sh -; then
+        log_ok "  K3S instalado (kubectl via 'k3s kubectl')."
+        INSTALLED_COMPONENTS+=("k3s")
+    else
+        log_err "  Falha ao instalar K3S."
+        FAILED_COMPONENTS+=("k3s")
+    fi
+}
+
+install_group_docker() {
+    log "=============================================="
+    log "Instalando Grupo DOCKER..."
+    log "=============================================="
+
     install_docker
-    log_ok "=== DOCKER group installation complete ==="
+    install_k3s
+
+    log "=============================================="
+    log "Grupo DOCKER concluído."
+    log "=============================================="
 }
 
 # =============================================================================
-# GOLANG GROUP - INSTALL FUNCTIONS
+# GRUPO GOLANG
 # =============================================================================
 
 install_golang() {
-    log "Installing Golang..."
+    log "Instalando Go..."
+
     if command -v go &>/dev/null; then
-        log_ok "Golang already installed. Skipping."
+        log "  Go já instalado ($(go version)). Pulando."
         SKIPPED_COMPONENTS+=("golang")
         return 0
     fi
+
     local go_version
-    go_version=$(curl -fsSL "https://go.dev/VERSION?m=text" | head -1)
-    local go_tarball="${go_version}.linux-amd64.tar.gz"
-    wget -q "https://go.dev/dl/${go_tarball}" -O "/tmp/${go_tarball}"
-    rm -rf /usr/local/go
-    tar -C /usr/local -xzf "/tmp/${go_tarball}"
-    rm "/tmp/${go_tarball}"
-    # Add to system PATH
-    cat > /etc/profile.d/golang.sh <<'GOPATH'
-export PATH=$PATH:/usr/local/go/bin
-GOPATH
-    chmod +x /etc/profile.d/golang.sh
-    if /usr/local/go/bin/go version &>/dev/null; then
-        log_ok "Golang installed successfully."
-        INSTALLED_COMPONENTS+=("golang")
-    else
-        log_err "Failed to install Golang."
+    go_version=$(curl -sSfL "https://go.dev/VERSION?m=text" | head -1)
+
+    if [[ -z "$go_version" ]]; then
+        log_err "  Falha ao obter versão do Go."
         FAILED_COMPONENTS+=("golang")
         return 1
     fi
+
+    local temp_tarball="/tmp/go.tar.gz"
+
+    log "  Baixando ${go_version}..."
+    if ! curl -sSfL "https://go.dev/dl/${go_version}.linux-amd64.tar.gz" -o "$temp_tarball"; then
+        log_err "  Falha ao baixar Go."
+        FAILED_COMPONENTS+=("golang")
+        rm -f "$temp_tarball"
+        return 1
+    fi
+
+    rm -rf /usr/local/go
+    if tar -C /usr/local -xzf "$temp_tarball"; then
+        log_ok "  Go ${go_version} instalado."
+        INSTALLED_COMPONENTS+=("golang")
+    else
+        log_err "  Falha ao extrair Go."
+        FAILED_COMPONENTS+=("golang")
+        rm -f "$temp_tarball"
+        return 1
+    fi
+
+    rm -f "$temp_tarball"
+
+    if [[ ! -f /etc/profile.d/golang.sh ]]; then
+        cat > /etc/profile.d/golang.sh <<'EOF'
+export PATH="/usr/local/go/bin:$PATH"
+EOF
+        chmod +x /etc/profile.d/golang.sh
+    fi
+
+    export PATH="/usr/local/go/bin:$PATH"
 }
 
-install_golang_group() {
-    log "=== Installing GOLANG group ==="
+install_golangci_lint() {
+    log "Instalando golangci-lint..."
+
+    if command -v golangci-lint &>/dev/null; then
+        log "  golangci-lint já instalado. Pulando."
+        SKIPPED_COMPONENTS+=("golangci-lint")
+        return 0
+    fi
+
+    if curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
+       sh -s -- -b /usr/local/bin; then
+        log_ok "  golangci-lint instalado."
+        INSTALLED_COMPONENTS+=("golangci-lint")
+    else
+        log_err "  Falha ao instalar golangci-lint."
+        FAILED_COMPONENTS+=("golangci-lint")
+    fi
+}
+
+install_group_golang() {
+    log "=============================================="
+    log "Instalando Grupo GOLANG..."
+    log "=============================================="
+
     install_golang
-    log_ok "=== GOLANG group installation complete ==="
+    install_golangci_lint
+
+    log "=============================================="
+    log "Grupo GOLANG concluído."
+    log "=============================================="
 }
 
 # =============================================================================
-# JAVA GROUP - INSTALL FUNCTIONS
+# GRUPO JAVA
 # =============================================================================
 
 install_sdkman() {
-    log "Installing SDKMAN..."
-    sudo apt install -y zip unzip curl
-    if [[ -d "${HOME}/.sdkman" ]]; then
-        log_ok "SDKMAN already installed. Skipping."
+    log "Instalando SDKMAN..."
+
+    export SDKMAN_DIR="/usr/local/sdkman"
+
+    if [[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]]; then
+        log "  SDKMAN já instalado. Pulando."
         SKIPPED_COMPONENTS+=("sdkman")
         return 0
     fi
-    if curl -s "https://get.sdkman.io" | bash; then
-        log_ok "SDKMAN installed successfully."
+
+    if curl -sSfL "https://get.sdkman.io" | bash; then
+        log_ok "  SDKMAN instalado."
         INSTALLED_COMPONENTS+=("sdkman")
     else
-        log_err "Failed to install SDKMAN."
+        log_err "  Falha ao instalar SDKMAN."
         FAILED_COMPONENTS+=("sdkman")
         return 1
     fi
+
+    if [[ ! -f /etc/profile.d/sdkman.sh ]]; then
+        cat > /etc/profile.d/sdkman.sh <<'EOF'
+export SDKMAN_DIR="/usr/local/sdkman"
+[[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"
+EOF
+        chmod +x /etc/profile.d/sdkman.sh
+    fi
 }
 
-install_java_latest() {
-    log "Installing latest Java via SDKMAN..."
+install_jdk() {
+    log "Instalando JDK via SDKMAN..."
 
-    export SDKMAN_DIR="${HOME}/.sdkman"
+    export SDKMAN_DIR="/usr/local/sdkman"
 
     if [[ ! -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]]; then
-        log_err "SDKMAN init script not found."
-        FAILED_COMPONENTS+=("java")
+        log_err "  SDKMAN não encontrado. JDK não será instalado."
+        FAILED_COMPONENTS+=("jdk")
         return 1
     fi
 
-    # 🔥 FIX: disable nounset temporarily
+    # SDKMAN usa variáveis não definidas internamente — requer set +u
     set +u
     source "${SDKMAN_DIR}/bin/sdkman-init.sh"
 
-    if command -v sdk &>/dev/null; then
-        if sdk install java; then
-            log_ok "Java (latest) installed successfully."
-            INSTALLED_COMPONENTS+=("java")
-        else
-            log_err "Failed to install Java via SDKMAN."
-            FAILED_COMPONENTS+=("java")
-            set -u
-            return 1
-        fi
-    else
-        log_err "SDKMAN not available. Cannot install Java."
-        FAILED_COMPONENTS+=("java")
+    if command -v java &>/dev/null; then
+        log "  JDK já instalado. Pulando."
+        SKIPPED_COMPONENTS+=("jdk")
         set -u
-        return 1
+        return 0
     fi
 
-    # 🔥 restore safety
+    if sdk install java; then
+        log_ok "  JDK instalado via SDKMAN."
+        INSTALLED_COMPONENTS+=("jdk")
+    else
+        log_err "  Falha ao instalar JDK."
+        FAILED_COMPONENTS+=("jdk")
+    fi
+
     set -u
 }
 
-install_java_group() {
-    log "=== Installing JAVA group ==="
-    install_sdkman
-    install_java_latest
-    log_ok "=== JAVA group installation complete ==="
-}
+install_kotlin_and_gradle() {
+    log "Instalando Kotlin e Gradle via SDKMAN..."
 
-# =============================================================================
-# DOTNET GROUP - INSTALL FUNCTIONS
-# =============================================================================
+    export SDKMAN_DIR="/usr/local/sdkman"
 
-install_dotnet() {
-    log "Installing dotnet core SDK..."
-    if command -v dotnet &>/dev/null; then
-        log_ok "dotnet already installed. Skipping."
-        SKIPPED_COMPONENTS+=("dotnet")
-        return 0
-    fi
-    # Add Microsoft package feed
-    wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb" -O /tmp/packages-microsoft-prod.deb
-    dpkg -i /tmp/packages-microsoft-prod.deb
-    rm /tmp/packages-microsoft-prod.deb
-    DEBIAN_FRONTEND=noninteractive apt-get update -y
-    if DEBIAN_FRONTEND=noninteractive apt-get install -y dotnet-sdk-8.0; then
-        log_ok "dotnet core SDK installed successfully."
-        INSTALLED_COMPONENTS+=("dotnet")
-    else
-        log_err "Failed to install dotnet core SDK."
-        FAILED_COMPONENTS+=("dotnet")
+    if [[ ! -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]]; then
+        log_err "  SDKMAN não encontrado. Kotlin e Gradle não serão instalados."
+        FAILED_COMPONENTS+=("kotlin" "gradle")
         return 1
     fi
+
+    # SDKMAN usa variáveis não definidas internamente — requer set +u
+    set +u
+    source "${SDKMAN_DIR}/bin/sdkman-init.sh"
+
+    if command -v kotlin &>/dev/null; then
+        log "  Kotlin já instalado. Pulando."
+        SKIPPED_COMPONENTS+=("kotlin")
+    elif sdk install kotlin; then
+        log_ok "  Kotlin instalado."
+        INSTALLED_COMPONENTS+=("kotlin")
+    else
+        log_err "  Falha ao instalar Kotlin."
+        FAILED_COMPONENTS+=("kotlin")
+    fi
+
+    if command -v gradle &>/dev/null; then
+        log "  Gradle já instalado. Pulando."
+        SKIPPED_COMPONENTS+=("gradle")
+    elif sdk install gradle; then
+        log_ok "  Gradle instalado."
+        INSTALLED_COMPONENTS+=("gradle")
+    else
+        log_err "  Falha ao instalar Gradle."
+        FAILED_COMPONENTS+=("gradle")
+    fi
+
+    set -u
 }
 
-install_dotnet_group() {
-    log "=== Installing DOTNET group ==="
+install_group_java() {
+    log "=============================================="
+    log "Instalando Grupo JAVA..."
+    log "=============================================="
+
+    install_sdkman
+    install_jdk
+    install_kotlin_and_gradle
+
+    log "=============================================="
+    log "Grupo JAVA concluído."
+    log "=============================================="
+}
+
+# =============================================================================
+# GRUPO DOTNET
+# =============================================================================
+
+# Usa o .deb packages-microsoft-prod para configurar o repositório Microsoft
+install_dotnet() {
+    log "Instalando .NET SDK..."
+
+    if command -v dotnet &>/dev/null; then
+        log "  .NET SDK já instalado. Pulando."
+        SKIPPED_COMPONENTS+=("dotnet-sdk")
+        return 0
+    fi
+
+    local ms_deb_url="https://packages.microsoft.com/config/ubuntu/$(. /etc/os-release && echo "$VERSION_ID")/packages-microsoft-prod.deb"
+    local temp_deb="/tmp/packages-microsoft-prod.deb"
+
+    if ! wget -q "$ms_deb_url" -O "$temp_deb"; then
+        log_err "  Falha ao baixar pacote Microsoft."
+        FAILED_COMPONENTS+=("dotnet-sdk")
+        rm -f "$temp_deb"
+        return 1
+    fi
+
+    dpkg -i "$temp_deb" || true
+    rm -f "$temp_deb"
+    DEBIAN_FRONTEND=noninteractive apt-get update -y || true
+
+    install_apt_package dotnet-sdk-8.0 dotnet
+}
+
+install_group_dotnet() {
+    log "=============================================="
+    log "Instalando Grupo DOTNET..."
+    log "=============================================="
+
     install_dotnet
-    log_ok "=== DOTNET group installation complete ==="
+
+    log "=============================================="
+    log "Grupo DOTNET concluído."
+    log "=============================================="
 }
 
 # =============================================================================
-# SUMMARY REPORT
+# CONFIGURAÇÕES PER-USER
 # =============================================================================
 
-print_summary() {
+configure_shell_for_user() {
+    local username="$1"
+    local homedir="$2"
+
+    log "  Configurando shell para '$username'..."
+
+    local current_shell
+    current_shell=$(getent passwd "$username" | cut -d: -f7)
+
+    if [[ "$current_shell" != */zsh ]]; then
+        chsh -s "$(command -v zsh)" "$username" 2>/dev/null \
+            && log_ok "    Shell alterado para zsh." \
+            || log_err "    Falha ao alterar shell para zsh."
+    fi
+
+    local omz_dir="${homedir}/.oh-my-zsh"
+
+    if [[ ! -d "$omz_dir" ]]; then
+        if sudo -u "$username" env HOME="$homedir" \
+            RUNZSH=no CHSH=no \
+            sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" 2>/dev/null; then
+            log_ok "    Oh My Zsh instalado para '$username'."
+        else
+            log_err "    Falha ao instalar Oh My Zsh para '$username'."
+        fi
+    fi
+
+    local zshrc="${homedir}/.zshrc"
+
+    if [[ -f "$zshrc" ]]; then
+        if ! grep -q '^ZSH_THEME="frisk"' "$zshrc" 2>/dev/null; then
+            if grep -q '^ZSH_THEME=' "$zshrc" 2>/dev/null; then
+                sed -i 's/^ZSH_THEME=.*/ZSH_THEME="frisk"/' "$zshrc"
+            else
+                echo 'ZSH_THEME="frisk"' >> "$zshrc"
+            fi
+            chown "$username":"$(id -gn "$username" 2>/dev/null || echo "$username")" "$zshrc" 2>/dev/null || true
+            log_ok "    Tema frisk configurado."
+        fi
+    fi
+}
+
+configure_git_editor() {
+    local username="$1"
+    local homedir="$2"
+
+    local current_editor
+    current_editor=$(sudo -u "$username" env HOME="$homedir" git config --global core.editor 2>/dev/null || echo "")
+
+    if [[ "$current_editor" == "micro" ]]; then
+        return 0
+    fi
+
+    sudo -u "$username" env HOME="$homedir" git config --global core.editor micro 2>/dev/null \
+        && log_ok "  Git editor → micro para '$username'." \
+        || log_err "  Falha ao configurar git editor para '$username'."
+}
+
+# Usa marcador para evitar duplicação em execuções repetidas
+configure_aliases_for_user() {
+    local username="$1"
+    local homedir="$2"
+
+    local -a eza_aliases=(
+        'alias ls="eza -hHbmgalT -L 1 --time-style=long-iso --icons"'
+        'alias lt="eza -hHbmgalT -L 4 --time-style=long-iso --icons"'
+    )
+
+    local marker="# Aliases eza — adicionado por prepare.sh"
+
+    local rc_file
+    for rc_file in "${homedir}/.bashrc" "${homedir}/.zshrc"; do
+        [[ ! -f "$rc_file" ]] && touch "$rc_file" && \
+            chown "$username":"$(id -gn "$username" 2>/dev/null || echo "$username")" "$rc_file" 2>/dev/null || true
+
+        if grep -qF "$marker" "$rc_file" 2>/dev/null; then
+            continue
+        fi
+
+        {
+            echo ""
+            echo "$marker"
+            for alias_line in "${eza_aliases[@]}"; do
+                echo "$alias_line"
+            done
+        } >> "$rc_file"
+
+        chown "$username":"$(id -gn "$username" 2>/dev/null || echo "$username")" "$rc_file" 2>/dev/null || true
+        log_ok "    Aliases eza adicionados em $(basename "$rc_file") para '$username'."
+    done
+}
+
+# Aplica configurações apenas aos TARGET_USERS (não itera /etc/passwd)
+apply_user_configurations() {
+    log "=============================================="
+    log "Aplicando configurações per-user..."
+    log "=============================================="
+
+    for username in "${TARGET_USERS[@]}"; do
+        local homedir
+        homedir=$(eval echo "~${username}")
+
+        if [[ ! -d "$homedir" ]]; then
+            log_err "  Home '$homedir' não encontrado para '$username'. Pulando."
+            continue
+        fi
+
+        log "--- $username ---"
+        configure_shell_for_user "$username" "$homedir"
+        configure_git_editor "$username" "$homedir"
+        configure_aliases_for_user "$username" "$homedir"
+    done
+
+    log "=============================================="
+    log "Configurações per-user concluídas."
+    log "=============================================="
+}
+
+# =============================================================================
+# RELATÓRIO FINAL
+# =============================================================================
+
+print_final_report() {
     local end_time
     end_time=$(date +%s)
-    local duration=$(( end_time - SCRIPT_START_TIME ))
-    local minutes=$(( duration / 60 ))
-    local seconds=$(( duration % 60 ))
-    local end_ts
-    end_ts=$(date '+%Y-%m-%d %H:%M:%S')
+    local elapsed=$(( end_time - SCRIPT_START_TIME ))
+    local minutes=$(( elapsed / 60 ))
+    local seconds=$(( elapsed % 60 ))
 
-    local installed_str="none"
-    local skipped_str="none"
-    local failed_str="none"
+    declare -A component_status
+    for c in "${INSTALLED_COMPONENTS[@]}"; do component_status["$c"]="✓ Instalado"; done
+    for c in "${SKIPPED_COMPONENTS[@]}"; do component_status["$c"]="⊘ Pulado"; done
+    for c in "${FAILED_COMPONENTS[@]}"; do component_status["$c"]="✗ Falha"; done
 
-    [[ "${#INSTALLED_COMPONENTS[@]}" -gt 0 ]] && installed_str="${INSTALLED_COMPONENTS[*]}"
-    [[ "${#SKIPPED_COMPONENTS[@]}" -gt 0 ]]  && skipped_str="${SKIPPED_COMPONENTS[*]}"
-    [[ "${#FAILED_COMPONENTS[@]}" -gt 0 ]]   && failed_str="${FAILED_COMPONENTS[*]}"
+    local max_name_len=10
+    for name in "${!component_status[@]}"; do
+        [[ ${#name} -gt $max_name_len ]] && max_name_len=${#name}
+    done
+    max_name_len=$(( max_name_len + 2 ))
 
-    log "========================================"
-    log "  INSTALLATION SUMMARY"
-    log "========================================"
-    log "Start time : $(date -d @${SCRIPT_START_TIME} '+%Y-%m-%d %H:%M:%S')"
-    log "End time   : ${end_ts}"
-    log "Duration   : ${minutes}m ${seconds}s"
-    log ""
-    log "Installed  (${#INSTALLED_COMPONENTS[@]}): ${installed_str}"
-    log "Skipped    (${#SKIPPED_COMPONENTS[@]}): ${skipped_str}"
-    log "Failed     (${#FAILED_COMPONENTS[@]}): ${failed_str}"
-    log ""
-    log "Log file   : ${LOG_FILE}"
-    log "========================================"
+    local status_col_width=14
+
+    local h_line_top h_line_mid h_line_bot
+    h_line_top=$(printf "╔"; printf '═%.0s' $(seq 1 $((max_name_len + 2))); printf "╦"; printf '═%.0s' $(seq 1 $((status_col_width + 2))); printf "╗")
+    h_line_mid=$(printf "╠"; printf '═%.0s' $(seq 1 $((max_name_len + 2))); printf "╬"; printf '═%.0s' $(seq 1 $((status_col_width + 2))); printf "╣")
+    h_line_bot=$(printf "╚"; printf '═%.0s' $(seq 1 $((max_name_len + 2))); printf "╩"; printf '═%.0s' $(seq 1 $((status_col_width + 2))); printf "╝")
+
+    local output=""
+    output+="\n"
+    output+="$h_line_top\n"
+    output+="$(printf "║ %-${max_name_len}s ║ %-${status_col_width}s ║" "Componente" "Status")\n"
+    output+="$h_line_mid\n"
+
+    local sorted_names
+    sorted_names=$(for name in "${!component_status[@]}"; do echo "$name"; done | sort)
+
+    while IFS= read -r name; do
+        [[ -z "$name" ]] && continue
+        local status="${component_status[$name]}"
+        output+="$(printf "║ %-${max_name_len}s ║ %-${status_col_width}s ║" "$name" "$status")\n"
+    done <<< "$sorted_names"
+
+    output+="$h_line_bot\n"
+    output+="\n"
+    output+="Instalados: ${#INSTALLED_COMPONENTS[@]}  |  Pulados: ${#SKIPPED_COMPONENTS[@]}  |  Falhas: ${#FAILED_COMPONENTS[@]}\n"
+    output+="Tempo total: ${minutes}m ${seconds}s\n"
+    output+="Log: ${LOG_FILE}\n"
+
+    echo -e "$output"
+    [[ -n "${LOG_FILE}" ]] && echo -e "$output" >> "${LOG_FILE}"
+
+    if [[ ${#FAILED_COMPONENTS[@]} -gt 0 ]]; then
+        log_err "Execução concluída com ${#FAILED_COMPONENTS[@]} falha(s)."
+        return 1
+    else
+        log_ok "Execução concluída com sucesso!"
+        return 0
+    fi
 }
 
 # =============================================================================
-# MAIN ENTRY POINT
+# MAIN
 # =============================================================================
 
 main() {
-    # 1. Prerequisite checks (order matters: root first)
-    validate_root
-    validate_ubuntu
-    validate_ram
+    check_running_as_root
+    check_ubuntu_version
+    check_minimum_ram
 
-    # 2. Parse CLI arguments
-    parse_args "$@"
-
-    # 3. Initialise logging (after root check, before any installs)
+    parse_arguments "$@"
     init_logging
-    log "Ubuntu Dev Setup Script starting..."
 
-    # 4. System update
-    update_system
+    log "=============================================="
+    log "Início da configuração do ambiente"
+    log "=============================================="
+    log "Usuário corrente: ${CURRENT_USER}"
+    log "Grupos: BASE=${INSTALL_BASE} DESKTOP=${INSTALL_DESKTOP} DOCKER=${INSTALL_DOCKER} GOLANG=${INSTALL_GOLANG} JAVA=${INSTALL_JAVA} DOTNET=${INSTALL_DOTNET}"
+    [[ ${#FLAG_USERS[@]} -gt 0 ]] && log "Usuários a criar: ${FLAG_USERS[*]}"
 
-    # 5. User management
-    create_default_user
-    create_extra_users
+    create_users_from_flag
+    build_target_users
 
-    # 6. Install selected component groups
-    [[ "${INSTALL_BASE}"    -eq 1 ]] && install_base_group
-    [[ "${INSTALL_DESKTOP}" -eq 1 ]] && install_desktop_group
-    [[ "${INSTALL_DOCKER}"  -eq 1 ]] && install_docker_group
-    [[ "${INSTALL_GOLANG}"  -eq 1 ]] && install_golang_group
-    [[ "${INSTALL_JAVA}"    -eq 1 ]] && install_java_group
-    [[ "${INSTALL_DOTNET}"  -eq 1 ]] && install_dotnet_group
+    DEBIAN_FRONTEND=noninteractive apt-get update -y || log_err "Falha no apt-get update."
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y || log_err "Falha no apt-get upgrade."
 
-    # 7. Print summary
-    print_summary
+    [[ "${INSTALL_BASE}"    -eq 1 ]] && install_group_base
+    [[ "${INSTALL_DESKTOP}" -eq 1 ]] && install_group_desktop
+    [[ "${INSTALL_DOCKER}"  -eq 1 ]] && install_group_docker
+    [[ "${INSTALL_GOLANG}"  -eq 1 ]] && install_group_golang
+    [[ "${INSTALL_JAVA}"    -eq 1 ]] && install_group_java
+    [[ "${INSTALL_DOTNET}"  -eq 1 ]] && install_group_dotnet
 
-    # 8. Exit with error if any component failed
-    if [[ "${#FAILED_COMPONENTS[@]}" -gt 0 ]]; then
-        log_err "Some components failed to install. Check the log for details."
-        exit 1
-    fi
-
-    log_ok "Setup completed successfully."
+    apply_user_configurations
+    print_final_report
 }
 
 main "$@"
+
