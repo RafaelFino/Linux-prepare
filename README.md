@@ -157,22 +157,7 @@ Installs base tools plus Docker and Golang.
 sudo ./prepare.sh --users alice bob
 ```
 
-Creates users `alice` and `bob` in addition to the default user.
-
----
-
-## User Management
-
-The script always creates a default user:
-
-* Username: `dev`
-* Password: `dev123`
-
-Additional users created via `--users` receive:
-
-* Password: `changeme123`
-
-It is strongly recommended to change all default passwords after execution.
+Creates users `alice` and `bob` in addition to the default user. Passwords will be requested during execution.
 
 ---
 
