@@ -480,11 +480,10 @@ install_micro() {
         return 0
     fi
 
-    local install_dir="/tmp/micro-install"
-    mkdir -p "$install_dir"
+    cd
 
-    if curl -fsSL https://getmic.ro | bash -s -- --dest "$install_dir"; then
-        mv "$install_dir/micro" /usr/local/bin/micro
+    if curl -fsSL https://getmic.ro | bash; then
+        mv micro /usr/local/bin/micro
         chmod +x /usr/local/bin/micro
         log_ok "  micro instalado."
         INSTALLED_COMPONENTS+=("micro")
@@ -492,8 +491,6 @@ install_micro() {
         log_err "  Falha ao instalar micro."
         FAILED_COMPONENTS+=("micro")
     fi
-
-    rm -rf "$install_dir"
 }
 
 install_oh_my_bash() {
