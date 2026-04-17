@@ -1173,7 +1173,6 @@ print_final_report() {
     for name in "${!component_status[@]}"; do
         [[ ${#name} -gt $max_name_len ]] && max_name_len=${#name}
     done
-    max_name_len=$(( max_name_len + 2 ))
 
     local status_col_width=14
 
