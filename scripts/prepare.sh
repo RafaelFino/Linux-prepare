@@ -599,7 +599,7 @@ install_nerd_fonts() {
         return 0
     fi
 
-    local temp_dir="/tmp/nerd-fonts-clone"
+    local temp_dir="~/nerd-fonts-clone"
     rm -rf "$temp_dir"
 
     if ! git clone --depth=1 https://github.com/ryanoasis/nerd-fonts "$temp_dir"; then
