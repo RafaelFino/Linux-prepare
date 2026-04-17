@@ -633,7 +633,7 @@ install_powerline_fonts() {
         return 0
     fi
 
-    local temp_dir="/tmp/powerline-fonts-clone"
+    local temp_dir="~/powerline-fonts-clone"
     rm -rf "$temp_dir"
 
     if ! git clone --depth=1 https://github.com/powerline/fonts.git "$temp_dir"; then
