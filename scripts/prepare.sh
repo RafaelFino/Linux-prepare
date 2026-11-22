@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Script de Configuração de Ambiente de Desenvolvimento — Ubuntu 25+
+# Script de Configuração de Ambiente de Desenvolvimento — Ubuntu 24.04+ e Linux Mint 22+
 # =============================================================================
 #
 # Uso       : sudo ./prepare.sh [OPÇÕES]
@@ -200,26 +200,53 @@ check_running_as_root() {
     fi
 }
 
-check_ubuntu_version() {
+# Versão mínima da base Ubuntu. Linux Mint 22.x usa base Ubuntu 24.04.
+MIN_UBUNTU_MAJOR=24
+
+# Lê uma chave de /etc/os-release sem poluir o ambiente do script
+os_release_get() {
+    ( . /etc/os-release && printf '%s' "${!1:-}" )
+}
+
+# Define DISTRO_ID, UBUNTU_BASE_VERSION e UBUNTU_BASE_CODENAME.
+# Para Linux Mint, VERSION_ID e VERSION_CODENAME são da versão do Mint;
+# a base Ubuntu vem de UBUNTU_CODENAME e de /etc/upstream-release/lsb-release.
+detect_distro() {
     if [[ ! -f /etc/os-release ]]; then
         echo "ERRO: /etc/os-release não encontrado. Sistema não suportado." >&2
         exit 1
     fi
 
-    local os_id os_version
-    os_id=$(. /etc/os-release && echo "${ID:-}")
-    os_version=$(. /etc/os-release && echo "${VERSION_ID:-}")
+    DISTRO_ID=$(os_release_get ID)
 
-    if [[ "$os_id" != "ubuntu" ]]; then
-        echo "ERRO: Sistema não suportado: '$os_id'. Apenas Ubuntu." >&2
-        exit 1
+    case "$DISTRO_ID" in
+        ubuntu)
+            UBUNTU_BASE_VERSION=$(os_release_get VERSION_ID)
+            ;;
+        linuxmint)
+            if [[ ! -f /etc/upstream-release/lsb-release ]]; then
+                echo "ERRO: /etc/upstream-release/lsb-release não encontrado. Não foi possível determinar a base Ubuntu do Mint." >&2
+                exit 1
+            fi
+            UBUNTU_BASE_VERSION=$( . /etc/upstream-release/lsb-release && printf '%s' "${DISTRIB_RELEASE:-}" )
+            ;;
+        *)
+            echo "ERRO: Sistema não suportado: '$DISTRO_ID'. Apenas Ubuntu e Linux Mint." >&2
+            exit 1
+            ;;
+    esac
+
+    UBUNTU_BASE_CODENAME=$(os_release_get UBUNTU_CODENAME)
+    if [[ -z "$UBUNTU_BASE_CODENAME" ]]; then
+        UBUNTU_BASE_CODENAME=$(os_release_get VERSION_CODENAME)
     fi
+}
 
-    local major_version
-    major_version=$(echo "$os_version" | cut -d'.' -f1)
+check_supported_distro() {
+    local major_version="${UBUNTU_BASE_VERSION%%.*}"
 
-    if [[ -z "$major_version" ]] || [[ "$major_version" -lt 25 ]]; then
-        echo "ERRO: Ubuntu $os_version detectado. Mínimo: 25." >&2
+    if [[ ! "$major_version" =~ ^[0-9]+$ ]] || [[ "$major_version" -lt "$MIN_UBUNTU_MAJOR" ]]; then
+        echo "ERRO: Base Ubuntu '${UBUNTU_BASE_VERSION:-desconhecida}' detectada em '$DISTRO_ID'. Mínimo: ${MIN_UBUNTU_MAJOR}.04." >&2
         exit 1
     fi
 }
@@ -252,7 +279,8 @@ show_help() {
 Uso: sudo ./prepare.sh [OPÇÕES]
 
 Automatiza a instalação e configuração de um ambiente completo de
-desenvolvimento em Ubuntu 25 ou superior.
+desenvolvimento em Ubuntu 24.04 ou superior, e em Linux Mint 22 ou superior
+(base Ubuntu 24.04+).
 
 GRUPOS DE COMPONENTES:
   --base       Ferramentas de terminal (tmux, htop, jq, bat, ripgrep, fzf...),
@@ -732,7 +760,7 @@ install_docker() {
 
     local arch codename
     arch=$(dpkg --print-architecture)
-    codename=$(. /etc/os-release && echo "$VERSION_CODENAME")
+    codename="$UBUNTU_BASE_CODENAME"
 
     if ! add_apt_key_with_validation \
         "docker" \
@@ -1002,7 +1030,7 @@ install_dotnet() {
         return 0
     fi
 
-    local ms_deb_url="https://packages.microsoft.com/config/ubuntu/$(. /etc/os-release && echo "$VERSION_ID")/packages-microsoft-prod.deb"
+    local ms_deb_url="https://packages.microsoft.com/config/ubuntu/${UBUNTU_BASE_VERSION}/packages-microsoft-prod.deb"
     local temp_deb="/tmp/packages-microsoft-prod.deb"
 
     if ! wget -q "$ms_deb_url" -O "$temp_deb"; then
@@ -1220,7 +1248,8 @@ print_final_report() {
 
 main() {
     check_running_as_root
-    check_ubuntu_version
+    detect_distro
+    check_supported_distro
     check_minimum_ram
 
     parse_arguments "$@"
@@ -1229,6 +1258,7 @@ main() {
     log "=============================================="
     log "Início da configuração do ambiente"
     log "=============================================="
+    log "Distribuição: ${DISTRO_ID} (base Ubuntu ${UBUNTU_BASE_VERSION} / ${UBUNTU_BASE_CODENAME})"
     log "Usuário corrente: ${CURRENT_USER}"
     log "Grupos: BASE=${INSTALL_BASE} DESKTOP=${INSTALL_DESKTOP} DOCKER=${INSTALL_DOCKER} GOLANG=${INSTALL_GOLANG} JAVA=${INSTALL_JAVA} DOTNET=${INSTALL_DOTNET}"
     [[ ${#FLAG_USERS[@]} -gt 0 ]] && log "Usuários a criar: ${FLAG_USERS[*]}"
